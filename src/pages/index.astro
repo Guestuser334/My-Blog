@@ -184,23 +184,28 @@ const latestPost = posts[0];
 				display: grid;
 				grid-template-rows: repeat(24, 1fr);
 				grid-template-columns: repeat(80, 1fr);
-				gap: 1.2px;
+				gap: 1.5px;
 				padding: 0.4rem 0.2rem;
 				opacity: 0.9;
+				width: 100%;
+				aspect-ratio: 80 / 24;
+				margin: auto;
 			}
 			:global(.map-dot) {
-				width: 3px;
-				height: 3px;
+				width: 2.2px;
+				height: 2.2px;
 				border-radius: 50%;
-				background: rgba(255, 255, 255, 0.07);
+				background: rgba(255, 255, 255, 0.08);
 				transition: background-color 0.3s, transform 0.3s;
+				justify-self: center;
+				align-self: center;
 			}
 			:global(.map-dot.active-land) {
-				background: rgba(var(--accent-color), 0.65);
+				background: rgba(var(--accent-color), 0.7);
 			}
 			:global(.map-dot.current-city) {
 				background: #10b981 !important;
-				transform: scale(1.8);
+				transform: scale(2);
 				box-shadow: 0 0 8px #10b981;
 				z-index: 10;
 				position: relative;
@@ -208,10 +213,10 @@ const latestPost = posts[0];
 			:global(.map-dot.current-city::after) {
 				content: '';
 				position: absolute;
-				top: -3.5px;
-				left: -3.5px;
-				right: -3.5px;
-				bottom: -3.5px;
+				top: -4px;
+				left: -4px;
+				right: -4px;
+				bottom: -4px;
 				border: 1px solid #10b981;
 				border-radius: 50%;
 				animation: pulse-dot 1.5s infinite;
@@ -884,44 +889,46 @@ const latestPost = posts[0];
 
 			// 4. Dot Map Render and Interaction
 			const MAP_MATRIX = [
-				"                .                                     ...       ",
-				"       .       ...               .         .       ......       ",
-				"      ...     .....            ...        ...     ........      ",
-				"    ......   .......          .....      ..................     ",
-				"   ..................       ...............................     ",
-				"   ..................       ................................... ",
-				"    ................         .................................  ",
-				"     ..............           ................................  ",
-				"      ...........              ..............................   ",
-				"       ........                  ...........................    ",
-				"        ......                    .........................     ",
-				"         ....                      ......................       ",
-				"          ..                        .  .................        ",
-				"          .                             ............            ",
-				"          .                              ..........             ",
-				"         ..                              .........              ",
-				"        ....                             ........       .       ",
-				"        ....                              ......       ...      ",
-				"        ...                                ....       .....     ",
-				"        ..                                  ..        .....     ",
-				"         .                                   .         ...      ",
-				"                                                        .       "
+				"                                                                                ",
+				"                                  ....                                          ",
+				"                                 ......                                         ",
+				"  .                             ........                        ......          ",
+				" ...                           ..........                      ........         ",
+				".....                         ............                    ..........        ",
+				"-------   .                  --------------                  ------------   .   ",
+				"--------- ...                ...............                -------------- ...  ",
+				"---------- ----              ...............               ------------------   ",
+				"---------- ----              ...............               ----------------     ",
+				" --------- -----              .............                 ---------------      ",
+				"  -------  ----               ...........                  --------------       ",
+				"   -----    ..                 .......                        ------------        ",
+				"    ...                         .....                          -----------         ",
+				"     .                           ...                            .........          ",
+				"    ..                            .                              .......           ",
+				"   ....                                                           .....            ",
+				"  ......                                                           ...             ",
+				"  ......                                                            .      ...     ",
+				"   ....                                                                   .....    ",
+				"    ..                                                                    .....    ",
+				"    .                                                                      ...     ",
+				"   ..                                                                       .      ",
+				"                                                                                "
 			];
 
 			const CITIES = {
-				Beijing: { r: 5, c: 53, label: "北京" },
-				Shanghai: { r: 6, c: 54, label: "上海" },
-				Shenzhen: { r: 7, c: 53, label: "深圳" },
-				Chengdu: { r: 6, c: 50, label: "成都" },
-				Xian: { r: 5, c: 51, label: "西安" },
-				Wuxi: { r: 6, c: 53, label: "无锡" },
-				Tokyo: { r: 5, c: 62, label: "东京" },
-				Singapore: { r: 11, c: 50, label: "新加坡" },
-				London: { r: 4, c: 30, label: "伦敦" },
-				Paris: { r: 5, c: 31, label: "巴黎" },
-				"New York": { r: 5, c: 16, label: "纽约" },
-				"San Francisco": { r: 5, c: 6, label: "旧金山" },
-				Sydney: { r: 18, c: 59, label: "悉尼" }
+				Beijing: { r: 6, c: 70, label: "北京" },
+				Shanghai: { r: 7, c: 71, label: "上海" },
+				Shenzhen: { r: 9, c: 68, label: "深圳" },
+				Chengdu: { r: 8, c: 63, label: "成都" },
+				Xian: { r: 7, c: 67, label: "西安" },
+				Wuxi: { r: 7, c: 70, label: "无锡" },
+				Tokyo: { r: 6, c: 76, label: "东京" },
+				Singapore: { r: 12, c: 63, label: "新加坡" },
+				London: { r: 5, c: 37, label: "伦敦" },
+				Paris: { r: 6, c: 38, label: "巴黎" },
+				"New York": { r: 6, c: 19, label: "纽约" },
+				"San Francisco": { r: 6, c: 8, label: "旧金山" },
+				Sydney: { r: 19, c: 71, label: "悉尼" }
 			};
 
 			const mapContainer = document.getElementById('dot-map-container');
