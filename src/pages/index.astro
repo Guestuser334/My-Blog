@@ -157,27 +157,27 @@ const latestPost = posts[0];
 			.map-container {
 				flex-grow: 1;
 				display: grid;
-				grid-template-rows: repeat(17, 1fr);
-				grid-template-columns: repeat(44, 1fr);
-				gap: 2px;
+				grid-template-rows: repeat(22, 1fr);
+				grid-template-columns: repeat(64, 1fr);
+				gap: 1.5px;
 				padding: 0.4rem 0.2rem;
 				opacity: 0.85;
 			}
 			:global(.map-dot) {
-				width: 5px;
-				height: 5px;
+				width: 3.5px;
+				height: 3.5px;
 				border-radius: 50%;
-				background: rgba(var(--accent-color), 0.15);
+				background: rgba(var(--accent-color), 0.12);
 				transition: background-color 0.3s, transform 0.3s;
 			}
 			:root[data-theme="dark"] :global(.map-dot) {
-				background: rgba(255, 255, 255, 0.1);
+				background: rgba(255, 255, 255, 0.08);
 			}
 			:global(.map-dot.active-land) {
-				background: rgba(var(--accent-color), 0.3);
+				background: rgba(var(--accent-color), 0.65);
 			}
 			:root[data-theme="dark"] :global(.map-dot.active-land) {
-				background: rgba(255, 255, 255, 0.22);
+				background: rgba(var(--accent-color), 0.65);
 			}
 			:global(.map-dot.current-city) {
 				background: #10b981 !important;
@@ -863,39 +863,44 @@ const latestPost = posts[0];
 
 			// 4. Dot Map Render and Interaction
 			const MAP_MATRIX = [
-				"                ......   .........          ",
-				"  ......       ........  ...........        ",
-				" ........     .........  .............      ",
-				"..........   ..........  .............. ... ",
-				"..........   .........   ............. .... ",
-				" ........     .......     ...........   ..  ",
-				"  ......       .....      ..........        ",
-				"   ....                    ........         ",
-				"    ..                     ........         ",
-				"    .                      .........        ",
-				"   ..                     ..........        ",
-				"  ...                     ..........        ",
-				"  ..                       ........         ",
-				"                            ......    ...   ",
-				"                            ....     .....  ",
-				"                             ..      .....  ",
-				"                                      ...   "
+				"                .                                     ...       ",
+				"       .       ...               .         .       ......       ",
+				"      ...     .....            ...        ...     ........      ",
+				"    ......   .......          .....      ..................     ",
+				"   ..................       ...............................     ",
+				"   ..................       ................................... ",
+				"    ................         .................................  ",
+				"     ..............           ................................  ",
+				"      ...........              ..............................   ",
+				"       ........                  ...........................    ",
+				"        ......                    .........................     ",
+				"         ....                      ......................       ",
+				"          ..                        .  .................        ",
+				"          .                             ............            ",
+				"          .                              ..........             ",
+				"         ..                              .........              ",
+				"        ....                             ........       .       ",
+				"        ....                              ......       ...      ",
+				"        ...                                ....       .....     ",
+				"        ..                                  ..        .....     ",
+				"         .                                   .         ...      ",
+				"                                                        .       "
 			];
 
 			const CITIES = {
-				Beijing: { r: 3, c: 25, label: "北京" },
-				Shanghai: { r: 4, c: 26, label: "上海" },
-				Shenzhen: { r: 5, c: 25, label: "深圳" },
-				Chengdu: { r: 4, c: 23, label: "成都" },
-				Xian: { r: 4, c: 24, label: "西安" },
-				Wuxi: { r: 4, c: 25, label: "无锡" },
-				Tokyo: { r: 3, c: 29, label: "东京" },
-				Singapore: { r: 7, c: 24, label: "新加坡" },
-				London: { r: 2, c: 15, label: "伦敦" },
-				Paris: { r: 3, c: 16, label: "巴黎" },
-				"New York": { r: 3, c: 6, label: "纽约" },
-				"San Francisco": { r: 3, c: 2, label: "旧金山" },
-				Sydney: { r: 14, c: 33, label: "悉尼" }
+				Beijing: { r: 5, c: 53, label: "北京" },
+				Shanghai: { r: 6, c: 54, label: "上海" },
+				Shenzhen: { r: 7, c: 53, label: "深圳" },
+				Chengdu: { r: 6, c: 50, label: "成都" },
+				Xian: { r: 5, c: 51, label: "西安" },
+				Wuxi: { r: 6, c: 53, label: "无锡" },
+				Tokyo: { r: 5, c: 62, label: "东京" },
+				Singapore: { r: 11, c: 50, label: "新加坡" },
+				London: { r: 4, c: 30, label: "伦敦" },
+				Paris: { r: 5, c: 31, label: "巴黎" },
+				"New York": { r: 5, c: 16, label: "纽约" },
+				"San Francisco": { r: 5, c: 6, label: "旧金山" },
+				Sydney: { r: 18, c: 59, label: "悉尼" }
 			};
 
 			const mapContainer = document.getElementById('dot-map-container');

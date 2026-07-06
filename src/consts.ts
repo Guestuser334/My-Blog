@@ -3,4 +3,4 @@
 
 export const SITE_TITLE = 'Skittles’s Blog';
 export const SITE_DESCRIPTION = '在代码、学术与数码艺术中穿梭的旅人。';
-export const CURRENT_LOCATION = 'Beijing';
+export const CURRENT_LOCATION = 'Xian';
