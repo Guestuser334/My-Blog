@@ -247,15 +247,6 @@ const latestPost = posts[0];
 				align-items: center;
 				font-size: 0.95rem;
 				overflow: hidden;
-				background: rgba(255, 255, 255, 0.52);
-			}
-			:root[data-theme="dark"] .status-banner {
-				background: rgba(15, 15, 20, 0.7);
-			}
-			@media (prefers-color-scheme: dark) {
-				:root:not([data-theme="light"]) .status-banner {
-					background: rgba(15, 15, 20, 0.7);
-				}
 			}
 			.lyric-text {
 				font-weight: 700;
@@ -462,18 +453,6 @@ const latestPost = posts[0];
 				align-items: center;
 				font-size: 0.9rem;
 				color: var(--text-color);
-				background: rgba(255, 255, 255, 0.52);
-				border: 1px solid var(--glass-border);
-				backdrop-filter: blur(25px);
-				box-shadow: var(--glass-shadow);
-			}
-			:root[data-theme="dark"] .footer-bar {
-				background: rgba(15, 15, 20, 0.7);
-			}
-			@media (prefers-color-scheme: dark) {
-				:root:not([data-theme="light"]) .footer-bar {
-					background: rgba(15, 15, 20, 0.7);
-				}
 			}
 			
 			.footer-left {
