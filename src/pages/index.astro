@@ -153,22 +153,6 @@ const latestPost = posts[0];
 				margin: 0;
 				font-size: 1.05rem;
 			}
-			.map-settings-btn {
-				background: transparent;
-				border: none;
-				color: var(--text-muted);
-				cursor: pointer;
-				padding: 4px;
-				border-radius: 50%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				transition: color 0.2s, background-color 0.2s;
-			}
-			.map-settings-btn:hover {
-				color: var(--accent);
-				background: rgba(var(--accent-color), 0.08);
-			}
 
 			.map-container {
 				flex-grow: 1;
@@ -179,30 +163,30 @@ const latestPost = posts[0];
 				padding: 0.4rem 0.2rem;
 				opacity: 0.85;
 			}
-			.map-dot {
+			:global(.map-dot) {
 				width: 5px;
 				height: 5px;
 				border-radius: 50%;
 				background: rgba(var(--accent-color), 0.15);
 				transition: background-color 0.3s, transform 0.3s;
 			}
-			:root[data-theme="dark"] .map-dot {
+			:root[data-theme="dark"] :global(.map-dot) {
 				background: rgba(255, 255, 255, 0.1);
 			}
-			.map-dot.active-land {
+			:global(.map-dot.active-land) {
 				background: rgba(var(--accent-color), 0.3);
 			}
-			:root[data-theme="dark"] .map-dot.active-land {
+			:root[data-theme="dark"] :global(.map-dot.active-land) {
 				background: rgba(255, 255, 255, 0.22);
 			}
-			.map-dot.current-city {
-				background: #10b981;
+			:global(.map-dot.current-city) {
+				background: #10b981 !important;
 				transform: scale(1.6);
 				box-shadow: 0 0 8px #10b981;
 				z-index: 10;
 				position: relative;
 			}
-			.map-dot.current-city::after {
+			:global(.map-dot.current-city::after) {
 				content: '';
 				position: absolute;
 				top: -3px;
@@ -238,93 +222,6 @@ const latestPost = posts[0];
 			}
 			.location-text strong {
 				color: var(--accent);
-			}
-
-			/* Settings Modal */
-			.map-settings-modal {
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background: rgba(0, 0, 0, 0.15);
-				backdrop-filter: blur(10px);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				z-index: 100;
-				transition: opacity 0.3s ease;
-			}
-			.map-settings-modal.hidden {
-				display: none;
-				pointer-events: none;
-				opacity: 0;
-			}
-			.modal-content {
-				width: 85%;
-				max-width: 320px;
-				padding: 1.2rem;
-				background: var(--glass-bg);
-				border: 1px solid var(--glass-border);
-				border-radius: 18px;
-				box-shadow: var(--glass-shadow);
-				display: flex;
-				flex-direction: column;
-				gap: 0.8rem;
-			}
-			.modal-content h4 {
-				margin: 0;
-				font-size: 1rem;
-				font-weight: 700;
-				color: var(--text-color);
-			}
-			.select-wrapper select {
-				width: 100%;
-				padding: 0.5rem;
-				border-radius: 8px;
-				border: 1px solid var(--glass-border);
-				background: var(--glass-bg);
-				color: var(--text-color);
-				font-size: 0.85rem;
-				outline: none;
-				cursor: pointer;
-			}
-			.modal-buttons {
-				display: flex;
-				gap: 0.5rem;
-				justify-content: flex-end;
-			}
-			.modal-btn {
-				padding: 0.4rem 0.8rem;
-				border-radius: 8px;
-				font-size: 0.8rem;
-				font-weight: 600;
-				cursor: pointer;
-				border: none;
-				transition: background-color 0.2s;
-			}
-			.modal-btn.save {
-				background: var(--accent);
-				color: white;
-			}
-			.modal-btn.save:hover {
-				background: var(--accent-dark);
-			}
-			.modal-btn.cancel {
-				background: rgba(0, 0, 0, 0.05);
-				color: var(--text-muted);
-			}
-			:root[data-theme="dark"] .modal-btn.cancel {
-				background: rgba(255, 255, 255, 0.08);
-			}
-			.modal-btn.cancel:hover {
-				background: rgba(0, 0, 0, 0.1);
-			}
-			.modal-tip {
-				font-size: 0.7rem;
-				color: var(--text-muted);
-				margin: 0;
-				line-height: 1.4;
 			}
 
 			/* Status Banner / Lyric Marquee */
@@ -780,12 +677,6 @@ const latestPost = posts[0];
 								</svg>
 								<h3>我的足迹与定位</h3>
 							</div>
-							<button id="map-settings-btn" class="map-settings-btn" aria-label="Configure Location">
-								<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-									<circle cx="12" cy="12" r="3"></circle>
-									<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-								</svg>
-							</button>
 						</div>
 
 						<!-- Dot Map Container -->
@@ -797,33 +688,6 @@ const latestPost = posts[0];
 						<div class="location-footer">
 							<span class="location-dot-pulse"></span>
 							<span class="location-text">📍 当前所处位置：<strong id="current-location-display">北京</strong></span>
-						</div>
-
-						<!-- Admin Settings Modal (Inline) -->
-						<div id="map-settings-modal" class="map-settings-modal hidden">
-							<div class="modal-content glass-card">
-								<h4>更改当前定位</h4>
-								<div class="select-wrapper">
-									<select id="city-select">
-										<option value="Beijing">🇨🇳 北京 (Beijing)</option>
-										<option value="Shanghai">🇨🇳 上海 (Shanghai)</option>
-										<option value="Shenzhen">🇨🇳 深圳 (Shenzhen)</option>
-										<option value="Chengdu">🇨🇳 成都 (Chengdu)</option>
-										<option value="Tokyo">🇯🇵 东京 (Tokyo)</option>
-										<option value="Singapore">🇸🇬 新加坡 (Singapore)</option>
-										<option value="London">🇬🇧 伦敦 (London)</option>
-										<option value="Paris">🇫🇷 巴黎 (Paris)</option>
-										<option value="New York">🇺🇸 纽约 (New York)</option>
-										<option value="San Francisco">🇺🇸 旧金山 (San Francisco)</option>
-										<option value="Sydney">🇦🇺 悉尼 (Sydney)</option>
-									</select>
-								</div>
-								<div class="modal-buttons">
-									<button id="modal-save-btn" class="modal-btn save">保存本地</button>
-									<button id="modal-cancel-btn" class="modal-btn cancel">取消</button>
-								</div>
-								<p class="modal-tip">💡 提示：在此处修改仅保存在本地浏览器缓存中。若想让所有公网访客看到，请在项目的 <code>src/consts.ts</code> 中修改 <code>CURRENT_LOCATION</code> 常量并提交推送。</p>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -1023,6 +887,8 @@ const latestPost = posts[0];
 				Shanghai: { r: 4, c: 26, label: "上海" },
 				Shenzhen: { r: 5, c: 25, label: "深圳" },
 				Chengdu: { r: 4, c: 23, label: "成都" },
+				Xian: { r: 4, c: 24, label: "西安" },
+				Wuxi: { r: 4, c: 25, label: "无锡" },
 				Tokyo: { r: 3, c: 29, label: "东京" },
 				Singapore: { r: 7, c: 24, label: "新加坡" },
 				London: { r: 2, c: 15, label: "伦敦" },
@@ -1034,10 +900,8 @@ const latestPost = posts[0];
 
 			const mapContainer = document.getElementById('dot-map-container');
 			const locationDisplay = document.getElementById('current-location-display');
-			const citySelect = document.getElementById('city-select');
 
-			const defaultCity = mapContainer?.dataset.defaultCity || 'Beijing';
-			let currentCity = localStorage.getItem('user-current-location') || defaultCity;
+			const currentCity = mapContainer?.dataset.defaultCity || 'Beijing';
 
 			const renderMap = () => {
 				if (!mapContainer) return;
@@ -1045,7 +909,6 @@ const latestPost = posts[0];
 				
 				const activeCityData = CITIES[currentCity] || CITIES.Beijing;
 				if (locationDisplay) locationDisplay.textContent = activeCityData.label;
-				if (citySelect) citySelect.value = currentCity;
 
 				for (let r = 0; r < MAP_MATRIX.length; r++) {
 					const rowStr = MAP_MATRIX[r];
@@ -1068,30 +931,6 @@ const latestPost = posts[0];
 					}
 				}
 			};
-
-			// Modal Interaction
-			const settingsBtn = document.getElementById('map-settings-btn');
-			const settingsModal = document.getElementById('map-settings-modal');
-			const cancelBtn = document.getElementById('modal-cancel-btn');
-			const saveBtn = document.getElementById('modal-save-btn');
-
-			settingsBtn?.addEventListener('click', () => {
-				settingsModal?.classList.remove('hidden');
-			});
-
-			cancelBtn?.addEventListener('click', () => {
-				settingsModal?.classList.add('hidden');
-			});
-
-			saveBtn?.addEventListener('click', () => {
-				if (citySelect) {
-					const newCity = citySelect.value;
-					localStorage.setItem('user-current-location', newCity);
-					currentCity = newCity;
-					renderMap();
-				}
-				settingsModal?.classList.add('hidden');
-			});
 
 			renderMap();
 		</script>
