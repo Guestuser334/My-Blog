@@ -154,34 +154,53 @@ const latestPost = posts[0];
 				font-size: 1.05rem;
 			}
 
+			/* Map Widget - Obsidian Contrast Design */
+			.map-widget {
+				height: 250px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				position: relative;
+				overflow: hidden;
+				background: rgba(18, 18, 24, 0.93) !important;
+				border: 1px solid rgba(255, 255, 255, 0.12) !important;
+				box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.3) !important;
+				color: #f5f5f7 !important;
+			}
+			.map-header h3 {
+				margin: 0;
+				font-size: 1.05rem;
+				color: #ffffff;
+			}
+			.map-title-wrapper {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				color: #ffffff;
+			}
+
 			.map-container {
 				flex-grow: 1;
 				display: grid;
-				grid-template-rows: repeat(22, 1fr);
-				grid-template-columns: repeat(64, 1fr);
-				gap: 1.5px;
+				grid-template-rows: repeat(24, 1fr);
+				grid-template-columns: repeat(80, 1fr);
+				gap: 1.2px;
 				padding: 0.4rem 0.2rem;
-				opacity: 0.85;
+				opacity: 0.9;
 			}
 			:global(.map-dot) {
-				width: 3.5px;
-				height: 3.5px;
+				width: 3px;
+				height: 3px;
 				border-radius: 50%;
-				background: rgba(var(--accent-color), 0.12);
+				background: rgba(255, 255, 255, 0.07);
 				transition: background-color 0.3s, transform 0.3s;
-			}
-			:root[data-theme="dark"] :global(.map-dot) {
-				background: rgba(255, 255, 255, 0.08);
 			}
 			:global(.map-dot.active-land) {
 				background: rgba(var(--accent-color), 0.65);
 			}
-			:root[data-theme="dark"] :global(.map-dot.active-land) {
-				background: rgba(var(--accent-color), 0.65);
-			}
 			:global(.map-dot.current-city) {
 				background: #10b981 !important;
-				transform: scale(1.6);
+				transform: scale(1.8);
 				box-shadow: 0 0 8px #10b981;
 				z-index: 10;
 				position: relative;
@@ -189,17 +208,17 @@ const latestPost = posts[0];
 			:global(.map-dot.current-city::after) {
 				content: '';
 				position: absolute;
-				top: -3px;
-				left: -3px;
-				right: -3px;
-				bottom: -3px;
+				top: -3.5px;
+				left: -3.5px;
+				right: -3.5px;
+				bottom: -3.5px;
 				border: 1px solid #10b981;
 				border-radius: 50%;
 				animation: pulse-dot 1.5s infinite;
 			}
 			@keyframes pulse-dot {
 				0% { transform: scale(1); opacity: 1; }
-				100% { transform: scale(2.5); opacity: 0; }
+				100% { transform: scale(2.8); opacity: 0; }
 			}
 
 			.location-footer {
@@ -208,6 +227,8 @@ const latestPost = posts[0];
 				gap: 0.5rem;
 				font-size: 0.85rem;
 				margin-top: 0.2rem;
+				border-top: 1px solid rgba(255, 255, 255, 0.08);
+				padding-top: 0.5rem;
 			}
 			.location-dot-pulse {
 				width: 8px;
@@ -218,7 +239,7 @@ const latestPost = posts[0];
 				animation: pulse 2s infinite;
 			}
 			.location-text {
-				color: var(--text-color);
+				color: rgba(255, 255, 255, 0.75);
 			}
 			.location-text strong {
 				color: var(--accent);
