@@ -127,33 +127,6 @@ const latestPost = posts[0];
 				box-shadow: 0 4px 12px rgba(var(--accent-color), 0.35);
 			}
 
-			/* Map Widget */
-			.map-widget {
-				height: 250px;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				position: relative;
-				overflow: hidden;
-			}
-			.map-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				font-size: 0.95rem;
-				font-weight: 700;
-				margin-bottom: 0.2rem;
-			}
-			.map-title-wrapper {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-			}
-			.map-title-wrapper h3 {
-				margin: 0;
-				font-size: 1.05rem;
-			}
-
 			/* Map Widget - Obsidian Contrast Design */
 			.map-widget {
 				height: 250px;
@@ -179,51 +152,49 @@ const latestPost = posts[0];
 				color: #ffffff;
 			}
 
-			.map-container {
+			/* SVG Map */
+			.svg-map-wrapper {
 				flex-grow: 1;
-				display: grid;
-				grid-template-rows: repeat(24, 1fr);
-				grid-template-columns: repeat(80, 1fr);
-				gap: 1.5px;
-				padding: 0.4rem 0.2rem;
-				opacity: 0.9;
+				position: relative;
+				overflow: hidden;
+				margin: 0.2rem 0;
+			}
+			.svg-map-wrapper svg {
 				width: 100%;
-				aspect-ratio: 80 / 24;
-				margin: auto;
+				height: 100%;
+			}
+			.map-land {
+				fill: none;
+				stroke: none;
 			}
 			:global(.map-dot) {
-				width: 2.2px;
-				height: 2.2px;
-				border-radius: 50%;
-				background: rgba(255, 255, 255, 0.08);
-				transition: background-color 0.3s, transform 0.3s;
-				justify-self: center;
-				align-self: center;
+				fill: rgba(255, 255, 255, 0.08);
+				transition: fill 0.3s;
 			}
 			:global(.map-dot.active-land) {
-				background: rgba(var(--accent-color), 0.7);
+				fill: var(--accent) !important;
+				opacity: 0.95;
 			}
-			:global(.map-dot.current-city) {
-				background: #10b981 !important;
-				transform: scale(2);
-				box-shadow: 0 0 8px #10b981;
-				z-index: 10;
-				position: relative;
+			.city-marker {
+				fill: #10b981;
+				filter: drop-shadow(0 0 6px #10b981);
+				animation: pulse-city 2s infinite;
 			}
-			:global(.map-dot.current-city::after) {
-				content: '';
-				position: absolute;
-				top: -4px;
-				left: -4px;
-				right: -4px;
-				bottom: -4px;
-				border: 1px solid #10b981;
-				border-radius: 50%;
-				animation: pulse-dot 1.5s infinite;
+			.city-ring {
+				fill: none;
+				stroke: #10b981;
+				stroke-width: 1.2;
+				animation: expand-ring 2s infinite;
+				transform-box: fill-box;
+				transform-origin: center;
 			}
-			@keyframes pulse-dot {
-				0% { transform: scale(1); opacity: 1; }
-				100% { transform: scale(2.8); opacity: 0; }
+			@keyframes pulse-city {
+				0%, 100% { opacity: 1; r: 5; }
+				50% { opacity: 0.7; r: 7; }
+			}
+			@keyframes expand-ring {
+				0% { transform: scale(1); opacity: 0.8; }
+				100% { transform: scale(3.5); opacity: 0; }
 			}
 
 			.location-footer {
@@ -231,9 +202,8 @@ const latestPost = posts[0];
 				align-items: center;
 				gap: 0.5rem;
 				font-size: 0.85rem;
-				margin-top: 0.2rem;
 				border-top: 1px solid rgba(255, 255, 255, 0.08);
-				padding-top: 0.5rem;
+				padding-top: 0.4rem;
 			}
 			.location-dot-pulse {
 				width: 8px;
@@ -692,7 +662,7 @@ const latestPost = posts[0];
 						</div>
 					</div>
 
-					<!-- Interactive Location Map Card -->
+					<!-- Interactive Location Map Card - SVG based -->
 					<div class="glass-card map-widget w-40">
 						<div class="map-header">
 							<div class="map-title-wrapper">
@@ -705,15 +675,101 @@ const latestPost = posts[0];
 							</div>
 						</div>
 
-						<!-- Dot Map Container -->
-						<div class="map-container" id="dot-map-container" data-default-city={CURRENT_LOCATION}>
-							<!-- Dots will be rendered dynamically by JavaScript -->
+						<!-- SVG World Map -->
+						<div class="svg-map-wrapper">
+							<svg id="world-map-svg" viewBox="0 0 1010 505" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+								<!-- Simplified Natural Earth world map paths -->
+								<!-- North America -->
+								<path class="map-land" d="M108,55 L155,45 L185,50 L210,65 L220,80 L215,100 L200,115 L175,120 L155,110 L140,95 L120,85 L105,70 Z"/>
+								<path class="map-land" d="M155,45 L210,38 L250,42 L280,55 L290,75 L275,90 L255,95 L230,88 L210,65 L185,50 Z"/>
+								<path class="map-land" d="M108,55 L140,45 L155,45 L155,110 L140,95 L120,85 L105,70 Z"/>
+								<!-- Main North America body -->
+								<path class="map-land" d="M82,85 L108,55 L155,45 L210,38 L255,42 L290,55 L310,70 L315,95 L300,120 L275,140 L245,155 L215,165 L185,162 L160,150 L135,135 L108,125 L85,110 Z"/>
+								<path class="map-land" d="M85,110 L108,125 L135,135 L160,150 L185,162 L215,165 L235,180 L240,200 L225,215 L200,220 L175,215 L150,205 L125,190 L105,175 L88,155 L80,135 Z"/>
+								<!-- Central America -->
+								<path class="map-land" d="M175,215 L200,220 L210,235 L200,250 L185,255 L170,245 L165,230 Z"/>
+								<!-- South America -->
+								<path class="map-land" d="M185,255 L220,248 L255,255 L280,275 L290,305 L285,340 L270,370 L248,395 L225,415 L205,430 L190,420 L178,400 L170,370 L165,340 L162,310 L165,280 Z"/>
+								<!-- Greenland -->
+								<path class="map-land" d="M245,18 L270,15 L295,20 L305,35 L298,50 L278,55 L258,48 L245,35 Z"/>
+								<!-- Europe -->
+								<path class="map-land" d="M420,68 L445,62 L468,65 L478,78 L472,92 L458,98 L440,95 L425,85 Z"/>
+								<path class="map-land" d="M440,95 L458,98 L475,108 L485,125 L478,140 L462,148 L445,145 L430,132 L425,115 Z"/>
+								<path class="map-land" d="M390,75 L420,68 L440,95 L425,115 L405,120 L385,112 L375,95 Z"/>
+								<path class="map-land" d="M350,82 L390,75 L405,120 L385,112 L360,108 L340,95 Z"/>
+								<path class="map-land" d="M460,62 L490,58 L510,65 L520,80 L508,95 L488,100 L468,92 L455,78 Z"/>
+								<path class="map-land" d="M488,100 L510,95 L530,102 L538,118 L525,130 L508,128 L495,115 Z"/>
+								<!-- Scandinavia -->
+								<path class="map-land" d="M455,40 L475,35 L492,42 L498,58 L488,68 L472,65 L458,55 Z"/>
+								<path class="map-land" d="M472,65 L490,58 L505,62 L510,78 L500,88 L485,85 L472,75 Z"/>
+								<path class="map-land" d="M492,42 L512,38 L530,45 L535,58 L520,65 L505,62 L498,50 Z"/>
+								<!-- Africa -->
+								<path class="map-land" d="M415,148 L445,140 L472,148 L488,168 L492,195 L485,225 L470,252 L450,275 L428,290 L408,295 L388,288 L370,270 L358,245 L355,215 L360,188 L372,165 L392,150 Z"/>
+								<path class="map-land" d="M428,290 L450,295 L465,315 L460,340 L445,355 L428,348 L415,328 L412,305 Z"/>
+								<!-- Middle East / Arabian Peninsula -->
+								<path class="map-land" d="M495,138 L525,130 L545,140 L555,160 L545,178 L525,185 L505,178 L492,162 Z"/>
+								<path class="map-land" d="M525,185 L548,178 L565,190 L568,210 L555,222 L535,218 L520,205 Z"/>
+								<!-- Russia / Central Asia -->
+								<path class="map-land" d="M525,45 L580,35 L640,30 L695,35 L740,45 L770,58 L780,75 L760,90 L720,98 L680,95 L640,88 L600,82 L565,78 L538,70 Z"/>
+								<path class="map-land" d="M580,35 L630,25 L680,22 L725,28 L760,38 L780,55 L770,58 L740,45 L695,35 L640,30 Z"/>
+								<path class="map-land" d="M680,22 L730,18 L775,25 L810,35 L835,50 L825,65 L800,72 L770,68 L745,55 L720,42 L695,35 L670,30 Z"/>
+								<path class="map-land" d="M810,35 L855,28 L890,35 L908,48 L900,62 L875,68 L848,62 L825,52 Z"/>
+								<!-- Siberia extension -->
+								<path class="map-land" d="M760,90 L800,85 L840,88 L870,98 L878,115 L858,128 L825,130 L792,122 L768,108 Z"/>
+								<!-- Kazakhstan / Central Asia -->
+								<path class="map-land" d="M555,95 L600,88 L640,92 L668,105 L670,125 L648,135 L618,132 L588,122 L560,112 Z"/>
+								<!-- South Asia (India) -->
+								<path class="map-land" d="M618,148 L648,142 L670,152 L678,175 L668,200 L648,218 L625,225 L605,215 L595,195 L600,170 Z"/>
+								<!-- India peninsula -->
+								<path class="map-land" d="M625,225 L648,218 L658,240 L648,262 L632,270 L618,258 L612,238 Z"/>
+								<!-- China / East Asia -->
+								<path class="map-land" d="M668,95 L715,90 L748,100 L765,118 L762,140 L742,155 L715,158 L688,148 L668,132 L660,112 Z"/>
+								<path class="map-land" d="M715,90 L755,85 L785,92 L800,108 L795,128 L775,140 L748,138 L730,122 L718,105 Z"/>
+								<path class="map-land" d="M742,155 L768,148 L792,155 L802,172 L792,188 L768,192 L748,182 L738,168 Z"/>
+								<!-- Southeast Asia -->
+								<path class="map-land" d="M715,178 L740,172 L755,185 L748,202 L730,208 L715,198 Z"/>
+								<path class="map-land" d="M730,208 L752,205 L762,220 L755,235 L738,238 L725,225 Z"/>
+								<!-- Japan -->
+								<path class="map-land" d="M812,95 L825,90 L835,98 L830,112 L818,115 L808,105 Z"/>
+								<path class="map-land" d="M825,112 L838,108 L848,118 L842,130 L828,132 L820,122 Z"/>
+								<!-- Australia -->
+								<path class="map-land" d="M752,318 L790,308 L828,312 L858,328 L872,355 L865,385 L842,408 L810,418 L778,415 L750,398 L732,372 L728,345 Z"/>
+								<path class="map-land" d="M858,328 L885,325 L900,340 L895,360 L875,365 L862,350 Z"/>
+								<!-- New Zealand -->
+								<path class="map-land" d="M900,378 L912,372 L918,385 L910,398 L898,395 Z"/>
+								<path class="map-land" d="M908,405 L918,400 L925,412 L918,422 L905,418 Z"/>
+								<!-- Madagascar -->
+								<path class="map-land" d="M498,288 L508,282 L515,295 L510,315 L498,318 L490,305 Z"/>
+								<!-- Sri Lanka -->
+								<path class="map-land" d="M648,268 L655,264 L660,275 L654,282 L646,278 Z"/>
+								<!-- Philippines -->
+								<path class="map-land" d="M780,188 L790,182 L798,192 L792,205 L780,200 Z"/>
+								<path class="map-land" d="M790,208 L800,202 L808,212 L800,225 L788,220 Z"/>
+								<!-- Indonesia -->
+								<path class="map-land" d="M698,248 L720,242 L738,250 L735,265 L715,268 L698,260 Z"/>
+								<path class="map-land" d="M740,255 L762,248 L775,258 L770,272 L750,275 L738,265 Z"/>
+								<path class="map-land" d="M778,255 L798,250 L812,260 L808,275 L790,278 L778,268 Z"/>
+								<path class="map-land" d="M815,265 L832,260 L842,272 L835,285 L818,285 L810,275 Z"/>
+								<!-- Taiwan -->
+								<path class="map-land" d="M795,155 L802,150 L808,158 L802,170 L794,165 Z"/>
+								<!-- Korea -->
+								<path class="map-land" d="M800,118 L810,112 L818,120 L815,132 L805,135 L798,126 Z"/>
+								
+								<!-- Dynamic dot matrix grid container -->
+								<g id="dot-grid-group"></g>
+								
+								<!-- Location marker - updated by JS -->
+								<g id="city-marker-group">
+									<circle class="city-ring" id="city-ring" cx="720" cy="140" r="4"/>
+									<circle class="city-marker" id="city-dot" cx="720" cy="140" r="2"/>
+								</g>
+							</svg>
 						</div>
 
 						<!-- Current Location Info -->
 						<div class="location-footer">
 							<span class="location-dot-pulse"></span>
-							<span class="location-text">📍 当前所处位置：<strong id="current-location-display">北京</strong></span>
+							<span class="location-text">📍 当前所处位置：<strong id="current-location-display">西安</strong></span>
 						</div>
 					</div>
 				</div>
@@ -834,7 +890,7 @@ const latestPost = posts[0];
 		<Footer />
 
 		<!-- Scripts for clock, status, lyrics, and theme states -->
-		<script>
+		<script define:vars={{ CURRENT_LOCATION }}>
 			// 1. Typing Lyric Effect
 			const lyrics = [
 				"独有南山桂花发，飞来飞去袭人裾。",
@@ -887,87 +943,79 @@ const latestPost = posts[0];
 			// Initial check
 			updateThemeWidget();
 
-			// 4. Dot Map Render and Interaction
-			const MAP_MATRIX = [
-				//0         1         2         3         4         5         6         7
-				//0123456789012345678901234567890123456789012345678901234567890123456789012345678
-				"                                                                                ",
-				"              .....                .......                                       ",
-				"           ..........             .........                          .....       ",
-				"          ...........            ..........                        .........     ",
-				" ..      ............           ............                      ............   ",
-				"....    ..............          ..............                   ...............  ",
-				".......  .............          ................               .................. ",
-				".........  ...........          ................              ................... ",
-				"..........  ..........           ...............              ..................  ",
-				" .........   ........             .............               .................   ",
-				"  ........    ......               ...........                ................    ",
-				"   ......     ....                  .........                  ..............     ",
-				"    .....      ..                    .......                    ............      ",
-				"     ....                             .....                      ..........      ",
-				"      ...                              ...                        ........       ",
-				"     ....                               ..                         ......        ",
-				"    ......                               .                          ....         ",
-				"   ........                                                          ..          ",
-				"   ........                                                                ..   ",
-				"    ......                                                              .....   ",
-				"     ....                                                               .....   ",
-				"      ..                                                                 ...    ",
-				"       .                                                                  .     ",
-				"                                                                                "
-			];
-
-			const CITIES = {
-				Beijing: { r: 6, c: 68, label: "北京" },
-				Shanghai: { r: 7, c: 70, label: "上海" },
-				Shenzhen: { r: 8, c: 67, label: "深圳" },
-				Chengdu: { r: 8, c: 63, label: "成都" },
-				Xian: { r: 7, c: 65, label: "西安" },
-				Wuxi: { r: 7, c: 69, label: "无锡" },
-				Tokyo: { r: 6, c: 75, label: "东京" },
-				Singapore: { r: 12, c: 63, label: "新加坡" },
-				London: { r: 5, c: 36, label: "伦敦" },
-				Paris: { r: 6, c: 37, label: "巴黎" },
-				"New York": { r: 6, c: 18, label: "纽约" },
-				"San Francisco": { r: 7, c: 6, label: "旧金山" },
-				Sydney: { r: 19, c: 71, label: "悉尼" }
+			// 4. SVG World Map - Move city marker and dynamically render dot matrix
+			const CITIES_SVG = {
+				Beijing:        { x: 708, y: 177, label: "北京" },
+				Shanghai:       { x: 728, y: 192, label: "上海" },
+				Shenzhen:       { x: 718, y: 207, label: "深圳" },
+				Chengdu:        { x: 683, y: 192, label: "成都" },
+				Xian:           { x: 693, y: 185, label: "西安" },
+				Wuxi:           { x: 724, y: 192, label: "无锡" },
+				Tokyo:          { x: 760, y: 182, label: "东京" },
+				Singapore:      { x: 710, y: 243, label: "新加坡" },
+				London:         { x: 475, y: 142, label: "伦敦" },
+				Paris:          { x: 485, y: 150, label: "巴黎" },
+				"New York":     { x: 230, y: 170, label: "纽约" },
+				"San Francisco":{ x: 130, y: 175, label: "旧金山" },
+				Sydney:         { x: 808, y: 378, label: "悉尼" }
 			};
 
-			const mapContainer = document.getElementById('dot-map-container');
+			const svgMapContainer = document.getElementById('world-map-svg');
+			const cityDot = document.getElementById('city-dot');
+			const cityRing = document.getElementById('city-ring');
 			const locationDisplay = document.getElementById('current-location-display');
+			
+			const cityKey = CURRENT_LOCATION || 'Xian';
+			const cityData = CITIES_SVG[cityKey] || CITIES_SVG.Xian;
 
-			const currentCity = mapContainer?.dataset.defaultCity || 'Beijing';
+			if (cityDot && cityRing && locationDisplay) {
+				cityDot.setAttribute('cx', cityData.x);
+				cityDot.setAttribute('cy', cityData.y);
+				cityRing.setAttribute('cx', cityData.x);
+				cityRing.setAttribute('cy', cityData.y);
+				locationDisplay.textContent = cityData.label;
+			}
 
-			const renderMap = () => {
-				if (!mapContainer) return;
-				mapContainer.innerHTML = '';
-				
-				const activeCityData = CITIES[currentCity] || CITIES.Beijing;
-				if (locationDisplay) locationDisplay.textContent = activeCityData.label;
+			// Generate dot matrix from SVG path geometry dynamically
+			if (svgMapContainer) {
+				const lands = svgMapContainer.querySelectorAll('.map-land');
+				const gridGroup = document.getElementById('dot-grid-group');
+				if (gridGroup) {
+					const cols = 80;
+					const rows = 28;
+					const width = 1010;
+					const height = 505;
+					const pt = svgMapContainer.createSVGPoint();
 
-				for (let r = 0; r < MAP_MATRIX.length; r++) {
-					const rowStr = MAP_MATRIX[r];
-					for (let c = 0; c < rowStr.length; c++) {
-						const char = rowStr[c];
-						const dotEl = document.createElement('div');
-						dotEl.classList.add('map-dot');
-						
-						if (char === '.') {
-							dotEl.classList.add('active-land');
+					for (let r = 0; r < rows; r++) {
+						for (let c = 0; c < cols; c++) {
+							const cx = (c + 0.5) * (width / cols);
+							const cy = (r + 0.5) * (height / rows);
+
+							pt.x = cx;
+							pt.y = cy;
+
+							let isLand = false;
+							for (let i = 0; i < lands.length; i++) {
+								if (lands[i].isPointInFill(pt)) {
+									isLand = true;
+									break;
+								}
+							}
+
+							const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+							circle.setAttribute('cx', cx);
+							circle.setAttribute('cy', cy);
+							circle.setAttribute('r', '3.5');
+							circle.classList.add('map-dot');
+							if (isLand) {
+								circle.classList.add('active-land');
+							}
+							gridGroup.appendChild(circle);
 						}
-						
-						// Check if this dot is the current city
-						if (r === activeCityData.r && c === activeCityData.c) {
-							dotEl.classList.add('current-city');
-							dotEl.title = `📍 当前位置：${activeCityData.label}`;
-						}
-						
-						mapContainer.appendChild(dotEl);
 					}
 				}
-			};
-
-			renderMap();
+			}
 		</script>
 	</body>
 </html>
