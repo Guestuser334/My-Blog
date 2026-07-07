@@ -610,17 +610,72 @@ const latestPost = posts[0];
 				.w-60, .w-40, .w-35, .w-65, .w-50 {
 					width: 100% !important;
 				}
-				.profile-card, .map-widget {
-					height: auto;
+				.glass-card {
+					padding: 1.2rem !important; /* more breathing room on mobile */
 				}
+				
+				/* Profile Card Mobile Optimization */
+				.profile-card {
+					height: auto !important;
+					padding-bottom: 1.5rem !important;
+				}
+				.profile-top {
+					flex-direction: column;
+					text-align: center;
+					gap: 1rem;
+				}
+				.profile-avatar {
+					margin: 0 auto;
+					width: 76px;
+					height: 76px;
+				}
+				.profile-info h2 {
+					font-size: 1.5rem;
+				}
+				.profile-bottom {
+					flex-direction: column;
+					gap: 1.2rem;
+					align-items: center;
+					margin-top: 1.5rem;
+				}
+				.profile-stats {
+					width: 100%;
+					justify-content: space-around;
+					gap: 1rem;
+				}
+				
+				/* Map Card Mobile Optimization */
+				.map-widget {
+					height: 240px !important;
+				}
+				
+				/* Sub-row / Column Layout Stacking */
 				.sub-row {
 					flex-direction: column;
 					gap: 1rem;
 				}
+				
+				/* Footer Bar Mobile Optimization */
 				.footer-bar {
 					flex-direction: column;
-					gap: 0.5rem;
+					gap: 1.2rem;
 					text-align: center;
+					padding: 1.5rem 1rem !important;
+				}
+				.footer-left {
+					flex-direction: column;
+					align-items: center;
+					gap: 0.6rem;
+				}
+				.footer-right {
+					flex-direction: column;
+					align-items: center;
+					gap: 0.8rem;
+				}
+				.tech-badges-list {
+					justify-content: center;
+					flex-wrap: wrap;
+					gap: 0.4rem;
 				}
 			}
 		</style>
