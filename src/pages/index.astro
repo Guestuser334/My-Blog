@@ -53,6 +53,28 @@ const latestPost = posts[0];
 				flex-direction: column;
 				justify-content: space-between;
 				height: 250px;
+				position: relative;
+				transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+			}
+			.profile-card:hover {
+				transform: translateY(-4px);
+				border-color: rgba(var(--accent-color), 0.3);
+				box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12), var(--glass-shadow);
+			}
+			.profile-title-link {
+				color: inherit;
+				text-decoration: none;
+				outline: none;
+			}
+			.profile-title-link::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				z-index: 1;
+				border-radius: 24px;
 			}
 			.profile-top {
 				display: flex;
@@ -107,6 +129,8 @@ const latestPost = posts[0];
 			.profile-socials {
 				display: flex;
 				gap: 0.6rem;
+				position: relative;
+				z-index: 2;
 			}
 			.social-btn {
 				width: 38px;
@@ -623,7 +647,7 @@ const latestPost = posts[0];
 						<div class="profile-top">
 							<img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop" alt="Avatar" class="profile-avatar" />
 							<div class="profile-info">
-								<h2>Hi, I'm Skittles!</h2>
+								<h2><a href="/about" class="profile-title-link">Hi, I'm Skittles!</a></h2>
 								<p>Grade 2024 student in EE, Xi'an Jiaotong University<br />
 								   Designing quantitative trading based on power grids<br />
 								   I am learning everything I found interesting<br />
