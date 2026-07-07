@@ -4,6 +4,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE, CURRENT_LOCATION } from '../consts';
+import avatarImage from '../assets/avatar.png';
 
 const allPosts = await getCollection('blog');
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
@@ -645,7 +646,7 @@ const latestPost = posts[0];
 					<!-- Profile Card -->
 					<div class="glass-card profile-card w-60">
 						<div class="profile-top">
-							<img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop" alt="Avatar" class="profile-avatar" />
+							<img src={avatarImage.src} alt="Avatar" class="profile-avatar" />
 							<div class="profile-info">
 								<h2><a href="/about" class="profile-title-link">Hi, I'm Skittles!</a></h2>
 								<p>Grade 2024 student in EE, Xi'an Jiaotong University<br />
