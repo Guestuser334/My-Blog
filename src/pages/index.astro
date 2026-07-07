@@ -675,7 +675,7 @@ const latestPost = posts[0];
 									<line x1="2" y1="12" x2="22" y2="12"></line>
 									<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
 								</svg>
-								<h3>我的足迹与定位</h3>
+								<h3>My location</h3>
 							</div>
 						</div>
 
@@ -703,7 +703,7 @@ const latestPost = posts[0];
 						<!-- Current Location Info -->
 						<div class="location-footer">
 							<span class="location-dot-pulse"></span>
-							<span class="location-text">📍 当前所处位置：<strong id="current-location-display">西安</strong></span>
+							<span class="location-text">📍 Currently in：<strong id="current-location-display">Xi'an</strong></span>
 						</div>
 					</div>
 				</div>
@@ -888,19 +888,19 @@ const latestPost = posts[0];
 				const cityMarkerGroup = document.getElementById('city-marker-group');
 
 				const CITIES_RELATIVE = {
-					Beijing:        { country: 'cn', rx: 0.70, ry: 0.20, label: "北京" },
-					Shanghai:       { country: 'cn', rx: 0.85, ry: 0.50, label: "上海" },
-					Shenzhen:       { country: 'cn', rx: 0.68, ry: 0.75, label: "深圳" },
-					Chengdu:        { country: 'cn', rx: 0.38, ry: 0.65, label: "成都" },
-					Xian:           { xFallback: 800, yFallback: 215, country: 'cn', rx: 0.52, ry: 0.48, label: "西安" },
-					Wuxi:           { country: 'cn', rx: 0.81, ry: 0.50, label: "无锡" },
-					Tokyo:          { country: 'jp', rx: 0.50, ry: 0.50, label: "东京" },
-					Singapore:      { country: 'sg', rx: 0.50, ry: 0.50, label: "新加坡" },
-					London:         { country: 'gb', rx: 0.40, ry: 0.80, label: "伦敦" },
-					Paris:          { country: 'fr', rx: 0.45, ry: 0.45, label: "巴黎" },
-					"New York":     { country: 'us', rx: 0.88, ry: 0.35, label: "纽约" },
-					"San Francisco":{ country: 'us', rx: 0.08, ry: 0.38, label: "旧金山" },
-					Sydney:         { country: 'au', rx: 0.85, ry: 0.78, label: "悉尼" }
+					Beijing:        { country: 'cn', rx: 0.70, ry: 0.20, label: "Beijing" },
+					Shanghai:       { country: 'cn', rx: 0.85, ry: 0.50, label: "Shanghai" },
+					Shenzhen:       { country: 'cn', rx: 0.68, ry: 0.75, label: "Shenzhen" },
+					Chengdu:        { country: 'cn', rx: 0.38, ry: 0.65, label: "Chengdu" },
+					Xian:           { xFallback: 800, yFallback: 215, country: 'cn', rx: 0.52, ry: 0.48, label: "Xi'an" },
+					Wuxi:           { country: 'cn', rx: 0.81, ry: 0.50, label: "Wuxi" },
+					Tokyo:          { country: 'jp', rx: 0.50, ry: 0.50, label: "Tokyo" },
+					Singapore:      { country: 'sg', rx: 0.50, ry: 0.50, label: "Singapore" },
+					London:         { country: 'gb', rx: 0.40, ry: 0.80, label: "London" },
+					Paris:          { country: 'fr', rx: 0.45, ry: 0.45, label: "Paris" },
+					"New York":     { country: 'us', rx: 0.88, ry: 0.35, label: "New York" },
+					"San Francisco":{ country: 'us', rx: 0.08, ry: 0.38, label: "San Francisco" },
+					Sydney:         { country: 'au', rx: 0.85, ry: 0.78, label: "Sydney" }
 				};
 
 				const cityKey = CURRENT_LOCATION || 'Xian';
