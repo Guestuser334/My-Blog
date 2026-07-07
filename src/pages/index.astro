@@ -910,8 +910,8 @@ const latestPost = posts[0];
 					const { default: worldMap } = await import('https://unpkg.com/@svg-maps/world@2.0.0/index.js');
 					if (!svgMapContainer || !pathsGroup || !gridGroup) return;
 
-					// 1. Set SVG viewBox to match the official dataset (0 0 1010 666)
-					svgMapContainer.setAttribute('viewBox', worldMap.viewBox);
+					// 1. Set cropped SVG viewBox to fill the card space better (crop top empty arctic ocean & bottom southern ocean)
+					svgMapContainer.setAttribute('viewBox', "0 25 1010 500");
 
 					// 2. Append the high-fidelity country paths to the invisible group
 					worldMap.locations.forEach(loc => {
@@ -944,33 +944,43 @@ const latestPost = posts[0];
 						locationDisplay.textContent = cityData.label;
 					}
 
-					// 4. Sample a grid of dots over the 1010x666 viewBox
-					const cols = 64;
-					const rows = 42;
-					const [viewW, viewH] = worldMap.viewBox.split(' ').slice(2).map(Number);
+					// 4. Sample a denser grid of dots over the cropped 1010x500 viewBox (y: 25 to 525)
+					const cols = 80;
+					const rows = 40;
 					const lands = pathsGroup.querySelectorAll('.country-path');
 					const pt = svgMapContainer.createSVGPoint();
 
+					// Pre-calculate country bounding boxes to optimize sampling performance
+					const countryBBoxes = Array.from(lands).map(path => ({
+						path: path,
+						bbox: path.getBBox()
+					}));
+
 					for (let r = 0; r < rows; r++) {
 						for (let c = 0; c < cols; c++) {
-							const cx = (c + 0.5) * (viewW / cols);
-							const cy = (r + 0.5) * (viewH / rows);
+							const cx = (c + 0.5) * (1010 / cols);
+							const cy = 25 + (r + 0.5) * (500 / rows);
 
 							pt.x = cx;
 							pt.y = cy;
 
 							let isLand = false;
-							for (let i = 0; i < lands.length; i++) {
-								if (lands[i].isPointInFill(pt)) {
-									isLand = true;
-									break;
+							// BBox pre-filtering optimization to bypass heavy isPointInFill calls for ocean cells
+							for (let i = 0; i < countryBBoxes.length; i++) {
+								const { path, bbox } = countryBBoxes[i];
+								if (cx >= bbox.x && cx <= bbox.x + bbox.width &&
+									cy >= bbox.y && cy <= bbox.y + bbox.height) {
+									if (path.isPointInFill(pt)) {
+										isLand = true;
+										break;
+									}
 								}
 							}
 
 							const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
 							circle.setAttribute('cx', cx);
 							circle.setAttribute('cy', cy);
-							circle.setAttribute('r', '3.5');
+							circle.setAttribute('r', '2.5'); // Shrunk dot radius for high-resolution detail
 							circle.classList.add('map-dot');
 							if (isLand) {
 								circle.classList.add('active-land');
