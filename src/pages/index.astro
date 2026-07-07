@@ -181,20 +181,20 @@ const latestPost = posts[0];
 			}
 			.city-marker {
 				fill: #10b981;
-				filter: drop-shadow(0 0 6px #10b981);
+				filter: drop-shadow(0 0 4px #10b981);
 				animation: pulse-city 2s infinite;
 			}
 			.city-ring {
 				fill: none;
 				stroke: #10b981;
-				stroke-width: 1.2;
+				stroke-width: 0.6;
 				animation: expand-ring 2s infinite;
 				transform-box: fill-box;
 				transform-origin: center;
 			}
 			@keyframes pulse-city {
-				0%, 100% { opacity: 1; r: 5; }
-				50% { opacity: 0.7; r: 7; }
+				0%, 100% { opacity: 1; r: 2.2; }
+				50% { opacity: 0.7; r: 3.5; }
 			}
 			@keyframes expand-ring {
 				0% { transform: scale(1); opacity: 0.8; }
@@ -910,10 +910,7 @@ const latestPost = posts[0];
 					const { default: worldMap } = await import('https://unpkg.com/@svg-maps/world@2.0.0/index.js');
 					if (!svgMapContainer || !pathsGroup || !gridGroup) return;
 
-					// 1. Set cropped SVG viewBox to fill the card space better (crop top empty arctic ocean & bottom southern ocean)
-					svgMapContainer.setAttribute('viewBox', "0 25 1010 500");
-
-					// 2. Append the high-fidelity country paths to the invisible group
+					// 1. Append the high-fidelity country paths to the invisible group
 					worldMap.locations.forEach(loc => {
 						const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 						path.setAttribute('d', loc.path);
@@ -922,7 +919,7 @@ const latestPost = posts[0];
 						pathsGroup.appendChild(path);
 					});
 
-					// 3. Position the city marker using relative bounding box offsets
+					// 2. Position the city marker using relative bounding box offsets
 					const countryPath = svgMapContainer.querySelector(`path[id="${cityData.country}"]`);
 					let markerX = cityData.xFallback || 800;
 					let markerY = cityData.yFallback || 215;
@@ -944,7 +941,15 @@ const latestPost = posts[0];
 						locationDisplay.textContent = cityData.label;
 					}
 
-					// 4. Sample a denser grid of dots over the cropped 1010x500 viewBox (y: 25 to 525)
+					// 3. Zoom and Center the viewBox on the city marker, clamping within map bounds [0, 1010] and [25, 525]
+					const zoomH = 200;
+					const zoomW = 410; // Aspect ratio of ~2.05 to fit the wrapper nicely
+					const minX = Math.max(0, Math.min(1010 - zoomW, markerX - zoomW / 2));
+					const minY = Math.max(25, Math.min(525 - zoomH, markerY - zoomH / 2));
+
+					svgMapContainer.setAttribute('viewBox', `${minX} ${minY} ${zoomW} ${zoomH}`);
+
+					// 4. Sample a dense grid of dots only over the visible zoomed-in viewBox
 					const cols = 80;
 					const rows = 40;
 					const lands = pathsGroup.querySelectorAll('.country-path');
@@ -958,8 +963,8 @@ const latestPost = posts[0];
 
 					for (let r = 0; r < rows; r++) {
 						for (let c = 0; c < cols; c++) {
-							const cx = (c + 0.5) * (1010 / cols);
-							const cy = 25 + (r + 0.5) * (500 / rows);
+							const cx = minX + (c + 0.5) * (zoomW / cols);
+							const cy = minY + (r + 0.5) * (zoomH / rows);
 
 							pt.x = cx;
 							pt.y = cy;
@@ -980,7 +985,7 @@ const latestPost = posts[0];
 							const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
 							circle.setAttribute('cx', cx);
 							circle.setAttribute('cy', cy);
-							circle.setAttribute('r', '2.5'); // Shrunk dot radius for high-resolution detail
+							circle.setAttribute('r', '1.5'); // Shrunk dot radius for high-resolution detail at zoom level
 							circle.classList.add('map-dot');
 							if (isLand) {
 								circle.classList.add('active-land');
