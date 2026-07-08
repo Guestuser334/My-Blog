@@ -9,6 +9,22 @@ import avatarImage from '../assets/avatar.png';
 const allPosts = await getCollection('blog');
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 const latestPost = posts[0];
+
+const formatDate = (date: Date) => {
+	const d = new Date(date);
+	const y = d.getFullYear();
+	const m = String(d.getMonth() + 1).padStart(2, '0');
+	const day = String(d.getDate()).padStart(2, '0');
+	return `${y}/${m}/${day}`;
+};
+
+const formatDateSpaced = (date: Date) => {
+	const d = new Date(date);
+	const y = d.getFullYear();
+	const m = String(d.getMonth() + 1).padStart(2, '0');
+	const day = String(d.getDate()).padStart(2, '0');
+	return `${y} / ${m} / ${day}`;
+};
 ---
 
 <!doctype html>
@@ -817,14 +833,14 @@ const latestPost = posts[0];
 					<!-- Featured Post Card -->
 					<a href={`/blog/${latestPost.id}/`} class="glass-card glass-card-hover featured-widget w-35">
 						<span class="featured-tag">LATEST POST</span>
-						<img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400" alt="Cover" class="featured-img" />
+						<img src={latestPost.data.heroImage} alt="Cover" class="featured-img" />
 						<div>
 							<h3>{latestPost.data.title}</h3>
 							<p style="margin-top: 0.5rem;">{latestPost.data.description}</p>
 						</div>
 						<div class="featured-bottom">
 							<span>阅读全文 &rarr;</span>
-							<span>2026/07/05</span>
+							<span>{formatDate(latestPost.data.pubDate)}</span>
 						</div>
 					</a>
 
@@ -849,7 +865,7 @@ const latestPost = posts[0];
 											{post.data.title}
 										</a>
 										<span class="post-meta-tag">
-											2026 / 07 / 05
+											{formatDateSpaced(post.data.pubDate)}
 										</span>
 									</div>
 								))
