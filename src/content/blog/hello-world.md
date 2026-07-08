@@ -2,7 +2,7 @@
 title: 'Hello World: 我的第一篇博客文章'
 description: '这是我使用 Astro 搭建的个人博客的第一篇文章！这里我将分享我的学习、生活和技术心得。'
 pubDate: 'Jul 05 2026'
-heroImage: '../../assets/blog-placeholder-about.jpg'
+heroImage: '../../assets/post-hello-world.jpg'
 ---
 
 # 欢迎来到我的个人博客！
