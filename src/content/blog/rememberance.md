@@ -1,6 +1,6 @@
 ---
 title: '朝花熙拾'
-description: ''
+description: '风起而勇，风止而息'
 pubDate: 'Jul 08 2026'
 heroImage: '../../assets/post-rememberance.jpg'
 ---
