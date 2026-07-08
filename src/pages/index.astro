@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
@@ -833,7 +834,7 @@ const formatDateSpaced = (date: Date) => {
 					<!-- Featured Post Card -->
 					<a href={`/blog/${latestPost.id}/`} class="glass-card glass-card-hover featured-widget w-35">
 						<span class="featured-tag">LATEST POST</span>
-						<img src={latestPost.data.heroImage} alt="Cover" class="featured-img" />
+						{latestPost.data.heroImage && <Image src={latestPost.data.heroImage} alt="Cover" class="featured-img" width={400} height={200} />}
 						<div>
 							<h3>{latestPost.data.title}</h3>
 							<p style="margin-top: 0.5rem;">{latestPost.data.description}</p>
