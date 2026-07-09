@@ -79,6 +79,71 @@ const formatDateSpaced = (date: Date) => {
 				border-color: rgba(var(--accent-color), 0.3);
 				box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12), var(--glass-shadow);
 			}
+
+			/* Liquid Glass Card Effect */
+			.liquid-glass-card {
+				position: relative;
+				overflow: hidden !important;
+				box-shadow: 
+					inset 0 1.5px 1.5px rgba(255, 255, 255, 0.45), /* Specular top edge highlight */
+					inset 0 -1px 1px rgba(0, 0, 0, 0.08),        /* Muted bottom edge */
+					0 8px 32px 0 rgba(0, 0, 0, 0.06) !important;           /* Ambient shadow */
+				transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, border-color 0.3s ease !important;
+				transform-style: preserve-3d;
+				will-change: transform;
+			}
+			
+			.liquid-glass-card:hover {
+				border-color: rgba(var(--accent-color), 0.35) !important;
+				box-shadow: 
+					inset 0 1.5px 2px rgba(255, 255, 255, 0.55),
+					inset 0 -1.5px 1.5px rgba(0, 0, 0, 0.1),
+					0 16px 40px rgba(0, 0, 0, 0.12), 
+					0 0 1px 1px rgba(var(--accent-color), 0.2) !important;
+			}
+
+			/* Procedural Frosted Glass Noise Overlay */
+			.liquid-glass-card::after {
+				content: '';
+				position: absolute;
+				top: 0; left: 0; right: 0; bottom: 0;
+				background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+				opacity: 0.025;
+				mix-blend-mode: overlay;
+				pointer-events: none;
+				z-index: 5;
+			}
+
+			/* Static specular diagonal sheen */
+			.liquid-glass-card::before {
+				content: '';
+				position: absolute;
+				top: 0; left: 0; right: 0; bottom: 0;
+				background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 60%);
+				pointer-events: none;
+				z-index: 4;
+				transition: opacity 0.5s ease;
+			}
+
+			/* Dynamic specular spotlight (follows mouse) */
+			.glass-spotlight {
+				position: absolute;
+				top: 0; left: 0; right: 0; bottom: 0;
+				background: radial-gradient(350px circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.12), transparent 60%);
+				pointer-events: none;
+				z-index: 3;
+				opacity: 0;
+				transition: opacity 0.3s ease;
+			}
+
+			.liquid-glass-card:hover .glass-spotlight {
+				opacity: 1;
+			}
+
+			/* 3D Depth support for contents */
+			.liquid-glass-card > * {
+				transform: translateZ(15px);
+			}
 			.profile-title-link {
 				color: inherit;
 				text-decoration: none;
@@ -1252,6 +1317,55 @@ const formatDateSpaced = (date: Date) => {
 					}
 				} catch (err) {
 					console.error('Error rendering high-fidelity dot-matrix map:', err);
+				}
+			})();
+
+			// 5. Interactive 3D Liquid Glass Tilt for Profile Card
+			(() => {
+				const card = document.querySelector('.profile-card');
+				if (!card) return;
+				card.classList.add('liquid-glass-card');
+				
+				const spotlight = document.createElement('div');
+				spotlight.className = 'glass-spotlight';
+				card.appendChild(spotlight);
+				
+				let rafId = null;
+				
+				const onMouseMove = (e) => {
+					if (rafId) cancelAnimationFrame(rafId);
+					
+					rafId = requestAnimationFrame(() => {
+						const rect = card.getBoundingClientRect();
+						const x = e.clientX - rect.left;
+						const y = e.clientY - rect.top;
+						
+						card.style.setProperty('--x', `${x}px`);
+						card.style.setProperty('--y', `${y}px`);
+						
+						const centerX = rect.width / 2;
+						const centerY = rect.height / 2;
+						const percentX = (x - centerX) / centerX;
+						const percentY = (y - centerY) / centerY;
+						
+						const maxTilt = 6;
+						const rotateX = (-percentY * maxTilt).toFixed(2);
+						const rotateY = (percentX * maxTilt).toFixed(2);
+						
+						card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.015, 1.015, 1.015)`;
+					});
+				};
+				
+				const onMouseLeave = () => {
+					if (rafId) cancelAnimationFrame(rafId);
+					card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+					card.style.setProperty('--x', `50%`);
+					card.style.setProperty('--y', `50%`);
+				};
+
+				if (window.matchMedia('(hover: hover)').matches) {
+					card.addEventListener('mousemove', onMouseMove);
+					card.addEventListener('mouseleave', onMouseLeave);
 				}
 			})();
 		</script>
