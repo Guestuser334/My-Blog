@@ -1180,9 +1180,16 @@ const formatDateSpaced = (date: Date) => {
 					const topojson = await import('https://cdn.jsdelivr.net/npm/topojson-client@3/+esm');
 					if (!svgMapContainer || !gridGroup) return;
 
-					// Fetch world TopoJSON
-					const res = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-					const worldData = await res.json();
+					// Fetch world TopoJSON (with sessionStorage caching for instant subsequent loads)
+					let worldData;
+					const cachedWorld = sessionStorage.getItem('worldTopoData');
+					if (cachedWorld) {
+						worldData = JSON.parse(cachedWorld);
+					} else {
+						const res = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+						worldData = await res.json();
+						sessionStorage.setItem('worldTopoData', JSON.stringify(worldData));
+					}
 					const landFeature = topojson.feature(worldData, worldData.objects.land);
 
 					const width = 1010;
@@ -1234,6 +1241,8 @@ const formatDateSpaced = (date: Date) => {
 					const startY = height / 2 + centerYOffset - globeRadius;
 					const endY = height / 2 + centerYOffset + globeRadius;
 
+					let dotsHTML = '';
+
 					for (let y = startY; y <= endY; y += gridSize) {
 						for (let x = startX; x <= endX; x += gridSize) {
 							// Check if dot falls within the circular boundary of the globe
@@ -1248,26 +1257,22 @@ const formatDateSpaced = (date: Date) => {
 								if (coords && !isNaN(coords[0]) && !isNaN(coords[1])) {
 									const isLand = d3.geoContains(landFeature, coords);
 
-									const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-									circle.setAttribute('cx', String(x));
-									circle.setAttribute('cy', String(y));
 									// Simulating depth by shrinking dots slightly near the edges
 									const distToEdge = Math.sqrt(dx * dx + dy * dy) / globeRadius;
 									let r = Math.max(0.8, 1.8 * (1 - distToEdge * 0.4));
 									if (isLand) {
 										r = r * 1.35; // Boost size of active land dots to define continents
 									}
-									circle.setAttribute('r', String(r));
 									
-									circle.classList.add('map-dot');
-									if (isLand) {
-										circle.classList.add('active-land');
-									}
-									gridGroup.appendChild(circle);
+									const cssClass = isLand ? 'map-dot active-land' : 'map-dot';
+									dotsHTML += `<circle cx="${x}" cy="${y}" r="${r}" class="${cssClass}"></circle>`;
 								}
 							}
 						}
 					}
+					
+					// Ultra-fast bulk DOM insertion to prevent rendering bottlenecks
+					gridGroup.innerHTML = dotsHTML;
 				} catch (err) {
 					console.error('Error rendering 3D dot-matrix globe:', err);
 				}
