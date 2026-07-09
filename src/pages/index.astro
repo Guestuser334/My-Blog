@@ -183,6 +183,11 @@ const formatDateSpaced = (date: Date) => {
 				justify-content: space-between;
 				position: relative;
 				overflow: hidden;
+				/* Frosted Black Glass styling */
+				background-color: rgba(12, 12, 16, 0.15) !important; /* MUCH MORE transparent */
+				background-clip: padding-box !important; /* Forces background to stop exactly inside the border */
+				backdrop-filter: blur(12px) !important;
+				-webkit-backdrop-filter: blur(12px) !important;
 			}
 			.map-header h3 {
 				margin: 0;
@@ -216,7 +221,7 @@ const formatDateSpaced = (date: Date) => {
 				pointer-events: none !important;
 			}
 			:global(.map-dot) {
-				fill: rgba(255, 255, 255, 0.08);
+				fill: rgba(255, 255, 255, 0.12); /* Brighter ocean dots */
 				transition: fill 0.3s;
 			}
 			:global(.map-dot.active-land) {
@@ -887,11 +892,14 @@ const formatDateSpaced = (date: Date) => {
 
 						<!-- SVG World Map -->
 						<div class="svg-map-wrapper">
-							<svg id="world-map-svg" viewBox="0 0 1010 505" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-								<!-- Simplified Natural Earth world map paths -->
-								<!-- North America -->
-								<path class="map-land" d="M108,55 L155,45 L185,50 L210,65 L220,80 L215,100 L200,115 L175,120 L155,110 L140,95 L120,85 L105,70 Z"/>
-								<path class="map-land" d="M155,45 L210,38 L250,42 L280,55 L290,75 L275,90 L255,95 L230,88 L210,65 L185,50 Z"/>
+							<svg id="world-map-svg" viewBox="0 0 1010 505" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+								<defs>
+									<radialGradient id="earth-gradient" cx="50%" cy="50%" r="50%">
+										<stop offset="85%" stop-color="rgba(10, 15, 30, 0.45)" />
+										<stop offset="98%" stop-color="rgba(40, 60, 100, 0.6)" />
+										<stop offset="100%" stop-color="rgba(200, 220, 255, 0.0)" />
+									</radialGradient>
+								</defs>
 								<!-- High-fidelity country paths loaded dynamically at runtime -->
 								<g id="map-paths-group"></g>
 								
@@ -1137,124 +1145,131 @@ const formatDateSpaced = (date: Date) => {
 			// Initial check
 			updateThemeWidget();
 
-			// 4. SVG World Map - Move city marker and dynamically render dot matrix
+			// 4. SVG World Map - Move city marker and dynamically render 3D dot-matrix globe
 			(async () => {
 				const svgMapContainer = document.getElementById('world-map-svg');
 				const cityDot = document.getElementById('city-dot');
 				const cityRing = document.getElementById('city-ring');
 				const locationDisplay = document.getElementById('current-location-display');
-				const pathsGroup = document.getElementById('map-paths-group');
 				const gridGroup = document.getElementById('dot-grid-group');
 				const cityMarkerGroup = document.getElementById('city-marker-group');
 
-				const CITIES_RELATIVE = {
-					Beijing:        { country: 'cn', rx: 0.70, ry: 0.20, label: "Beijing" },
-					Shanghai:       { country: 'cn', rx: 0.85, ry: 0.50, label: "Shanghai" },
-					Shenzhen:       { country: 'cn', rx: 0.68, ry: 0.75, label: "Shenzhen" },
-					Chengdu:        { country: 'cn', rx: 0.38, ry: 0.65, label: "Chengdu" },
-					Xian:           { xFallback: 800, yFallback: 215, country: 'cn', rx: 0.52, ry: 0.48, label: "Xi'an" },
-					Wuxi:           { country: 'cn', rx: 0.81, ry: 0.50, label: "Wuxi" },
-					Tokyo:          { country: 'jp', rx: 0.50, ry: 0.50, label: "Tokyo" },
-					Singapore:      { country: 'sg', rx: 0.50, ry: 0.50, label: "Singapore" },
-					London:         { country: 'gb', rx: 0.40, ry: 0.80, label: "London" },
-					Paris:          { country: 'fr', rx: 0.45, ry: 0.45, label: "Paris" },
-					"New York":     { country: 'us', rx: 0.88, ry: 0.35, label: "New York" },
-					"San Francisco":{ country: 'us', rx: 0.08, ry: 0.38, label: "San Francisco" },
-					Sydney:         { country: 'au', rx: 0.85, ry: 0.78, label: "Sydney" }
+				const CITIES = {
+					Beijing:        { coords: [116.4074, 39.9042], label: "Beijing" },
+					Shanghai:       { coords: [121.4737, 31.2304], label: "Shanghai" },
+					Shenzhen:       { coords: [114.0579, 22.5431], label: "Shenzhen" },
+					Chengdu:        { coords: [104.0665, 30.5728], label: "Chengdu" },
+					Xian:           { coords: [108.9402, 34.3416], label: "Xi'an" },
+					Wuxi:           { coords: [120.3119, 31.4912], label: "Wuxi" },
+					Tokyo:          { coords: [139.6917, 35.6895], label: "Tokyo" },
+					Singapore:      { coords: [103.8198, 1.3521], label: "Singapore" },
+					London:         { coords: [-0.1278, 51.5074], label: "London" },
+					Paris:          { coords: [2.3522, 48.8566], label: "Paris" },
+					"New York":     { coords: [-74.0060, 40.7128], label: "New York" },
+					"San Francisco":{ coords: [-122.4194, 37.7749], label: "San Francisco" },
+					Sydney:         { coords: [151.2093, -33.8688], label: "Sydney" }
 				};
 
 				const cityKey = CURRENT_LOCATION || 'Xian';
-				const cityData = CITIES_RELATIVE[cityKey] || CITIES_RELATIVE.Xian;
+				const cityData = CITIES[cityKey] || CITIES.Xian;
+				const [cityLon, cityLat] = cityData.coords;
 
 				try {
-					const { default: worldMap } = await import('https://unpkg.com/@svg-maps/world@2.0.0/index.js');
-					if (!svgMapContainer || !pathsGroup || !gridGroup) return;
+					// Dynamically import D3.js and TopoJSON Client
+					const d3 = await import('https://cdn.jsdelivr.net/npm/d3@7/+esm');
+					const topojson = await import('https://cdn.jsdelivr.net/npm/topojson-client@3/+esm');
+					if (!svgMapContainer || !gridGroup) return;
 
-					// 1. Append the high-fidelity country paths to the invisible group
-					worldMap.locations.forEach(loc => {
-						const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-						path.setAttribute('d', loc.path);
-						path.setAttribute('id', loc.id);
-						path.classList.add('country-path');
-						pathsGroup.appendChild(path);
-					});
+					// Fetch world TopoJSON
+					const res = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+					const worldData = await res.json();
+					const landFeature = topojson.feature(worldData, worldData.objects.land);
 
-					// 2. Position the city marker using relative bounding box offsets
-					const countryPath = svgMapContainer.querySelector(`path[id="${cityData.country}"]`);
-					let markerX = cityData.xFallback || 800;
-					let markerY = cityData.yFallback || 215;
+					const width = 1010;
+					const height = 505;
+					const globeRadius = 480; // Large radius for a massive immersive globe
+					
+					// "再往赤道去一点，视角再斜一点" (Tilt aggressively by 30 degrees, placing camera right at the equator)
+					const tiltDegrees = 30; 
+					const cameraLat = cityLat - tiltDegrees;
+					
+					// Shift the globe down so the city remains vertically centered on screen
+					const centerYOffset = globeRadius * Math.sin(tiltDegrees * (Math.PI / 180));
 
-					if (countryPath) {
-						const bbox = countryPath.getBBox();
-						markerX = bbox.x + bbox.width * cityData.rx;
-						markerY = bbox.y + bbox.height * cityData.ry;
-					}
+					// Setup 3D Orthographic Projection with a gentle equatorial tilt
+					const projection = d3.geoOrthographic()
+						.scale(globeRadius)
+						.translate([width / 2, height / 2 + centerYOffset])
+						.rotate([-cityLon, -cameraLat, 0])
+						.clipAngle(90);
 
+					// Draw Sphere Base (Realistic earth gradient for volumetric glow effect)
+					const sphereOutline = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+					sphereOutline.setAttribute('cx', String(width / 2));
+					sphereOutline.setAttribute('cy', String(height / 2 + centerYOffset));
+					sphereOutline.setAttribute('r', String(globeRadius));
+					sphereOutline.setAttribute('fill', 'url(#earth-gradient)'); // Natural atmospheric scattering
+					sphereOutline.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)'); // Crisp very faint horizon line
+					sphereOutline.setAttribute('stroke-width', '0.5'); // Ultra-thin
+					svgMapContainer.insertBefore(sphereOutline, gridGroup);
+
+					// Position city marker
+					const [markerX, markerY] = projection([cityLon, cityLat]);
 					if (cityDot && cityRing) {
-						cityDot.setAttribute('cx', markerX);
-						cityDot.setAttribute('cy', markerY);
-						cityRing.setAttribute('cx', markerX);
-						cityRing.setAttribute('cy', markerY);
+						cityDot.setAttribute('cx', String(markerX));
+						cityDot.setAttribute('cy', String(markerY));
+						cityRing.setAttribute('cx', String(markerX));
+						cityRing.setAttribute('cy', String(markerY));
 						if (cityMarkerGroup) cityMarkerGroup.style.display = 'block';
 					}
+
 					if (locationDisplay) {
 						locationDisplay.textContent = cityData.label;
 					}
 
-					// 3. Zoom and Center the viewBox on the city marker, clamping within map bounds [0, 1010] and [25, 525]
-					const zoomH = 200;
-					const zoomW = 410; // Aspect ratio of ~2.05 to fit the wrapper nicely
-					const minX = Math.max(0, Math.min(1010 - zoomW, markerX - zoomW / 2));
-					const minY = Math.max(25, Math.min(525 - zoomH, markerY - zoomH / 2));
+					// Sample a 2D screen grid over the globe boundaries and back-project each point to 3D sphere
+					const gridSize = 8; // Higher density for the smaller globe
+					const startX = width / 2 - globeRadius;
+					const endX = width / 2 + globeRadius;
+					const startY = height / 2 + centerYOffset - globeRadius;
+					const endY = height / 2 + centerYOffset + globeRadius;
 
-					svgMapContainer.setAttribute('viewBox', `${minX} ${minY} ${zoomW} ${zoomH}`);
+					for (let y = startY; y <= endY; y += gridSize) {
+						for (let x = startX; x <= endX; x += gridSize) {
+							// Check if dot falls within the circular boundary of the globe
+							const dx = x - width / 2;
+							const dy = y - (height / 2 + centerYOffset);
+							const distFromCenter = Math.sqrt(dx * dx + dy * dy);
+							
+							// Leave a 12px margin from the edge to prevent dots from entering the light atmospheric gradient
+							if (distFromCenter <= globeRadius - 12) {
+								const coords = projection.invert([x, y]);
+								// Coordinates will be null or NaN if outside the projection's visible circle
+								if (coords && !isNaN(coords[0]) && !isNaN(coords[1])) {
+									const isLand = d3.geoContains(landFeature, coords);
 
-					// 4. Sample a dense grid of dots only over the visible zoomed-in viewBox
-					const cols = 80;
-					const rows = 40;
-					const lands = pathsGroup.querySelectorAll('.country-path');
-					const pt = svgMapContainer.createSVGPoint();
-
-					// Pre-calculate country bounding boxes to optimize sampling performance
-					const countryBBoxes = Array.from(lands).map(path => ({
-						path: path,
-						bbox: path.getBBox()
-					}));
-
-					for (let r = 0; r < rows; r++) {
-						for (let c = 0; c < cols; c++) {
-							const cx = minX + (c + 0.5) * (zoomW / cols);
-							const cy = minY + (r + 0.5) * (zoomH / rows);
-
-							pt.x = cx;
-							pt.y = cy;
-
-							let isLand = false;
-							// BBox pre-filtering optimization to bypass heavy isPointInFill calls for ocean cells
-							for (let i = 0; i < countryBBoxes.length; i++) {
-								const { path, bbox } = countryBBoxes[i];
-								if (cx >= bbox.x && cx <= bbox.x + bbox.width &&
-									cy >= bbox.y && cy <= bbox.y + bbox.height) {
-									if (path.isPointInFill(pt)) {
-										isLand = true;
-										break;
+									const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+									circle.setAttribute('cx', String(x));
+									circle.setAttribute('cy', String(y));
+									// Simulating depth by shrinking dots slightly near the edges
+									const distToEdge = Math.sqrt(dx * dx + dy * dy) / globeRadius;
+									let r = Math.max(0.8, 1.8 * (1 - distToEdge * 0.4));
+									if (isLand) {
+										r = r * 1.35; // Boost size of active land dots to define continents
 									}
+									circle.setAttribute('r', String(r));
+									
+									circle.classList.add('map-dot');
+									if (isLand) {
+										circle.classList.add('active-land');
+									}
+									gridGroup.appendChild(circle);
 								}
 							}
-
-							const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-							circle.setAttribute('cx', cx);
-							circle.setAttribute('cy', cy);
-							circle.setAttribute('r', '1.5'); // Shrunk dot radius for high-resolution detail at zoom level
-							circle.classList.add('map-dot');
-							if (isLand) {
-								circle.classList.add('active-land');
-							}
-							gridGroup.appendChild(circle);
 						}
 					}
 				} catch (err) {
-					console.error('Error rendering high-fidelity dot-matrix map:', err);
+					console.error('Error rendering 3D dot-matrix globe:', err);
 				}
 			})();
 		</script>
