@@ -11,14 +11,28 @@
 	--gray-light: 245, 245, 247;
 	--font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	
-	/* High-Contrast Glassmorphism - Light Mode */
-	--glass-bg: rgba(255, 255, 255, 0.52);
-	--glass-border: rgba(255, 255, 255, 0.45);
-	--glass-shadow: 0 10px 30px 0 rgba(31, 38, 135, 0.08);
-	--text-color: #1d1d1f;
-	--text-muted: #4e4e52;
-	--card-hover-bg: rgba(255, 255, 255, 0.55);
-	--card-hover-border: rgba(255, 255, 255, 0.65);
+	/* Clear Liquid Glass - Light Mode */
+	--glass-bg: rgba(255, 255, 255, 0.02);
+	--glass-border-gradient: conic-gradient(
+		from 0deg at 50% 50%, 
+		rgba(255, 255, 255, 0.02) 0deg,
+		rgba(255, 255, 255, 0.95) 35deg,
+		rgba(255, 255, 255, 0.95) 55deg, 
+		rgba(255, 255, 255, 0.01) 90deg, 
+		rgba(255, 255, 255, 0.6) 125deg,
+		rgba(255, 255, 255, 0.6) 145deg, 
+		rgba(255, 255, 255, 0.01) 180deg, 
+		rgba(255, 255, 255, 0.7) 215deg,
+		rgba(255, 255, 255, 0.7) 235deg, 
+		rgba(255, 255, 255, 0.01) 270deg, 
+		rgba(255, 255, 255, 1) 305deg,
+		rgba(255, 255, 255, 1) 325deg, 
+		rgba(255, 255, 255, 0.02) 360deg
+	);
+	--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+	--text-color: #e2e2e5; /* Dimmer white */
+	--text-muted: #b0b0b8; /* Dimmer muted text */
+	--card-hover-bg: rgba(255, 255, 255, 0.05);
 	
 	/* Background Image - Light */
 	--bg-url: url('/bg.png');
@@ -32,14 +46,28 @@
 	--gray-dark: 245, 245, 247;
 	--gray-light: 29, 29, 31;
 	
-	/* High-Contrast Glassmorphism - Dark Mode */
-	--glass-bg: rgba(15, 15, 20, 0.7);
-	--glass-border: rgba(255, 255, 255, 0.1);
-	--glass-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
+	/* Clear Liquid Glass - Dark Mode */
+	--glass-bg: rgba(10, 15, 25, 0.06);
+	--glass-border-gradient: conic-gradient(
+		from 0deg at 50% 50%, 
+		rgba(255, 255, 255, 0.1) 0deg,
+		rgba(255, 255, 255, 0.5) 35deg,
+		rgba(255, 255, 255, 0.5) 55deg,
+		rgba(255, 255, 255, 0.02) 90deg,
+		rgba(255, 255, 255, 0.2) 125deg,
+		rgba(255, 255, 255, 0.2) 145deg,
+		rgba(255, 255, 255, 0.02) 180deg,
+		rgba(255, 255, 255, 0.3) 215deg,
+		rgba(255, 255, 255, 0.3) 235deg,
+		rgba(255, 255, 255, 0.02) 270deg,
+		rgba(255, 255, 255, 0.6) 305deg,
+		rgba(255, 255, 255, 0.6) 325deg,
+		rgba(255, 255, 255, 0.1) 360deg
+	);
+	--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 35px 0 rgba(0, 0, 0, 0.32);
 	--text-color: #f5f5f7;
 	--text-muted: #a1a1aa;
-	--card-hover-bg: rgba(25, 25, 30, 0.65);
-	--card-hover-border: rgba(255, 255, 255, 0.18);
+	--card-hover-bg: rgba(15, 20, 30, 0.12);
 	
 	/* Background Image - Dark (same URL but overlay will handle dimming) */
 	--bg-url: url('/bg.png');
@@ -54,14 +82,28 @@
 		--gray-dark: 245, 245, 247;
 		--gray-light: 29, 29, 31;
 		
-		/* Glassmorphism - Dark Mode */
-		--glass-bg: rgba(15, 15, 20, 0.7);
-		--glass-border: rgba(255, 255, 255, 0.1);
-		--glass-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
+		/* Clear Liquid Glass - Dark Mode */
+		--glass-bg: rgba(10, 15, 25, 0.06);
+		--glass-border-gradient: conic-gradient(
+			from 0deg at 50% 50%, 
+			rgba(255, 255, 255, 0.1) 0deg,
+			rgba(255, 255, 255, 0.5) 35deg,
+			rgba(255, 255, 255, 0.5) 55deg,
+			rgba(255, 255, 255, 0.02) 90deg,
+			rgba(255, 255, 255, 0.2) 125deg,
+			rgba(255, 255, 255, 0.2) 145deg,
+			rgba(255, 255, 255, 0.02) 180deg,
+			rgba(255, 255, 255, 0.3) 215deg,
+			rgba(255, 255, 255, 0.3) 235deg,
+			rgba(255, 255, 255, 0.02) 270deg,
+			rgba(255, 255, 255, 0.6) 305deg,
+			rgba(255, 255, 255, 0.6) 325deg,
+			rgba(255, 255, 255, 0.1) 360deg
+		);
+		--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 35px 0 rgba(0, 0, 0, 0.32);
 		--text-color: #f5f5f7;
 		--text-muted: #a1a1aa;
-		--card-hover-bg: rgba(25, 25, 30, 0.65);
-		--card-hover-border: rgba(255, 255, 255, 0.18);
+		--card-hover-bg: rgba(15, 20, 30, 0.12);
 	}
 }
 
@@ -112,21 +154,35 @@ body::before {
 /* Base Glass Card Styles */
 .glass-card {
 	background: var(--glass-bg);
-	border: 1px solid var(--glass-border);
-	backdrop-filter: blur(25px);
-	-webkit-backdrop-filter: blur(25px);
+	border: 1.5px solid transparent;
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
 	border-radius: 24px;
 	box-shadow: var(--glass-shadow);
 	padding: 1.5rem;
 	box-sizing: border-box;
-	transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	position: relative;
+}
+
+.glass-card::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	padding: 1.5px; /* Border thickness */
+	background: var(--glass-border-gradient);
+	-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+	-webkit-mask-composite: xor;
+	mask-composite: exclude;
+	pointer-events: none;
+	z-index: 10;
 }
 
 .glass-card-hover:hover {
 	transform: translateY(-4px);
 	background: var(--card-hover-bg);
-	border-color: var(--card-hover-border);
-	box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+	box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.5), 0 16px 40px rgba(0, 0, 0, 0.15);
 }
 
 /* Transparent wrapper main container */
