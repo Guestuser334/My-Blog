@@ -1089,6 +1089,25 @@ const formatDateSpaced = (date: Date) => {
 			setInterval(updateClock, 1000);
 			updateClock();
 
+			// Uptime Counter
+			const updateUptime = () => {
+				const startDate = new Date('2026-07-05T00:00:00');
+				const now = new Date();
+				const diffMs = now.getTime() - startDate.getTime();
+				
+				const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+				const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+				const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
+				
+				const counterEl = document.getElementById('runtime-counter');
+				if (counterEl) {
+					counterEl.textContent = `${diffDays}天 ${diffHours}小时 ${diffMins}分 ${diffSecs}秒`;
+				}
+			};
+			setInterval(updateUptime, 1000);
+			updateUptime();
+
 			// 3. Dynamic Theme Widget Status Update
 			const themeTitle = document.getElementById('theme-status-title');
 			const themeDesc = document.getElementById('theme-status-desc');
