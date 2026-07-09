@@ -1210,6 +1210,21 @@ const formatDateSpaced = (date: Date) => {
 						.rotate([-cityLon, -cameraLat, 0])
 						.clipAngle(90);
 
+					// --- ULTRA-FAST PERFORMANCE OPTIMIZATION ---
+					// Render land to an offscreen canvas to avoid calling d3.geoContains 10,000+ times.
+					// Canvas array lookup is O(1) and executes in microseconds vs milliseconds for Math.
+					const canvas = document.createElement('canvas');
+					canvas.width = 1010; // Max SVG X size
+					canvas.height = 1010; // Max SVG Y size
+					const ctx = canvas.getContext('2d', { willReadFrequently: true });
+					const path = d3.geoPath().projection(projection).context(ctx);
+					ctx.fillStyle = '#fff';
+					ctx.beginPath();
+					path(landFeature);
+					ctx.fill();
+					const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+					// -------------------------------------------
+
 					// Draw Sphere Base (Realistic earth gradient for volumetric glow effect)
 					const sphereOutline = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
 					sphereOutline.setAttribute('cx', String(width / 2));
@@ -1252,21 +1267,21 @@ const formatDateSpaced = (date: Date) => {
 							
 							// Leave a 12px margin from the edge to prevent dots from entering the light atmospheric gradient
 							if (distFromCenter <= globeRadius - 12) {
-								const coords = projection.invert([x, y]);
-								// Coordinates will be null or NaN if outside the projection's visible circle
-								if (coords && !isNaN(coords[0]) && !isNaN(coords[1])) {
-									const isLand = d3.geoContains(landFeature, coords);
+								// Check land status instantly via Canvas pixel lookup instead of slow d3.geoContains math
+								const pixelX = Math.floor(x);
+								const pixelY = Math.floor(y);
+								const pixelIdx = (pixelY * canvas.width + pixelX) * 4;
+								const isLand = imageData[pixelIdx + 3] > 128; // Check Alpha channel
 
-									// Simulating depth by shrinking dots slightly near the edges
-									const distToEdge = Math.sqrt(dx * dx + dy * dy) / globeRadius;
-									let r = Math.max(0.8, 1.8 * (1 - distToEdge * 0.4));
-									if (isLand) {
-										r = r * 1.35; // Boost size of active land dots to define continents
-									}
-									
-									const cssClass = isLand ? 'map-dot active-land' : 'map-dot';
-									dotsHTML += `<circle cx="${x}" cy="${y}" r="${r}" class="${cssClass}"></circle>`;
+								// Simulating depth by shrinking dots slightly near the edges
+								const distToEdge = Math.sqrt(dx * dx + dy * dy) / globeRadius;
+								let r = Math.max(0.8, 1.8 * (1 - distToEdge * 0.4));
+								if (isLand) {
+									r = r * 1.35; // Boost size of active land dots to define continents
 								}
+								
+								const cssClass = isLand ? 'map-dot active-land' : 'map-dot';
+								dotsHTML += `<circle cx="${x}" cy="${y}" r="${r}" class="${cssClass}"></circle>`;
 							}
 						}
 					}
