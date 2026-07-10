@@ -8,6 +8,11 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	site: 'https://example.com',
 	integrations: [mdx(), sitemap()],
+	vite: {
+		build: {
+			cssTarget: ['chrome100', 'safari15', 'firefox100', 'edge100']
+		}
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),
