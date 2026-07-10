@@ -73,25 +73,16 @@ import HeaderLink from './HeaderLink.astro';
 		top: 0;
 		z-index: 100;
 		width: 100%;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		backdrop-filter: none;
-		-webkit-backdrop-filter: none;
-		box-shadow: none;
-		transition: background-color 0.4s, border-color 0.4s, box-shadow 0.4s, backdrop-filter 0.4s, padding 0.4s;
-		padding: 1.2rem 0; /* default padding creates top gap */
+		background: transparent !important;
+		border-bottom: none !important;
+		box-shadow: none !important;
+		backdrop-filter: none !important;
+		-webkit-backdrop-filter: none !important;
+		padding: 1.2rem 0; /* default padding */
+		transition: padding 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 	header.header-scrolled {
-		padding: 0.7rem 0; /* slightly shrink vertical height */
-		background: rgba(255, 255, 255, 0.88) !important;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
-		box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.06);
-		backdrop-filter: blur(28px) saturate(180%);
-	}
-	:root[data-theme="dark"] header.header-scrolled {
-		background: rgba(18, 18, 24, 0.90) !important;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-		box-shadow: 0 10px 35px 0 rgba(0, 0, 0, 0.35);
+		padding: 0.6rem 0; /* shrink on scroll */
 	}
 	h2 {
 		margin: 0;
@@ -126,7 +117,7 @@ import HeaderLink from './HeaderLink.astro';
 	.logo-text {
 		font-weight: 700;
 		letter-spacing: -0.02em;
-		color: var(--text-color);
+		color: #ffffff !important; /* Force high contrast white logo text */
 		transition: opacity 0.2s;
 	}
 	.logo-blog-span {
@@ -145,23 +136,22 @@ import HeaderLink from './HeaderLink.astro';
 		margin: 0 auto;
 		box-sizing: border-box;
 		padding: 0.5em 2em;
-		background: var(--glass-bg);
-		border: 1px solid var(--glass-border);
+		background: rgba(18, 22, 32, 0.45); /* slightly darker transparent glass base */
+		border: 1.5px solid rgba(255, 255, 255, 0.08);
 		backdrop-filter: blur(20px) saturate(140%);
 		box-shadow: var(--glass-shadow);
 		border-radius: 20px;
-		transition: background-color 0.4s, border-color 0.4s, box-shadow 0.4s, backdrop-filter 0.4s, padding 0.4s;
+		/* Removed backdrop-filter transition to fix scroll performance lag */
+		transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 	}
 	header.header-scrolled nav {
-		background: transparent !important;
-		border-color: transparent !important;
-		backdrop-filter: none !important;
-		-webkit-backdrop-filter: none !important;
-		box-shadow: none !important;
+		background: rgba(12, 16, 26, 0.8) !important; /* more opaque to block scrolled text */
+		border-color: rgba(255, 255, 255, 0.16) !important;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
 	}
 	nav a {
 		padding: 0.8em 1em;
-		color: var(--text-muted);
+		color: rgba(255, 255, 255, 0.7) !important; /* Brighter high contrast color */
 		text-decoration: none;
 		font-weight: 500;
 		font-size: 0.95em;
@@ -169,12 +159,12 @@ import HeaderLink from './HeaderLink.astro';
 		transition: color 0.2s, background-color 0.2s;
 	}
 	nav a:hover {
-		color: var(--text-color);
-		background-color: rgba(var(--accent-color), 0.08);
+		color: #ffffff !important;
+		background-color: rgba(var(--accent-color), 0.12) !important;
 	}
 	nav a.active {
-		color: var(--accent);
-		background-color: rgba(var(--accent-color), 0.08);
+		color: var(--accent) !important;
+		background-color: rgba(var(--accent-color), 0.12) !important;
 	}
 	.internal-links {
 		display: flex;

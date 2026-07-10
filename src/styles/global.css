@@ -119,21 +119,31 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	position: relative;
-	
-	/* Background Cover */
-	background-image: var(--bg-url);
-	background-attachment: fixed;
-	background-position: center;
-	background-size: cover;
-	background-repeat: no-repeat;
-	
+	background-color: #0c0d12;
 	transition: background-color 0.5s ease, color 0.3s ease;
 }
 
-/* Background Dimming Overlay for Dark Mode */
+/* High-performance hardware-accelerated fixed background */
 body::before {
+	content: "";
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-image: var(--bg-url);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	z-index: -2;
+	pointer-events: none;
+	transform: translateZ(0); /* Force GPU compositing */
+}
+
+/* Background Dimming Overlay for Dark Mode */
+body::after {
 	content: '';
-	position: absolute;
+	position: fixed;
 	top: 0; left: 0; right: 0; bottom: 0;
 	background: rgba(0, 0, 0, 0.05);
 	z-index: -1;
@@ -141,12 +151,12 @@ body::before {
 	transition: background 0.5s ease;
 }
 
-:root[data-theme="dark"] body::before {
+:root[data-theme="dark"] body::after {
 	background: rgba(0, 0, 0, 0.55);
 }
 
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) body::before {
+	:root:not([data-theme="light"]) body::after {
 		background: rgba(0, 0, 0, 0.55);
 	}
 }
