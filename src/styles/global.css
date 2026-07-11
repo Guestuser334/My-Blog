@@ -164,6 +164,7 @@ body::after {
 /* Base Glass Card Styles */
 .glass-card {
 	background: var(--glass-bg);
+	background-clip: padding-box; /* Clips card background to prevent bleeding under transparent border */
 	border: 1.5px solid transparent;
 	backdrop-filter: blur(2px);
 	border-radius: 24px;
