@@ -4,7 +4,7 @@ import HeaderLink from './HeaderLink.astro';
 ---
 
 <header>
-	<nav>
+	<nav class="glass-card">
 		<h2>
 			<a href="/" class="logo-link">
 				<span class="logo-badge">S</span>
@@ -137,7 +137,7 @@ import HeaderLink from './HeaderLink.astro';
 		box-sizing: border-box;
 		padding: 0.5em 2em;
 		background: rgba(14, 18, 28, 0.72) !important; /* unified high-contrast glass background */
-		border: 1.5px solid rgba(255, 255, 255, 0.12);
+		border: 1.5px solid transparent !important; /* Transparent border allows the conic gradient to show */
 		backdrop-filter: blur(20px) saturate(140%);
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
 		border-radius: 20px;
