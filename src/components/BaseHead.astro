@@ -7,6 +7,7 @@ import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
 import { Font } from 'astro:assets';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 interface Props {
 	title: string;
@@ -71,5 +72,6 @@ const { title, description, image = FallbackImage } = Astro.props;
 	}
 </script>
 
-<!-- Vercel Analytics -->
+<!-- Vercel Analytics & Speed Insights -->
 <Analytics />
+<SpeedInsights />
