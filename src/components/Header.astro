@@ -126,7 +126,7 @@ import HeaderLink from './HeaderLink.astro';
 	.logo-link:hover .logo-text {
 		opacity: 0.85;
 	}
-	nav {
+	nav.glass-card {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -135,17 +135,14 @@ import HeaderLink from './HeaderLink.astro';
 		margin: 0 auto;
 		box-sizing: border-box;
 		padding: 0.5em 2em;
-		background: rgba(16, 20, 30, 0.52) !important; /* Lighter, more transparent dark glass */
-		background-clip: padding-box !important; /* Clips background to inside of the border to prevent bleed-out */
-		border: 1.5px solid transparent !important; /* Transparent border allows the conic gradient to show */
-		backdrop-filter: blur(20px) saturate(140%);
+		background: rgba(12, 12, 16, 0.15) !important; /* Matches map background */
+		background-clip: padding-box !important;
+		border: 1.5px solid transparent !important;
+		backdrop-filter: blur(12px) !important; /* Matches map blur (12px) and overrides global 2px blur */
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
 		border-radius: 20px;
 		/* Completely static styling for buttery smooth scroll performance */
 		transition: none;
-	}
-	header.header-scrolled nav {
-		/* Inherit all styles statically, no color/shadow transitions on scroll */
 	}
 	nav a {
 		padding: 0.8em 1em;
