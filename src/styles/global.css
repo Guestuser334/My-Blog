@@ -350,3 +350,281 @@ hr {
 	clip-path: inset(50%);
 	white-space: nowrap;
 }
+
+/* ==========================================================================
+   Waline Comments Glassmorphism Overrides
+   ========================================================================== */
+#waline {
+	--waline-theme-color: var(--accent) !important;
+	--waline-active-color: var(--accent-dark) !important;
+	--waline-text-color: var(--text-color) !important;
+	--waline-color: var(--text-muted) !important;
+	--waline-border-color: rgba(255, 255, 255, 0.08) !important;
+	--waline-disable-color: rgba(255, 255, 255, 0.25) !important;
+	--waline-info-bg-color: rgba(255, 255, 255, 0.04) !important;
+	--waline-info-color: var(--text-muted) !important;
+	
+	/* Light theme parameters for comments base container */
+	--waline-bg-color: rgba(255, 255, 255, 0.03) !important;
+	--waline-bg-color-light: rgba(255, 255, 255, 0.02) !important;
+	--waline-bg-color-hover: rgba(255, 255, 255, 0.08) !important;
+}
+
+:root[data-theme="dark"] #waline {
+	--waline-bg-color: rgba(10, 15, 25, 0.25) !important;
+	--waline-bg-color-light: rgba(10, 15, 25, 0.15) !important;
+	--waline-bg-color-hover: rgba(10, 15, 25, 0.35) !important;
+	--waline-border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) #waline {
+		--waline-bg-color: rgba(10, 15, 25, 0.25) !important;
+		--waline-bg-color-light: rgba(10, 15, 25, 0.15) !important;
+		--waline-bg-color-hover: rgba(10, 15, 25, 0.35) !important;
+		--waline-border-color: rgba(255, 255, 255, 0.06) !important;
+	}
+}
+
+/* Customize specific components of Waline for maximum aesthetics */
+#waline .wl-editor {
+	background: rgba(255, 255, 255, 0.05) !important;
+	backdrop-filter: blur(12px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	border-radius: 12px;
+	color: #fff !important; /* Force whiter typed text */
+	padding: 12px !important;
+	transition: border-color 0.3s, box-shadow 0.3s;
+	background-clip: padding-box !important;
+	min-height: 80px !important;
+	height: 90px !important; /* Reduced height */
+	font-size: 1.1rem !important;
+}
+
+:root[data-theme="dark"] #waline .wl-editor {
+	background: rgba(10, 15, 25, 0.35) !important;
+	border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) #waline .wl-editor {
+		background: rgba(10, 15, 25, 0.35) !important;
+		border: 1px solid rgba(255, 255, 255, 0.05) !important;
+	}
+}
+
+#waline .wl-editor:focus {
+	border-color: var(--accent) !important;
+	box-shadow: 0 0 10px rgba(var(--accent-color), 0.2) !important;
+}
+
+/* Header Inputs (Nick, Email, Link) */
+#waline .wl-header {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+	display: flex !important;
+	gap: 1.5rem !important;
+	align-items: center !important;
+	padding: 0.5rem 0.75rem !important;
+	flex-wrap: wrap;
+}
+
+#waline .wl-header input {
+	border-bottom: 1px solid transparent !important;
+	color: var(--text-color) !important;
+	transition: border-color 0.3s;
+}
+
+#waline .wl-header input:focus {
+	border-bottom: 1px solid var(--accent) !important;
+}
+
+/* Hide Email and Link inputs in Waline Comments */
+#waline .wl-header .wl-header-item:has(label[for="wl-mail"]),
+#waline .wl-header .wl-header-item:has(label[for="wl-link"]) {
+	display: none !important;
+}
+
+/* Make Nickname input take available space since others are hidden */
+#waline .wl-header .wl-header-item:has(label[for="wl-nick"]) {
+	flex: 1 !important;
+	min-width: 150px !important;
+	border-right: none !important;
+	padding: 0 !important;
+}
+
+/* Make Nickname input text and label larger */
+#waline .wl-header .wl-header-item label[for="wl-nick"] {
+	font-size: 1.1rem !important; /* Match to 1.1rem of avatar label */
+	font-weight: 600 !important;
+	color: var(--accent) !important; /* Signature Pink! */
+}
+
+#waline #wl-nick {
+	font-size: 1.25rem !important;
+	font-weight: 600 !important;
+	color: var(--text-color) !important;
+}
+
+/* Hide login buttons and profile admin edit links in comment section */
+#waline .wl-login-info,
+#waline .wl-actions .wl-login,
+#waline .wl-info .wl-btn:not(.primary) {
+	display: none !important;
+}
+
+/* Style visitor's own comment edit/delete buttons */
+#waline .wl-meta .wl-meta-edit {
+	display: inline-flex !important;
+	gap: 10px !important;
+	margin-left: 15px !important;
+}
+
+#waline .wl-meta .wl-meta-edit button,
+#waline .wl-meta .wl-meta-edit a {
+	background: none !important;
+	border: none !important;
+	color: rgba(255, 255, 255, 0.45) !important;
+	font-size: 0.85rem !important;
+	cursor: pointer !important;
+	text-decoration: none !important;
+	transition: color 0.2s !important;
+}
+
+#waline .wl-meta .wl-meta-edit button:hover,
+#waline .wl-meta .wl-meta-edit a:hover {
+	color: var(--accent) !important;
+}
+
+#waline .wl-meta .wl-meta-edit button.wl-delete:hover,
+#waline .wl-meta .wl-meta-edit a.wl-delete:hover {
+	color: #ef4444 !important;
+}
+
+/* Hide browser version and OS tags */
+#waline .wl-card .wl-meta .wl-os,
+#waline .wl-card .wl-meta .wl-browser {
+	display: none !important;
+}
+
+/* Style comment nicknames in the cards list (corrected selectors) */
+#waline .wl-card .wl-nick,
+#waline .wl-card .wl-head .wl-nick {
+	font-size: 1.25rem !important; /* Larger nickname */
+	font-weight: 600 !important;
+	color: var(--accent) !important; /* Signature Pink accent color! */
+	transition: color 0.3s;
+	text-decoration: none !important;
+}
+
+#waline .wl-card .wl-nick:hover,
+#waline .wl-card .wl-head .wl-nick:hover {
+	color: var(--accent-dark) !important;
+}
+
+/* Style welcome comment placeholder text (Always white on dark glass background) */
+#waline .wl-editor::placeholder {
+	color: rgba(255, 255, 255, 0.45) !important;
+	font-size: 1.15rem !important;
+}
+
+/* Style displayed comments body text (Always white on dark glass cards) */
+#waline .wl-cards .wl-content,
+#waline .wl-cards .wl-content p {
+	color: #fff !important; /* Pure White! */
+	font-size: 1.1rem !important; /* Larger comment text */
+	line-height: 1.7 !important;
+}
+
+/* Strengthen comment cards frosted glass & tighten vertical spacing */
+#waline .wl-cards .wl-card {
+	background: rgba(255, 255, 255, 0.06) !important;
+	backdrop-filter: blur(16px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	border-radius: 16px !important;
+	padding: 1.2rem 1.5rem !important; /* Reduced vertical padding */
+	margin-bottom: 1.2rem !important;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+	transition: background-color 0.3s, border-color 0.3s, transform 0.3s !important;
+	background-clip: padding-box !important;
+}
+
+#waline .wl-card .wl-head {
+	margin-bottom: 0.2rem !important; /* Tighten gap below nickname */
+}
+
+#waline .wl-card .wl-meta {
+	margin-bottom: 0.3rem !important; /* Tighten gap below metadata */
+}
+
+#waline .wl-card .wl-content {
+	margin-top: 0.3rem !important; /* Tighten gap above comment body */
+}
+
+:root[data-theme="dark"] #waline .wl-cards .wl-card {
+	background: rgba(10, 15, 25, 0.45) !important;
+	border: 1px solid rgba(255, 255, 255, 0.05) !important;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) #waline .wl-cards .wl-card {
+		background: rgba(10, 15, 25, 0.45) !important;
+		border: 1px solid rgba(255, 255, 255, 0.05) !important;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+	}
+}
+
+#waline .wl-cards .wl-card:hover {
+	background-color: rgba(255, 255, 255, 0.08) !important;
+	border-color: rgba(255, 255, 255, 0.12) !important;
+	transform: translateY(-2px);
+}
+
+:root[data-theme="dark"] #waline .wl-cards .wl-card:hover {
+	background-color: rgba(10, 15, 25, 0.55) !important;
+	border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Outer comment section container glass enhancement */
+.comment-section.glass-card {
+	background: rgba(255, 255, 255, 0.06) !important;
+	backdrop-filter: blur(20px) !important;
+}
+
+:root[data-theme="dark"] .comment-section.glass-card {
+	background: rgba(10, 15, 25, 0.35) !important;
+	backdrop-filter: blur(20px) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) .comment-section.glass-card {
+		background: rgba(10, 15, 25, 0.35) !important;
+		backdrop-filter: blur(20px) !important;
+	}
+}
+
+/* Buttons */
+#waline .wl-btn {
+	border-radius: 10px !important;
+	font-weight: 600 !important;
+	transition: background-color 0.2s, transform 0.2s !important;
+}
+
+#waline .wl-btn.wl-btn-primary {
+	background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+	border: none !important;
+	box-shadow: 0 4px 12px rgba(var(--accent-color), 0.25) !important;
+	color: #fff !important;
+}
+
+#waline .wl-btn.wl-btn-primary:hover {
+	transform: translateY(-1px) !important;
+	box-shadow: 0 6px 16px rgba(var(--accent-color), 0.35) !important;
+}
+
+/* Meta info labels (OS, Browser) */
+#waline .wl-meta span {
+	border-radius: 6px !important;
+	padding: 2px 6px !important;
+	font-size: 0.75rem !important;
+}

@@ -59,9 +59,105 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+			.comment-section {
+				max-width: 820px;
+				width: calc(100% - 2.5rem);
+				margin: 30px auto 40px auto;
+				padding: 2.5rem;
+				box-sizing: border-box;
+			}
+			.comment-tip-banner {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				background: rgba(255, 255, 255, 0.04) !important;
+				backdrop-filter: blur(12px) !important;
+				border: 1px solid rgba(255, 255, 255, 0.06) !important;
+				border-radius: 12px;
+				padding: 10px 16px;
+				margin-bottom: 20px;
+				color: rgba(255, 255, 255, 0.65) !important;
+				font-size: 0.9rem;
+				line-height: 1.5;
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+			}
+			.comment-tip-banner .tip-icon {
+				font-size: 1.15rem;
+				user-select: none;
+			}
+			.custom-avatar-selector {
+				display: flex;
+				align-items: center;
+				gap: 0.8rem;
+				margin-left: auto;
+			}
+			.avatar-label {
+				font-size: 1.1rem !important;
+				font-weight: 600 !important;
+				color: var(--accent) !important; /* Signature Pink! */
+				white-space: nowrap;
+			}
+			.avatar-options {
+				display: flex;
+				gap: 0.5rem;
+				align-items: center;
+			}
+			.avatar-opt {
+				width: 38px;
+				height: 38px;
+				border-radius: 50%;
+				border: 1.5px solid transparent;
+				cursor: pointer;
+				background: rgba(255, 255, 255, 0.08);
+				transition: border-color 0.2s, transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+			}
+			.avatar-opt:hover {
+				transform: scale(1.1);
+				background: rgba(255, 255, 255, 0.15);
+			}
+			.avatar-opt.active {
+				border-color: var(--accent);
+				transform: scale(1.1);
+				background: rgba(var(--accent-color), 0.15);
+				box-shadow: 0 0 8px rgba(var(--accent-color), 0.3);
+			}
+			.avatar-upload-opt {
+				width: 38px;
+				height: 38px;
+				border-radius: 50%;
+				border: 1.5px dashed rgba(255, 255, 255, 0.3);
+				cursor: pointer;
+				background: rgba(255, 255, 255, 0.05);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: border-color 0.2s, background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+				position: relative;
+			}
+			.avatar-upload-opt:hover {
+				border-color: var(--accent);
+				background: rgba(255, 255, 255, 0.12);
+				transform: scale(1.1);
+			}
+			.avatar-upload-opt.active {
+				border-style: solid;
+				border-color: var(--accent);
+				box-shadow: 0 0 8px rgba(var(--accent-color), 0.3);
+				transform: scale(1.1);
+			}
+			.upload-icon {
+				font-size: 1.25rem;
+				font-weight: bold;
+				color: var(--text-muted);
+				user-select: none;
+				line-height: 1;
+			}
+			.avatar-upload-opt:hover .upload-icon {
+				color: var(--text-color);
+			}
 		</style>
 	</head>
-
+ 
 	<body>
 		<Header />
 		<main>
@@ -87,7 +183,290 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 					<slot />
 				</div>
 			</article>
+			<div class="comment-section glass-card">
+				<!-- Hidden template for custom avatar selector (will be dynamically moved into the Nickname row) -->
+				<div id="custom-avatar-selector-template" style="display: none;">
+					<div class="custom-avatar-selector">
+						<span class="avatar-label">头像:</span>
+						<div class="avatar-options">
+							<img src="/avatars/avatar1.png" data-avatar="avatar1" class="avatar-opt" alt="Avatar 1" />
+							<img src="/avatars/avatar2.png" data-avatar="avatar2" class="avatar-opt" alt="Avatar 2" />
+							<img src="/avatars/avatar3.png" data-avatar="avatar3" class="avatar-opt" alt="Avatar 3" />
+							<img src="/avatars/avatar4.png" data-avatar="avatar4" class="avatar-opt" alt="Avatar 4" />
+							<div class="avatar-upload-opt" title="上传自定义头像">
+								<span class="upload-icon">+</span>
+								<input type="file" id="avatar-file-input" accept="image/*" style="display: none;" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="comment-tip-banner">
+					<span class="tip-icon">💡</span>
+					<span class="tip-text">发表评论只需填写昵称并选择头像。发表后不可自助修改或删除，如需删除请联系博主，请谨慎发言。</span>
+				</div>
+				<div id="waline"></div>
+			</div>
 		</main>
 		<Footer />
+		<script>
+			import { init } from '@waline/client';
+			import '@waline/client/style';
+
+			// Intercept outgoing comments at the network layer to inject custom avatars silently
+			const originalFetch = window.fetch;
+			window.fetch = function (input, init) {
+				const url = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
+				if (url.includes('/comment') && init && init.method === 'POST' && init.body) {
+					try {
+						let bodyData;
+						if (typeof init.body === 'string') {
+							bodyData = JSON.parse(init.body);
+						}
+						if (bodyData && bodyData.comment) {
+							const mailInput = document.getElementById('wl-mail') as HTMLInputElement;
+							if (mailInput && mailInput.value === 'custom@chengxii.org' && customAvatarBase64) {
+								bodyData.comment += `\n<img class="custom-user-avatar" src="${customAvatarBase64}" style="display:none;" />`;
+								init.body = JSON.stringify(bodyData);
+							}
+						}
+					} catch (e) {
+						console.error('Error intercepting Waline comment submit:', e);
+					}
+				}
+				return originalFetch.call(this, input, init);
+			};
+
+			// Self-healing: clear invalid old local storage email cache to prevent validation alerts on load
+			try {
+				const userCacheStr = localStorage.getItem('WALINE_USER');
+				if (userCacheStr) {
+					const userCache = JSON.parse(userCacheStr);
+					if (userCache.mail && !userCache.mail.includes('@')) {
+						localStorage.removeItem('WALINE_USER');
+					}
+				}
+			} catch (e) {}
+
+			// MD5 hash to local file mapping for default avatars
+			const avatarMap: Record<string, string> = {
+				'ee3172ce9bdcdd1ed637d0477aa8da72': '/avatars/avatar1.png',
+				'ec7fe3e67594ce450f170b5c83b61d73': '/avatars/avatar2.png',
+				'6faf5609dc22ca4a81d3583bf79cef7c': '/avatars/avatar3.png',
+				'43214eb4809dd00da5b4f8699f10eae0': '/avatars/avatar4.png',
+			};
+
+			let customAvatarBase64 = '';
+
+			const replaceAvatars = () => {
+				const cardItems = document.querySelectorAll('#waline .wl-cards .wl-card-item');
+				cardItems.forEach((item: Element) => {
+					const customImg = item.querySelector('.wl-content img.custom-user-avatar') as HTMLImageElement;
+					const avatarImg = item.querySelector('.wl-user img') as HTMLImageElement;
+					
+					if (customImg && avatarImg) {
+						avatarImg.src = customImg.src;
+						customImg.remove(); // Remove custom payload tag from text DOM
+					} else if (avatarImg) {
+						const src = avatarImg.src;
+						for (const [hash, localPath] of Object.entries(avatarMap)) {
+							if (src.includes(hash)) {
+								avatarImg.src = localPath;
+								break;
+							}
+						}
+					}
+				});
+			};
+
+			// Syncs the active avatar selection to Waline's hidden email input (uses chengxii.org domain to pass email validation)
+			const syncAvatarInput = () => {
+				const mailInput = document.getElementById('wl-mail') as HTMLInputElement;
+				if (mailInput) {
+					const activeOpt = document.querySelector('.avatar-opt.active');
+					const activeUpload = document.querySelector('.avatar-upload-opt.active');
+					
+					let newValue = '';
+					if (activeUpload) {
+						newValue = 'custom@chengxii.org';
+					} else if (activeOpt) {
+						newValue = (activeOpt.getAttribute('data-avatar') || '') + '@chengxii.org';
+					}
+					
+					if (mailInput.value !== newValue) {
+						mailInput.value = newValue;
+						// Trigger input event to update Vue's reactive state!
+						mailInput.dispatchEvent(new Event('input', { bubbles: true }));
+					}
+				}
+			};
+
+			// Initialize Waline
+			init({
+				el: '#waline',
+				serverURL: 'https://my-blog-comments-teal.vercel.app/',
+				dark: 'html[data-theme="dark"]',
+				requiredFields: ['nick'], // Require nickname
+				emoji: [
+					'//unpkg.com/@waline/emojis@1.1.0/weibo',
+					'//unpkg.com/@waline/emojis@1.1.0/bilibili',
+					'//unpkg.com/@waline/emojis@1.1.0/qq',
+				],
+				locale: {
+					nick: '昵称:',
+					placeholder: '欢迎评论...',
+				}
+			});
+
+			// Setup capturing phase validation on Waline's submit button
+			const setupSubmitButtonValidation = () => {
+				const submitBtn = document.querySelector('#waline button[type="submit"]');
+				if (submitBtn && !submitBtn.getAttribute('data-validated')) {
+					submitBtn.setAttribute('data-validated', 'true');
+					
+					// Bind to capturing phase (true) to intercept submission BEFORE Waline's Vue handler triggers
+					submitBtn.addEventListener('click', (e) => {
+						const mailInput = document.getElementById('wl-mail') as HTMLInputElement;
+						const nickInput = document.getElementById('wl-nick') as HTMLInputElement;
+						
+						// Enforce nickname
+						if (!nickInput || !nickInput.value.trim()) {
+							alert('请先填写昵称！');
+							e.preventDefault();
+							e.stopPropagation();
+							return;
+						}
+						
+						// Enforce avatar selection
+						if (!mailInput || !mailInput.value) {
+							alert('请先选择一个头像！');
+							e.preventDefault();
+							e.stopPropagation();
+							return;
+						}
+						
+						// Enforce custom upload details
+						if (mailInput.value === 'custom@chengxii.org') {
+							if (!customAvatarBase64) {
+								alert('请先上传自定义头像！');
+								e.preventDefault();
+								e.stopPropagation();
+								return;
+							}
+							
+							// Silently handled in the network fetch layer!
+						}
+					}, true); // true = CAPTURING phase!
+				}
+			};
+
+			// Bind events to the dynamically injected avatar selector
+			const bindAvatarSelectorEvents = () => {
+				const avatarOpts = document.querySelectorAll('.avatar-opt');
+				const uploadOpt = document.querySelector('.avatar-upload-opt') as HTMLElement;
+				const fileInput = document.getElementById('avatar-file-input') as HTMLInputElement;
+
+				avatarOpts.forEach((opt) => {
+					if (opt.getAttribute('data-bound')) return;
+					opt.setAttribute('data-bound', 'true');
+
+					opt.addEventListener('click', () => {
+						avatarOpts.forEach(o => o.classList.remove('active'));
+						uploadOpt?.classList.remove('active');
+						opt.classList.add('active');
+						syncAvatarInput();
+					});
+				});
+
+				if (uploadOpt && !uploadOpt.getAttribute('data-bound')) {
+					uploadOpt.setAttribute('data-bound', 'true');
+					uploadOpt.addEventListener('click', (e) => {
+						if (e.target !== fileInput) {
+							fileInput?.click();
+						}
+					});
+				}
+
+				if (fileInput && !fileInput.getAttribute('data-bound')) {
+					fileInput.setAttribute('data-bound', 'true');
+					
+					// Stop event propagation to prevent Waline's global form listener from reacting
+					fileInput.addEventListener('click', (e) => {
+						e.stopPropagation();
+					});
+					
+					fileInput.addEventListener('change', (e) => {
+						e.stopPropagation();
+						const file = fileInput.files?.[0];
+						if (file) {
+							const reader = new FileReader();
+							reader.onload = (e) => {
+								const img = new Image();
+								img.onload = () => {
+									const canvas = document.createElement('canvas');
+									const size = 48; // Compact size to keep payload under 3KB
+									canvas.width = size;
+									canvas.height = size;
+									const ctx = canvas.getContext('2d');
+									if (ctx) {
+										// Center crop to square
+										const minSide = Math.min(img.width, img.height);
+										const sx = (img.width - minSide) / 2;
+										const sy = (img.height - minSide) / 2;
+										ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+										
+										// Highly compressed JPG
+										customAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+										
+										// Render background preview on upload button
+										uploadOpt.style.backgroundImage = `url(${customAvatarBase64})`;
+										uploadOpt.style.backgroundSize = 'cover';
+										uploadOpt.style.backgroundPosition = 'center';
+										
+										const icon = uploadOpt.querySelector('.upload-icon') as HTMLElement;
+										if (icon) icon.style.display = 'none';
+
+										avatarOpts.forEach(o => o.classList.remove('active'));
+										uploadOpt.classList.add('active');
+										syncAvatarInput();
+									}
+								};
+								img.src = e.target?.result as string;
+							};
+							reader.readAsDataURL(file);
+						}
+					});
+				}
+			};
+
+			// Injects custom avatar selector directly into Waline's input row (wl-header)
+			const injectAvatarSelector = () => {
+				const wlHeader = document.querySelector('#waline .wl-header');
+				const existing = wlHeader?.querySelector('.custom-avatar-selector');
+				if (wlHeader && !existing) {
+					const template = document.getElementById('custom-avatar-selector-template');
+					const selector = template?.querySelector('.custom-avatar-selector');
+					if (selector) {
+						wlHeader.appendChild(selector);
+						bindAvatarSelectorEvents();
+						syncAvatarInput();
+					}
+				}
+			};
+
+			// Initial runs
+			replaceAvatars();
+
+			// Listen for DOM changes as Waline renders forms or posts
+			const observer = new MutationObserver(() => {
+				injectAvatarSelector();
+				setupSubmitButtonValidation();
+				replaceAvatars();
+				syncAvatarInput();
+			});
+			const container = document.getElementById('waline');
+			if (container) {
+				observer.observe(container, { childList: true, subtree: true });
+			}
+		</script>
 	</body>
 </html>
