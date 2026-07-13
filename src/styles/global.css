@@ -3,6 +3,7 @@
 */
 
 :root {
+	color-scheme: dark; /* Prevent mobile browsers from forcing white backgrounds */
 	--accent-color: 251, 113, 133; /* Peach Pink (rose-400) */
 	--accent: rgb(var(--accent-color));
 	--accent-dark: #e11d48;
@@ -39,6 +40,7 @@
 }
 
 :root[data-theme="dark"] {
+	color-scheme: dark;
 	--accent-color: 244, 114, 182; /* Glow Pastel Pink */
 	--accent: rgb(var(--accent-color));
 	--accent-dark: #db2777;
@@ -388,11 +390,11 @@ hr {
 
 /* Customize specific components of Waline for maximum aesthetics */
 #waline .wl-editor {
-	background: rgba(255, 255, 255, 0.05) !important;
+	background: var(--glass-bg) !important;
 	backdrop-filter: blur(12px) !important;
 	border: 1px solid rgba(255, 255, 255, 0.08) !important;
 	border-radius: 12px;
-	color: #fff !important; /* Force whiter typed text */
+	color: var(--text-color) !important; /* Force whiter typed text */
 	padding: 12px !important;
 	transition: border-color 0.3s, box-shadow 0.3s;
 	background-clip: padding-box !important;
@@ -483,7 +485,7 @@ hr {
 #waline .wl-meta .wl-meta-edit a {
 	background: none !important;
 	border: none !important;
-	color: rgba(255, 255, 255, 0.45) !important;
+	color: var(--text-muted) !important;
 	font-size: 0.85rem !important;
 	cursor: pointer !important;
 	text-decoration: none !important;
@@ -523,21 +525,21 @@ hr {
 
 /* Style welcome comment placeholder text (Always white on dark glass background) */
 #waline .wl-editor::placeholder {
-	color: rgba(255, 255, 255, 0.45) !important;
+	color: var(--text-muted) !important;
 	font-size: 1.15rem !important;
 }
 
 /* Style displayed comments body text (Always white on dark glass cards) */
 #waline .wl-cards .wl-content,
 #waline .wl-cards .wl-content p {
-	color: #fff !important; /* Pure White! */
+	color: var(--text-color) !important; /* Pure White! */
 	font-size: 1.1rem !important; /* Larger comment text */
 	line-height: 1.7 !important;
 }
 
 /* Strengthen comment cards frosted glass & tighten vertical spacing */
 #waline .wl-cards .wl-card {
-	background: rgba(255, 255, 255, 0.06) !important;
+	background: var(--glass-bg) !important;
 	backdrop-filter: blur(16px) !important;
 	border: 1px solid rgba(255, 255, 255, 0.08) !important;
 	border-radius: 16px !important;
