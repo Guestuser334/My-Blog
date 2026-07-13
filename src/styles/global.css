@@ -649,7 +649,7 @@ hr {
 
 @media (max-width: 480px) {
 	#waline .wl-cards .wl-card-item {
-		padding: 1rem !important;
+		padding: 0.85rem !important;
 		margin-bottom: 1rem !important;
 		border-radius: 16px !important;
 	}
@@ -661,15 +661,22 @@ hr {
 		height: 40px !important;
 	}
 	#waline .wl-meta-header {
+		flex-direction: column !important;
+		align-items: flex-start !important;
+		gap: 10px !important;
 		margin-bottom: 1rem !important;
 		padding-bottom: 0.6rem !important;
 	}
 	#waline .wl-num {
-		font-size: 1.1rem !important;
+		font-size: 1.15rem !important;
+		white-space: nowrap !important;
 	}
 	#waline .wl-sort {
-		font-size: 0.85rem !important;
-		gap: 8px !important;
+		margin-left: 0 !important;
+		padding-left: 0 !important;
+		font-size: 0.88rem !important;
+		gap: 16px !important;
+		white-space: nowrap !important;
 	}
 }
 
