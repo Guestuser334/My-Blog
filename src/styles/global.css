@@ -537,15 +537,49 @@ hr {
 }
 
 /* Strengthen comment cards frosted glass & tighten vertical spacing */
-#waline .wl-cards .wl-card {
+/* Strengthen comment cards frosted glass & tighten vertical spacing */
+#waline .wl-cards .wl-card-item {
 	background: rgba(255, 255, 255, 0.04) !important;
 	border: 1px solid rgba(255, 255, 255, 0.06) !important;
-	border-radius: 16px !important;
-	padding: 1.2rem 1.5rem !important; /* Reduced vertical padding */
-	margin-bottom: 1.2rem !important;
+	border-radius: 20px !important;
+	padding: 1.25rem 1.5rem !important;
+	margin-bottom: 1.5rem !important;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 	transition: background-color 0.3s, border-color 0.3s, transform 0.3s !important;
 	background-clip: padding-box !important;
+	display: flex !important;
+	align-items: flex-start !important;
+}
+
+#waline .wl-cards .wl-card-item:hover {
+	background-color: rgba(255, 255, 255, 0.08) !important;
+	border-color: rgba(255, 255, 255, 0.12) !important;
+	transform: translateY(-2px);
+}
+
+#waline .wl-cards .wl-user {
+	margin-right: 14px !important;
+	margin-left: 0 !important;
+	padding: 0 !important;
+	flex-shrink: 0 !important;
+}
+
+#waline .wl-cards .wl-user img {
+	width: 48px !important;
+	height: 48px !important;
+	border-radius: 50% !important;
+	border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+#waline .wl-cards .wl-card {
+	background: transparent !important;
+	border: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	box-shadow: none !important;
+	flex: 1 !important;
+	min-width: 0 !important;
 }
 
 #waline .wl-card .wl-head {
@@ -553,36 +587,90 @@ hr {
 }
 
 #waline .wl-card .wl-meta {
-	margin-bottom: 0.3rem !important; /* Tighten gap below metadata */
+	margin-bottom: 0.4rem !important;
+	display: flex !important;
+	flex-wrap: wrap !important;
+	align-items: center !important;
+	gap: 12px !important;
+	color: var(--text-muted) !important;
 }
 
 #waline .wl-card .wl-content {
 	margin-top: 0.3rem !important; /* Tighten gap above comment body */
 }
 
-:root[data-theme="dark"] #waline .wl-cards .wl-card {
+:root[data-theme="dark"] #waline .wl-cards .wl-card-item {
 	background: rgba(10, 15, 25, 0.45) !important;
 	border: 1px solid rgba(255, 255, 255, 0.05) !important;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
+:root[data-theme="dark"] #waline .wl-cards .wl-card-item:hover {
+	background-color: rgba(10, 15, 25, 0.55) !important;
+	border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) #waline .wl-cards .wl-card {
+	:root:not([data-theme="light"]) #waline .wl-cards .wl-card-item {
 		background: rgba(10, 15, 25, 0.45) !important;
 		border: 1px solid rgba(255, 255, 255, 0.05) !important;
 		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 	}
+	:root:not([data-theme="light"]) #waline .wl-cards .wl-card-item:hover {
+		background-color: rgba(10, 15, 25, 0.55) !important;
+		border-color: rgba(255, 255, 255, 0.08) !important;
+	}
 }
 
-#waline .wl-cards .wl-card:hover {
-	background-color: rgba(255, 255, 255, 0.08) !important;
-	border-color: rgba(255, 255, 255, 0.12) !important;
-	transform: translateY(-2px);
+/* Comment Header list spacing & Mobile responsiveness */
+#waline .wl-meta-header {
+	display: flex !important;
+	justify-content: space-between !important;
+	align-items: center !important;
+	flex-wrap: nowrap !important;
+	margin-bottom: 1.5rem !important;
+	padding-bottom: 0.8rem !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-:root[data-theme="dark"] #waline .wl-cards .wl-card:hover {
-	background-color: rgba(10, 15, 25, 0.55) !important;
-	border-color: rgba(255, 255, 255, 0.08) !important;
+#waline .wl-num {
+	font-size: 1.25rem !important;
+	font-weight: 700 !important;
+	color: var(--text-color) !important;
+	white-space: nowrap !important;
+}
+
+#waline .wl-sort {
+	display: flex !important;
+	gap: 12px !important;
+	font-size: 0.95rem !important;
+	white-space: nowrap !important;
+}
+
+@media (max-width: 480px) {
+	#waline .wl-cards .wl-card-item {
+		padding: 1rem !important;
+		margin-bottom: 1rem !important;
+		border-radius: 16px !important;
+	}
+	#waline .wl-cards .wl-user {
+		margin-right: 10px !important;
+	}
+	#waline .wl-cards .wl-user img {
+		width: 40px !important;
+		height: 40px !important;
+	}
+	#waline .wl-meta-header {
+		margin-bottom: 1rem !important;
+		padding-bottom: 0.6rem !important;
+	}
+	#waline .wl-num {
+		font-size: 1.1rem !important;
+	}
+	#waline .wl-sort {
+		font-size: 0.85rem !important;
+		gap: 8px !important;
+	}
 }
 
 /* Outer comment section container glass enhancement */
