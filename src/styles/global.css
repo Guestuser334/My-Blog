@@ -390,12 +390,10 @@ hr {
 
 /* Customize specific components of Waline for maximum aesthetics */
 #waline .wl-editor {
-	background: rgba(10, 15, 25, 0.45) !important;
-	-webkit-backdrop-filter: blur(12px) !important;
-	backdrop-filter: blur(12px) !important;
+	background: rgba(255, 255, 255, 0.03) !important;
 	border: 1px solid rgba(255, 255, 255, 0.08) !important;
 	border-radius: 12px;
-	color: #f5f5f7 !important; /* Force whiter typed text */
+	color: var(--text-color) !important; /* Force whiter typed text */
 	padding: 12px !important;
 	transition: border-color 0.3s, box-shadow 0.3s;
 	background-clip: padding-box !important;
@@ -540,9 +538,7 @@ hr {
 
 /* Strengthen comment cards frosted glass & tighten vertical spacing */
 #waline .wl-cards .wl-card {
-	background: rgba(10, 15, 25, 0.35) !important;
-	-webkit-backdrop-filter: blur(16px) !important;
-	backdrop-filter: blur(16px) !important;
+	background: rgba(255, 255, 255, 0.04) !important;
 	border: 1px solid rgba(255, 255, 255, 0.06) !important;
 	border-radius: 16px !important;
 	padding: 1.2rem 1.5rem !important; /* Reduced vertical padding */
