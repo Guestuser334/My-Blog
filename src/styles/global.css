@@ -390,11 +390,12 @@ hr {
 
 /* Customize specific components of Waline for maximum aesthetics */
 #waline .wl-editor {
-	background: var(--glass-bg) !important;
+	background: rgba(10, 15, 25, 0.45) !important;
+	-webkit-backdrop-filter: blur(12px) !important;
 	backdrop-filter: blur(12px) !important;
 	border: 1px solid rgba(255, 255, 255, 0.08) !important;
 	border-radius: 12px;
-	color: var(--text-color) !important; /* Force whiter typed text */
+	color: #f5f5f7 !important; /* Force whiter typed text */
 	padding: 12px !important;
 	transition: border-color 0.3s, box-shadow 0.3s;
 	background-clip: padding-box !important;
@@ -525,23 +526,24 @@ hr {
 
 /* Style welcome comment placeholder text (Always white on dark glass background) */
 #waline .wl-editor::placeholder {
-	color: var(--text-muted) !important;
+	color: rgba(255, 255, 255, 0.4) !important;
 	font-size: 1.15rem !important;
 }
 
 /* Style displayed comments body text (Always white on dark glass cards) */
 #waline .wl-cards .wl-content,
 #waline .wl-cards .wl-content p {
-	color: var(--text-color) !important; /* Pure White! */
+	color: #e2e2e5 !important; /* Pure White! */
 	font-size: 1.1rem !important; /* Larger comment text */
 	line-height: 1.7 !important;
 }
 
 /* Strengthen comment cards frosted glass & tighten vertical spacing */
 #waline .wl-cards .wl-card {
-	background: var(--glass-bg) !important;
+	background: rgba(10, 15, 25, 0.35) !important;
+	-webkit-backdrop-filter: blur(16px) !important;
 	backdrop-filter: blur(16px) !important;
-	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	border: 1px solid rgba(255, 255, 255, 0.06) !important;
 	border-radius: 16px !important;
 	padding: 1.2rem 1.5rem !important; /* Reduced vertical padding */
 	margin-bottom: 1.2rem !important;
