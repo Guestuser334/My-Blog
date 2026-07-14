@@ -24,6 +24,13 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				padding: 2.5rem;
 				box-sizing: border-box;
 			}
+			@media (max-width: 720px) {
+				article {
+					width: calc(100% - 1rem) !important;
+					padding: 1.5rem 1.1rem !important;
+					margin: 20px auto !important;
+				}
+			}
 			.hero-image {
 				width: 100%;
 				margin-bottom: 2rem;
