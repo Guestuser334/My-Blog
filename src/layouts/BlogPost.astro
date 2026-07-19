@@ -84,38 +84,84 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 			}
 			.comment-tip-banner {
 				display: flex;
-				align-items: center;
+				align-items: flex-start;
 				gap: 12px;
 				background: rgba(255, 255, 255, 0.04) !important;
 				border: 1px solid rgba(var(--accent-color), 0.25) !important;
 				border-radius: 12px;
-				padding: 10px 16px;
+				padding: 12px 16px;
 				margin-bottom: 20px;
 				color: var(--text-color) !important;
-				font-size: 0.9rem;
-				line-height: 1.5;
+				font-size: 0.88rem;
+				line-height: 1.6;
 				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 			}
 			.comment-tip-banner .tip-icon {
 				font-size: 1.15rem;
 				user-select: none;
+				margin-top: 2px;
+			}
+			.comment-tip-banner .tip-content {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+			}
+			.comment-tip-banner .tip-text {
+				margin: 0;
+			}
+			.comment-tip-banner .tip-warning {
+				color: var(--text-muted);
+				font-size: 0.84rem;
+				opacity: 0.9;
 			}
 			.custom-avatar-selector {
 				display: flex;
 				align-items: center;
 				gap: 0.8rem;
-				margin-left: auto;
+				margin: 0 !important;
+				padding: 0 !important;
+				width: 100%;
 			}
 			.avatar-label {
 				font-size: 1.1rem !important;
 				font-weight: 600 !important;
-				color: var(--accent) !important; /* Signature Pink! */
+				color: var(--accent) !important;
 				white-space: nowrap;
+				margin: 0 !important;
+				padding: 0 !important;
 			}
 			.avatar-options {
 				display: flex;
 				gap: 0.5rem;
 				align-items: center;
+				overflow-x: auto;
+				max-width: 100%;
+				padding: 4px 2px;
+				scrollbar-width: none;
+				-ms-overflow-style: none;
+				-webkit-overflow-scrolling: touch;
+			}
+			.avatar-options::-webkit-scrollbar {
+				display: none;
+			}
+			.avatar-random-btn {
+				width: 38px;
+				height: 38px;
+				border-radius: 50%;
+				border: 1.5px solid rgba(255, 255, 255, 0.15);
+				cursor: pointer;
+				background: rgba(255, 255, 255, 0.08);
+				font-size: 1.1rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+				flex-shrink: 0;
+			}
+			.avatar-random-btn:hover {
+				transform: scale(1.1) rotate(15deg);
+				background: rgba(255, 255, 255, 0.18);
+				border-color: var(--accent);
 			}
 			.avatar-opt {
 				width: 38px;
@@ -125,6 +171,7 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				cursor: pointer;
 				background: rgba(255, 255, 255, 0.08);
 				transition: border-color 0.2s, transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+				flex-shrink: 0;
 			}
 			.avatar-opt:hover {
 				transform: scale(1.1);
@@ -148,6 +195,7 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				justify-content: center;
 				transition: border-color 0.2s, background-color 0.2s, transform 0.2s, box-shadow 0.2s;
 				position: relative;
+				flex-shrink: 0;
 			}
 			.avatar-upload-opt:hover {
 				border-color: var(--accent);
@@ -205,10 +253,18 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 					<div class="custom-avatar-selector">
 						<span class="avatar-label">头像:</span>
 						<div class="avatar-options">
+							<button type="button" class="avatar-random-btn" id="avatar-random-btn" title="随机选择头像">🎲</button>
 							<img src="/avatars/avatar1.png" data-avatar="avatar1" class="avatar-opt" alt="Avatar 1" />
 							<img src="/avatars/avatar2.png" data-avatar="avatar2" class="avatar-opt" alt="Avatar 2" />
 							<img src="/avatars/avatar3.png" data-avatar="avatar3" class="avatar-opt" alt="Avatar 3" />
 							<img src="/avatars/avatar4.png" data-avatar="avatar4" class="avatar-opt" alt="Avatar 4" />
+							<img src="/avatars/avatar5.png" data-avatar="avatar5" class="avatar-opt" alt="Avatar 5" />
+							<img src="/avatars/avatar6.png" data-avatar="avatar6" class="avatar-opt" alt="Avatar 6" />
+							<img src="/avatars/avatar7.png" data-avatar="avatar7" class="avatar-opt" alt="Avatar 7" />
+							<img src="/avatars/avatar8.png" data-avatar="avatar8" class="avatar-opt" alt="Avatar 8" />
+							<img src="/avatars/avatar9.jpg" data-avatar="avatar9" class="avatar-opt" alt="Avatar 9" />
+							<img src="/avatars/avatar10.jpg" data-avatar="avatar10" class="avatar-opt" alt="Avatar 10" />
+							<img src="/avatars/avatar11.jpg" data-avatar="avatar11" class="avatar-opt" alt="Avatar 11" />
 							<div class="avatar-upload-opt" title="上传自定义头像">
 								<span class="upload-icon">+</span>
 								<input type="file" id="avatar-file-input" accept="image/*" style="display: none;" />
@@ -218,7 +274,10 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				</div>
 				<div class="comment-tip-banner">
 					<span class="tip-icon">💡</span>
-					<span class="tip-text">发表评论只需填写昵称并选择头像。发表后不可自助修改或删除，如需删除请联系博主，请谨慎发言。</span>
+					<div class="tip-content">
+						<p class="tip-text">发表评论只需填写昵称并选择头像。发表后不可自助修改或删除，如需删除请联系博主，请谨慎发言。</p>
+						<p class="tip-text tip-warning">文中部分未详尽说明的内容系作者出于隐私考量未作公开。若对文章内容存在疑问，请私下联系博主，请勿在评论区留言提问，感谢理解与配合！</p>
+					</div>
 				</div>
 				<div id="waline"></div>
 			</div>
@@ -271,6 +330,13 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				'ec7fe3e67594ce450f170b5c83b61d73': '/avatars/avatar2.png',
 				'6faf5609dc22ca4a81d3583bf79cef7c': '/avatars/avatar3.png',
 				'43214eb4809dd00da5b4f8699f10eae0': '/avatars/avatar4.png',
+				'f507c23111ed1925b37a9ce760a052da': '/avatars/avatar5.png',
+				'd5c17c1a927336a3608ff8a4c7d8b04c': '/avatars/avatar6.png',
+				'1b3b4304e2007b6e0a51451acdde8336': '/avatars/avatar7.png',
+				'b0f3df21078bad42575fb1099ae44e92': '/avatars/avatar8.png',
+				'b69ed8e9483c8b88396f60736211a4b7': '/avatars/avatar9.jpg',
+				'd93da5df25360b4be374bf59b0b78d97': '/avatars/avatar10.jpg',
+				'b06b37b3b15777c3670dce8525b9df63': '/avatars/avatar11.jpg',
 			};
 
 			let customAvatarBase64 = '';
@@ -382,6 +448,20 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				const avatarOpts = document.querySelectorAll('.avatar-opt');
 				const uploadOpt = document.querySelector('.avatar-upload-opt') as HTMLElement;
 				const fileInput = document.getElementById('avatar-file-input') as HTMLInputElement;
+				const randomBtn = document.getElementById('avatar-random-btn');
+
+				if (randomBtn && !randomBtn.getAttribute('data-bound')) {
+					randomBtn.setAttribute('data-bound', 'true');
+					randomBtn.addEventListener('click', () => {
+						const availableOpts = Array.from(document.querySelectorAll('.avatar-opt'));
+						if (availableOpts.length > 0) {
+							const randomIndex = Math.floor(Math.random() * availableOpts.length);
+							const randomOpt = availableOpts[randomIndex] as HTMLElement;
+							randomOpt.click();
+							randomOpt.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+						}
+					});
+				}
 
 				avatarOpts.forEach((opt) => {
 					if (opt.getAttribute('data-bound')) return;
