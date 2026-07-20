@@ -145,18 +145,29 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				display: none;
 			}
 			.avatar-random-btn {
-				width: 38px;
-				height: 38px;
-				border-radius: 50%;
-				border: 1.5px solid rgba(255, 255, 255, 0.15);
+				width: 38px !important;
+				height: 38px !important;
+				min-width: 38px !important;
+				min-height: 38px !important;
+				max-width: 38px !important;
+				max-height: 38px !important;
+				aspect-ratio: 1 / 1 !important;
+				padding: 0 !important;
+				margin: 0 !important;
+				border-radius: 50% !important;
+				border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+				-webkit-appearance: none !important;
+				appearance: none !important;
+				box-sizing: border-box !important;
 				cursor: pointer;
 				background: rgba(255, 255, 255, 0.08);
 				font-size: 1.1rem;
-				display: flex;
-				align-items: center;
-				justify-content: center;
+				line-height: 1 !important;
+				display: flex !important;
+				align-items: center !important;
+				justify-content: center !important;
 				transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
-				flex-shrink: 0;
+				flex-shrink: 0 !important;
 			}
 			.avatar-random-btn:hover {
 				transform: scale(1.1) rotate(15deg);
@@ -265,6 +276,11 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 							<img src="/avatars/avatar9.jpg" data-avatar="avatar9" class="avatar-opt" alt="Avatar 9" />
 							<img src="/avatars/avatar10.jpg" data-avatar="avatar10" class="avatar-opt" alt="Avatar 10" />
 							<img src="/avatars/avatar11.jpg" data-avatar="avatar11" class="avatar-opt" alt="Avatar 11" />
+							<img src="/avatars/avatar12.jpg" data-avatar="avatar12" class="avatar-opt" alt="Avatar 12" />
+							<img src="/avatars/avatar13.jpg" data-avatar="avatar13" class="avatar-opt" alt="Avatar 13" />
+							<img src="/avatars/avatar14.jpg" data-avatar="avatar14" class="avatar-opt" alt="Avatar 14" />
+							<img src="/avatars/avatar15.jpg" data-avatar="avatar15" class="avatar-opt" alt="Avatar 15" />
+							<img src="/avatars/avatar16.jpg" data-avatar="avatar16" class="avatar-opt" alt="Avatar 16" />
 							<div class="avatar-upload-opt" title="上传自定义头像">
 								<span class="upload-icon">+</span>
 								<input type="file" id="avatar-file-input" accept="image/*" style="display: none;" />
@@ -337,6 +353,11 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				'b69ed8e9483c8b88396f60736211a4b7': '/avatars/avatar9.jpg',
 				'd93da5df25360b4be374bf59b0b78d97': '/avatars/avatar10.jpg',
 				'b06b37b3b15777c3670dce8525b9df63': '/avatars/avatar11.jpg',
+				'473bed837cb652c74821697a3ccca7e0': '/avatars/avatar12.jpg',
+				'51b467f9db15dcebfdbc4cdd6ee7dedc': '/avatars/avatar13.jpg',
+				'0bbf98032a6ab1f06d178db92f6a2891': '/avatars/avatar14.jpg',
+				'47cf7f3f7ef443f7a9131beee606def3': '/avatars/avatar15.jpg',
+				'273443a137b620c67ae6c4fb0d9bdc6c': '/avatars/avatar16.jpg',
 			};
 
 			let customAvatarBase64 = '';
