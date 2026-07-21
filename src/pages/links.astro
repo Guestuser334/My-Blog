@@ -69,7 +69,7 @@ const links = [
 		border-radius: 18px;
 		background: var(--glass-bg);
 		border: 1px solid var(--glass-border);
-		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: transform 200ms var(--ease-spring), background-color 200ms var(--ease-out), border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
 		position: relative;
 		overflow: hidden;
 	}
@@ -83,7 +83,7 @@ const links = [
 		bottom: 0;
 		background: radial-gradient(800px circle at var(--x, 0px) var(--y, 0px), rgba(var(--accent-color), 0.08), transparent 40%);
 		opacity: 0;
-		transition: opacity 0.5s ease;
+		transition: opacity 200ms var(--ease-out);
 		pointer-events: none;
 		z-index: 1;
 	}
@@ -97,6 +97,10 @@ const links = [
 		background: var(--card-hover-bg);
 		border-color: var(--card-hover-border);
 		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(var(--accent-color), 0.2);
+	}
+	
+	.link-card-wrapper:active .link-card {
+		transform: scale(0.97);
 	}
 	
 	.avatar-container {
@@ -113,7 +117,7 @@ const links = [
 		border-radius: 50%;
 		border: 2px solid var(--glass-border);
 		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+		transition: transform 200ms var(--ease-spring), border-color 150ms var(--ease-out);
 		z-index: 2;
 		position: relative;
 	}
@@ -133,7 +137,7 @@ const links = [
 		border-radius: 50%;
 		opacity: 0;
 		filter: blur(4px);
-		transition: opacity 0.4s ease, transform 0.4s ease;
+		transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
 		z-index: 1;
 	}
 	
@@ -155,7 +159,7 @@ const links = [
 		font-size: 1.15rem;
 		font-weight: 700;
 		color: var(--text-color);
-		transition: color 0.2s ease;
+		transition: color 150ms var(--ease-out);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;

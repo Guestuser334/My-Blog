@@ -135,11 +135,13 @@ import HeaderLink from './HeaderLink.astro';
 		margin: 0 auto;
 		box-sizing: border-box;
 		padding: 0.5em 2em;
-		background: rgba(12, 12, 16, 0.15) !important; /* Matches map background */
+		background: var(--glass-bg) !important;
 		background-clip: padding-box !important;
-		border: 1.5px solid transparent !important;
-		backdrop-filter: blur(12px) !important; /* Matches map blur (12px) and overrides global 2px blur */
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+		border: 1px solid rgba(255, 255, 255, 0.08) !important;
+		border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+		backdrop-filter: blur(12px) !important;
+		-webkit-backdrop-filter: blur(12px) !important;
+		box-shadow: var(--glass-shadow) !important;
 		border-radius: 20px;
 		/* Completely static styling for buttery smooth scroll performance */
 		transition: none;

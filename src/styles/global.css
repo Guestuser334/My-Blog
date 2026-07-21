@@ -4,6 +4,9 @@
 
 :root {
 	color-scheme: dark; /* Prevent mobile browsers from forcing white backgrounds */
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+	--ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
 	--accent-color: 251, 113, 133; /* Peach Pink (rose-400) */
 	--accent: rgb(var(--accent-color));
 	--accent-dark: #e11d48;
@@ -14,26 +17,10 @@
 	
 	/* Clear Liquid Glass - Light Mode */
 	--glass-bg: rgba(255, 255, 255, 0.05);
-	--glass-border-gradient: conic-gradient(
-		from 0deg at 50% 50%, 
-		rgba(255, 255, 255, 0.02) 0deg,
-		rgba(255, 255, 255, 0.95) 35deg,
-		rgba(255, 255, 255, 0.95) 55deg, 
-		rgba(255, 255, 255, 0.01) 90deg, 
-		rgba(255, 255, 255, 0.6) 125deg,
-		rgba(255, 255, 255, 0.6) 145deg, 
-		rgba(255, 255, 255, 0.01) 180deg, 
-		rgba(255, 255, 255, 0.7) 215deg,
-		rgba(255, 255, 255, 0.7) 235deg, 
-		rgba(255, 255, 255, 0.01) 270deg, 
-		rgba(255, 255, 255, 1) 305deg,
-		rgba(255, 255, 255, 1) 325deg, 
-		rgba(255, 255, 255, 0.02) 360deg
-	);
-	--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+	--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 8px 32px 0 rgba(0, 0, 0, 0.08);
 	--text-color: #e2e2e5; /* Dimmer white */
-	--text-muted: #b0b0b8; /* Dimmer muted text */
-	--card-hover-bg: rgba(255, 255, 255, 0.05);
+	--text-muted: #b8b8c0; /* Brighter for vibrancy */
+	--card-hover-bg: rgba(255, 255, 255, 0.07);
 	
 	/* Background Image - Light */
 	--bg-url: url('/bg.png');
@@ -49,27 +36,11 @@
 	--gray-light: 29, 29, 31;
 	
 	/* Clear Liquid Glass - Dark Mode */
-	--glass-bg: rgba(10, 15, 25, 0.10);
-	--glass-border-gradient: conic-gradient(
-		from 0deg at 50% 50%, 
-		rgba(255, 255, 255, 0.1) 0deg,
-		rgba(255, 255, 255, 0.5) 35deg,
-		rgba(255, 255, 255, 0.5) 55deg,
-		rgba(255, 255, 255, 0.02) 90deg,
-		rgba(255, 255, 255, 0.2) 125deg,
-		rgba(255, 255, 255, 0.2) 145deg,
-		rgba(255, 255, 255, 0.02) 180deg,
-		rgba(255, 255, 255, 0.3) 215deg,
-		rgba(255, 255, 255, 0.3) 235deg,
-		rgba(255, 255, 255, 0.02) 270deg,
-		rgba(255, 255, 255, 0.6) 305deg,
-		rgba(255, 255, 255, 0.6) 325deg,
-		rgba(255, 255, 255, 0.1) 360deg
-	);
+	--glass-bg: rgba(10, 15, 25, 0.1);
 	--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 35px 0 rgba(0, 0, 0, 0.32);
 	--text-color: #f5f5f7;
-	--text-muted: #a1a1aa;
-	--card-hover-bg: rgba(15, 20, 30, 0.12);
+	--text-muted: #b0b0b8; /* Brighter for vibrancy */
+	--card-hover-bg: rgba(15, 20, 30, 0.15);
 	
 	/* Background Image - Dark (same URL but overlay will handle dimming) */
 	--bg-url: url('/bg.png');
@@ -85,27 +56,11 @@
 		--gray-light: 29, 29, 31;
 		
 		/* Clear Liquid Glass - Dark Mode */
-		--glass-bg: rgba(10, 15, 25, 0.10);
-		--glass-border-gradient: conic-gradient(
-			from 0deg at 50% 50%, 
-			rgba(255, 255, 255, 0.1) 0deg,
-			rgba(255, 255, 255, 0.5) 35deg,
-			rgba(255, 255, 255, 0.5) 55deg,
-			rgba(255, 255, 255, 0.02) 90deg,
-			rgba(255, 255, 255, 0.2) 125deg,
-			rgba(255, 255, 255, 0.2) 145deg,
-			rgba(255, 255, 255, 0.02) 180deg,
-			rgba(255, 255, 255, 0.3) 215deg,
-			rgba(255, 255, 255, 0.3) 235deg,
-			rgba(255, 255, 255, 0.02) 270deg,
-			rgba(255, 255, 255, 0.6) 305deg,
-			rgba(255, 255, 255, 0.6) 325deg,
-			rgba(255, 255, 255, 0.1) 360deg
-		);
+		--glass-bg: rgba(10, 15, 25, 0.1);
 		--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 35px 0 rgba(0, 0, 0, 0.32);
 		--text-color: #f5f5f7;
-		--text-muted: #a1a1aa;
-		--card-hover-bg: rgba(15, 20, 30, 0.12);
+		--text-muted: #b0b0b8;
+		--card-hover-bg: rgba(15, 20, 30, 0.15);
 	}
 }
 
@@ -122,7 +77,7 @@ body {
 	overflow-wrap: break-word;
 	position: relative;
 	background-color: #0c0d12;
-	transition: background-color 0.5s ease, color 0.3s ease;
+	transition: background-color 0.5s var(--ease-out), color 0.3s var(--ease-out);
 }
 
 /* High-performance hardware-accelerated fixed background */
@@ -150,7 +105,7 @@ body::after {
 	background: rgba(0, 0, 0, 0.05);
 	z-index: -1;
 	pointer-events: none;
-	transition: background 0.5s ease;
+	transition: background 0.5s var(--ease-out);
 }
 
 :root[data-theme="dark"] body::after {
@@ -167,34 +122,26 @@ body::after {
 .glass-card {
 	background: var(--glass-bg);
 	background-clip: padding-box; /* Clips card background to prevent bleeding under transparent border */
-	border: 1.5px solid transparent;
-	backdrop-filter: blur(2px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-top: 1px solid rgba(255, 255, 255, 0.25);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
 	border-radius: 24px;
 	box-shadow: var(--glass-shadow);
 	padding: 1.5rem;
 	box-sizing: border-box;
-	transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transition: background-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out), transform 200ms var(--ease-spring);
 	position: relative;
-}
-
-.glass-card::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	border-radius: inherit;
-	padding: 1.5px; /* Border thickness */
-	background: var(--glass-border-gradient);
-	-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-	-webkit-mask-composite: xor;
-	mask-composite: exclude;
-	pointer-events: none;
-	z-index: 10;
 }
 
 .glass-card-hover:hover {
 	transform: translateY(-4px);
 	background: var(--card-hover-bg);
 	box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.5), 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+
+.glass-card-hover:active {
+	transform: scale(0.97);
 }
 
 /* Transparent wrapper main container */
@@ -233,7 +180,7 @@ strong, b {
 a {
 	color: var(--accent);
 	text-decoration: none;
-	transition: color 0.2s ease, opacity 0.2s ease;
+	transition: color 150ms var(--ease-out), opacity 150ms var(--ease-out);
 }
 
 a:hover {
@@ -395,7 +342,7 @@ hr {
 	border-radius: 12px;
 	color: var(--text-color) !important; /* Force whiter typed text */
 	padding: 12px !important;
-	transition: border-color 0.3s, box-shadow 0.3s;
+	transition: border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
 	background-clip: padding-box !important;
 	min-height: 80px !important;
 	height: 90px !important; /* Reduced height */
@@ -432,7 +379,7 @@ hr {
 #waline .wl-header input {
 	border-bottom: 1px solid transparent !important;
 	color: var(--text-color) !important;
-	transition: border-color 0.3s;
+	transition: border-color 200ms var(--ease-out);
 }
 
 #waline .wl-header input:focus {
@@ -494,7 +441,7 @@ hr {
 	font-size: 0.85rem !important;
 	cursor: pointer !important;
 	text-decoration: none !important;
-	transition: color 0.2s !important;
+	transition: color 150ms var(--ease-out) !important;
 }
 
 #waline .wl-meta .wl-meta-edit button:hover,
@@ -519,7 +466,7 @@ hr {
 	font-size: 1.25rem !important; /* Larger nickname */
 	font-weight: 600 !important;
 	color: var(--accent) !important; /* Signature Pink accent color! */
-	transition: color 0.3s;
+	transition: color 200ms var(--ease-out);
 	text-decoration: none !important;
 }
 
@@ -551,7 +498,7 @@ hr {
 	padding: 1.25rem 1.5rem !important;
 	margin-bottom: 1.5rem !important;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-	transition: background-color 0.3s, border-color 0.3s, transform 0.3s !important;
+	transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out), transform 200ms var(--ease-spring) !important;
 	background-clip: padding-box !important;
 	display: flex !important;
 	align-items: flex-start !important;
@@ -561,6 +508,10 @@ hr {
 	background-color: rgba(255, 255, 255, 0.08) !important;
 	border-color: rgba(255, 255, 255, 0.12) !important;
 	transform: translateY(-2px);
+}
+
+#waline .wl-cards .wl-card-item:active {
+	transform: scale(0.98);
 }
 
 #waline .wl-cards .wl-user {
@@ -708,7 +659,7 @@ hr {
 #waline .wl-btn {
 	border-radius: 10px !important;
 	font-weight: 600 !important;
-	transition: background-color 0.2s, transform 0.2s !important;
+	transition: background-color 150ms var(--ease-out), transform 150ms var(--ease-out) !important;
 }
 
 #waline .wl-btn.wl-btn-primary {
@@ -721,6 +672,10 @@ hr {
 #waline .wl-btn.wl-btn-primary:hover {
 	transform: translateY(-1px) !important;
 	box-shadow: 0 6px 16px rgba(var(--accent-color), 0.35) !important;
+}
+
+#waline .wl-btn.wl-btn-primary:active {
+	transform: scale(0.97) !important;
 }
 
 /* Meta info labels (OS, Browser) */

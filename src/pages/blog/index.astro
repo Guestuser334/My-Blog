@@ -31,12 +31,15 @@ const posts = (await getCollection('blog')).sort(
 			ul li {
 				width: calc(50% - 1rem);
 				/* Inherit glass styling, padding, and border radius from global .glass-card */
-				transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+				transition: transform 200ms var(--ease-spring), background-color 200ms var(--ease-out), border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
 			}
 			ul li:hover {
 				transform: translateY(-6px);
 				background: var(--card-hover-bg) !important;
 				box-shadow: 0 20px 38px rgba(0, 0, 0, 0.25) !important;
+			}
+			ul li:active {
+				transform: scale(0.98);
 			}
 			ul li * {
 				text-decoration: none;
@@ -63,7 +66,7 @@ const posts = (await getCollection('blog')).sort(
 			ul li img {
 				margin-bottom: 1rem;
 				border-radius: 12px;
-				transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+				transition: transform 200ms var(--ease-spring);
 			}
 			ul li a:hover img {
 				transform: scale(1.02);
@@ -76,7 +79,7 @@ const posts = (await getCollection('blog')).sort(
 				color: var(--text-color);
 				line-height: 1.2;
 				font-weight: 700;
-				transition: color 0.2s;
+				transition: color 150ms var(--ease-out);
 			}
 			.date {
 				margin: 0;

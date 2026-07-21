@@ -74,7 +74,7 @@ const formatDateSpaced = (date: Date) => {
 				position: relative;
 				top: 0;
 				/* Hover animation defined via top property, shadow inherits from global */
-				transition: top 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+				transition: top 200ms var(--ease-spring), box-shadow 200ms var(--ease-out), transform 150ms var(--ease-out);
 			}
 			
 			.profile-card:hover {
@@ -84,6 +84,9 @@ const formatDateSpaced = (date: Date) => {
 					inset 0 1px 1.5px rgba(255, 255, 255, 0.5),
 					0 16px 40px rgba(0, 0, 0, 0.15), 
 					0 0 1px 1px rgba(var(--accent-color), 0.3);
+			}
+			.profile-card:active {
+				transform: scale(0.98);
 			}
 			.profile-title-link {
 				color: inherit;
@@ -166,13 +169,16 @@ const formatDateSpaced = (date: Date) => {
 				align-items: center;
 				justify-content: center;
 				color: var(--text-color);
-				transition: all 0.2s;
+				transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out), transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
 			}
 			.social-btn:hover {
 				background: var(--accent);
 				color: white !important;
 				transform: translateY(-2px);
 				box-shadow: 0 4px 12px rgba(var(--accent-color), 0.35);
+			}
+			.social-btn:active {
+				transform: scale(0.95);
 			}
 
 			/* Map Widget - Obsidian Contrast Design */
@@ -221,7 +227,7 @@ const formatDateSpaced = (date: Date) => {
 			}
 			:global(.map-dot) {
 				fill: rgba(255, 255, 255, 0.12); /* Brighter ocean dots */
-				transition: fill 0.3s;
+				transition: fill 200ms var(--ease-out);
 			}
 			:global(.map-dot.active-land) {
 				fill: var(--accent) !important;
@@ -327,7 +333,7 @@ const formatDateSpaced = (date: Date) => {
 				font-size: 1.35rem;
 				line-height: 1.3;
 				color: var(--text-color);
-				transition: color 0.2s;
+				transition: color 150ms var(--ease-out);
 			}
 			.featured-widget:hover h3 {
 				color: var(--accent);
@@ -380,11 +386,14 @@ const formatDateSpaced = (date: Date) => {
 				align-items: center;
 				padding: 0.6rem 0.8rem;
 				border-radius: 12px;
-				transition: background-color 0.2s, transform 0.2s;
+				transition: background-color 150ms var(--ease-out), transform 150ms var(--ease-out);
 			}
 			.post-row:hover {
 				background: rgba(var(--accent-color), 0.05);
 				transform: translateX(4px);
+			}
+			.post-row:active {
+				transform: scale(0.98);
 			}
 			.post-title-link {
 				color: var(--text-color);
@@ -433,7 +442,7 @@ const formatDateSpaced = (date: Date) => {
 				box-shadow: 0 4px 15px rgba(255, 94, 98, 0.45);
 				margin-bottom: 0.8rem;
 				color: white;
-				transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+				transition: transform 200ms var(--ease-spring), box-shadow 200ms var(--ease-out), background 300ms var(--ease-out);
 			}
 			.theme-circle .sun-svg {
 				width: 24px;
@@ -449,6 +458,9 @@ const formatDateSpaced = (date: Date) => {
 			.theme-widget:hover .theme-circle {
 				transform: scale(1.1);
 				box-shadow: 0 6px 20px rgba(255, 94, 98, 0.6);
+			}
+			.theme-widget:active .theme-circle {
+				transform: scale(0.95);
 			}
 			
 			/* Dark Mode styling */
@@ -664,7 +676,7 @@ const formatDateSpaced = (date: Date) => {
 				border: 1px solid rgba(var(--accent-color), 0.15);
 				background: rgba(var(--accent-color), 0.05);
 				color: var(--text-color);
-				transition: transform 0.2s, background-color 0.2s;
+				transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out);
 			}
 			.tech-badge-pill:hover {
 				transform: translateY(-1px);
@@ -701,7 +713,7 @@ const formatDateSpaced = (date: Date) => {
 			.icp-link {
 				font-size: 0.8rem;
 				color: var(--text-muted);
-				transition: color 0.2s;
+				transition: color 150ms var(--ease-out);
 			}
 			.icp-link:hover {
 				color: var(--accent);
@@ -805,6 +817,11 @@ const formatDateSpaced = (date: Date) => {
 					justify-content: center;
 					flex-wrap: wrap;
 					gap: 0.4rem;
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.city-marker, .city-ring, .location-dot-pulse, .theme-circle .sun-svg, .theme-circle .moon-svg, .nixie-dot {
+					animation: none !important;
 				}
 			}
 		</style>
