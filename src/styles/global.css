@@ -92,9 +92,8 @@ body::before {
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
-	z-index: -2;
+	z-index: -1;
 	pointer-events: none;
-	transform: translateZ(0); /* Force GPU compositing */
 }
 
 /* Background Dimming Overlay for Dark Mode */
