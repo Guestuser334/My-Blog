@@ -59,6 +59,14 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				font-weight: 800;
 				letter-spacing: -0.03em;
 			}
+			.post-description {
+				margin: 0.5rem auto 1.5rem auto;
+				font-size: 1.15rem;
+				color: var(--text-muted);
+				line-height: 1.6;
+				max-width: 90%;
+				font-weight: 400;
+			}
 			.date {
 				margin-bottom: 0.8em;
 				color: var(--text-muted);
@@ -252,6 +260,7 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 							}
 						</div>
 						<h1>{title}</h1>
+						{description && <p class="post-description">{description}</p>}
 						<hr />
 					</div>
 					<slot />
