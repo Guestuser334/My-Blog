@@ -3,7 +3,7 @@
 */
 
 :root {
-	color-scheme: dark; /* Prevent mobile browsers from forcing white backgrounds */
+	color-scheme: light dark;
 	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 	--ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 	--ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
@@ -14,16 +14,24 @@
 	--gray-dark: 29, 29, 31;
 	--gray-light: 245, 245, 247;
 	--font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--material-thin: rgba(45, 40, 61, 0.08);
+	--material-regular: rgba(45, 40, 61, 0.12);
+	--material-thick: rgba(45, 40, 61, 0.16);
+	--material-border: rgba(255, 255, 255, 0.32);
+	--material-highlight: rgba(255, 255, 255, 0.52);
 	
 	/* Clear Liquid Glass - Light Mode */
-	--glass-bg: rgba(255, 255, 255, 0.05);
-	--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 8px 32px 0 rgba(0, 0, 0, 0.08);
-	--text-color: #e2e2e5; /* Dimmer white */
-	--text-muted: #b8b8c0; /* Brighter for vibrancy */
-	--card-hover-bg: rgba(255, 255, 255, 0.07);
+	--glass-bg: var(--material-regular);
+	--glass-shadow: inset 0 1px 0 var(--material-highlight), 0 18px 50px rgba(45, 30, 55, 0.18);
+	--text-color: #f7f7fa;
+	--text-muted: #e7e4eb;
+	--card-hover-bg: rgba(58, 48, 76, 0.18);
+	--surface-text-shadow: 0 1px 4px rgba(20, 18, 32, 0.38);
+	--map-text-color: rgba(255, 255, 255, 0.92);
+	--map-divider: rgba(255, 255, 255, 0.16);
 	
 	/* Background Image - Light */
-	--bg-url: url('/bg.png');
+	--bg-url: url('/bg.webp');
 }
 
 :root[data-theme="dark"] {
@@ -34,16 +42,24 @@
 	--black: 245, 245, 247;
 	--gray-dark: 245, 245, 247;
 	--gray-light: 29, 29, 31;
+	--material-thin: rgba(38, 32, 54, 0.12);
+	--material-regular: rgba(38, 32, 54, 0.18);
+	--material-thick: rgba(38, 32, 54, 0.24);
+	--material-border: rgba(255, 255, 255, 0.25);
+	--material-highlight: rgba(255, 255, 255, 0.4);
 	
 	/* Clear Liquid Glass - Dark Mode */
-	--glass-bg: rgba(10, 15, 25, 0.1);
-	--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 35px 0 rgba(0, 0, 0, 0.32);
+	--glass-bg: var(--material-regular);
+	--glass-shadow: inset 0 1px 0 var(--material-highlight), 0 22px 58px rgba(8, 7, 18, 0.34);
 	--text-color: #f5f5f7;
-	--text-muted: #b0b0b8; /* Brighter for vibrancy */
-	--card-hover-bg: rgba(15, 20, 30, 0.15);
+	--text-muted: #ded9e3;
+	--card-hover-bg: rgba(68, 50, 84, 0.28);
+	--surface-text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+	--map-text-color: rgba(255, 255, 255, 0.88);
+	--map-divider: rgba(255, 255, 255, 0.12);
 	
 	/* Background Image - Dark (same URL but overlay will handle dimming) */
-	--bg-url: url('/bg.png');
+	--bg-url: url('/bg.webp');
 }
 
 @media (prefers-color-scheme: dark) {
@@ -54,13 +70,21 @@
 		--black: 245, 245, 247;
 		--gray-dark: 245, 245, 247;
 		--gray-light: 29, 29, 31;
+		--material-thin: rgba(38, 32, 54, 0.12);
+		--material-regular: rgba(38, 32, 54, 0.18);
+		--material-thick: rgba(38, 32, 54, 0.24);
+		--material-border: rgba(255, 255, 255, 0.25);
+		--material-highlight: rgba(255, 255, 255, 0.4);
 		
 		/* Clear Liquid Glass - Dark Mode */
-		--glass-bg: rgba(10, 15, 25, 0.1);
-		--glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 35px 0 rgba(0, 0, 0, 0.32);
+		--glass-bg: var(--material-regular);
+		--glass-shadow: inset 0 1px 0 var(--material-highlight), 0 22px 58px rgba(8, 7, 18, 0.34);
 		--text-color: #f5f5f7;
-		--text-muted: #b0b0b8;
-		--card-hover-bg: rgba(15, 20, 30, 0.15);
+		--text-muted: #ded9e3;
+		--card-hover-bg: rgba(68, 50, 84, 0.28);
+		--surface-text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+		--map-text-color: rgba(255, 255, 255, 0.88);
+		--map-divider: rgba(255, 255, 255, 0.12);
 	}
 }
 
@@ -101,29 +125,29 @@ body::after {
 	content: '';
 	position: fixed;
 	top: 0; left: 0; right: 0; bottom: 0;
-	background: rgba(0, 0, 0, 0.05);
+	background: rgba(0, 0, 0, 0.18);
 	z-index: -1;
 	pointer-events: none;
 	transition: background 0.5s var(--ease-out);
 }
 
 :root[data-theme="dark"] body::after {
-	background: rgba(0, 0, 0, 0.55);
+	background: rgba(0, 0, 0, 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) body::after {
-		background: rgba(0, 0, 0, 0.55);
+		background: rgba(0, 0, 0, 0.4);
 	}
 }
 
 /* Base Glass Card Styles */
 .glass-card {
 	background: var(--glass-bg);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-top: 1px solid rgba(255, 255, 255, 0.25);
-	-webkit-backdrop-filter: blur(12px);
-	backdrop-filter: blur(12px);
+	border: 1px solid var(--material-border);
+	border-top-color: var(--material-highlight);
+	-webkit-backdrop-filter: blur(10px) saturate(130%);
+	backdrop-filter: blur(10px) saturate(130%);
 	isolation: isolate;
 	border-radius: 24px;
 	box-shadow: var(--glass-shadow);
@@ -131,6 +155,31 @@ body::after {
 	box-sizing: border-box;
 	transition: background-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out), transform 200ms var(--ease-spring);
 	position: relative;
+}
+
+.glass-card::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent 38%, rgba(255, 255, 255, 0.025));
+	pointer-events: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+	.glass-card {
+		background: #252838 !important;
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
+	}
+}
+
+@media (prefers-contrast: more) {
+	.glass-card {
+		background: rgba(18, 21, 32, 0.94) !important;
+		border-color: rgba(255, 255, 255, 0.58) !important;
+	}
+	:root { --text-muted: #f0f0f4; }
 }
 
 .glass-card-hover:hover {
@@ -319,17 +368,17 @@ hr {
 }
 
 :root[data-theme="dark"] #waline {
-	--waline-bg-color: rgba(10, 15, 25, 0.25) !important;
-	--waline-bg-color-light: rgba(10, 15, 25, 0.15) !important;
-	--waline-bg-color-hover: rgba(10, 15, 25, 0.35) !important;
+	--waline-bg-color: rgba(64, 50, 82, 0.18) !important;
+	--waline-bg-color-light: rgba(64, 50, 82, 0.12) !important;
+	--waline-bg-color-hover: rgba(64, 50, 82, 0.24) !important;
 	--waline-border-color: rgba(255, 255, 255, 0.06) !important;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) #waline {
-		--waline-bg-color: rgba(10, 15, 25, 0.25) !important;
-		--waline-bg-color-light: rgba(10, 15, 25, 0.15) !important;
-		--waline-bg-color-hover: rgba(10, 15, 25, 0.35) !important;
+		--waline-bg-color: rgba(64, 50, 82, 0.18) !important;
+		--waline-bg-color-light: rgba(64, 50, 82, 0.12) !important;
+		--waline-bg-color-hover: rgba(64, 50, 82, 0.24) !important;
 		--waline-border-color: rgba(255, 255, 255, 0.06) !important;
 	}
 }
@@ -349,13 +398,13 @@ hr {
 }
 
 :root[data-theme="dark"] #waline .wl-editor {
-	background: rgba(10, 15, 25, 0.35) !important;
+	background: rgba(45, 36, 60, 0.52) !important;
 	border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) #waline .wl-editor {
-		background: rgba(10, 15, 25, 0.35) !important;
+		background: rgba(45, 36, 60, 0.52) !important;
 		border: 1px solid rgba(255, 255, 255, 0.05) !important;
 	}
 }
@@ -556,24 +605,24 @@ hr {
 }
 
 :root[data-theme="dark"] #waline .wl-cards .wl-card-item {
-	background: rgba(10, 15, 25, 0.45) !important;
+	background: rgba(31, 26, 44, 0.72) !important;
 	border: 1px solid rgba(255, 255, 255, 0.05) !important;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 :root[data-theme="dark"] #waline .wl-cards .wl-card-item:hover {
-	background-color: rgba(10, 15, 25, 0.55) !important;
+	background-color: rgba(40, 32, 55, 0.8) !important;
 	border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) #waline .wl-cards .wl-card-item {
-		background: rgba(10, 15, 25, 0.45) !important;
+		background: rgba(31, 26, 44, 0.72) !important;
 		border: 1px solid rgba(255, 255, 255, 0.05) !important;
 		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 	}
 	:root:not([data-theme="light"]) #waline .wl-cards .wl-card-item:hover {
-		background-color: rgba(10, 15, 25, 0.55) !important;
+		background-color: rgba(40, 32, 55, 0.8) !important;
 		border-color: rgba(255, 255, 255, 0.08) !important;
 	}
 }
@@ -639,18 +688,18 @@ hr {
 /* Outer comment section container glass enhancement */
 .comment-section.glass-card {
 	background: rgba(255, 255, 255, 0.06) !important;
-	backdrop-filter: blur(20px) !important;
+	backdrop-filter: blur(12px) !important;
 }
 
 :root[data-theme="dark"] .comment-section.glass-card {
-	background: rgba(10, 15, 25, 0.35) !important;
-	backdrop-filter: blur(20px) !important;
+	background: rgba(72, 58, 92, 0.16) !important;
+	backdrop-filter: blur(12px) !important;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) .comment-section.glass-card {
-		background: rgba(10, 15, 25, 0.35) !important;
-		backdrop-filter: blur(20px) !important;
+		background: rgba(72, 58, 92, 0.16) !important;
+		backdrop-filter: blur(12px) !important;
 	}
 }
 

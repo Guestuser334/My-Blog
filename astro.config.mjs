@@ -6,7 +6,8 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://example.com',
+	// Set SITE_URL in the deployment environment when using a custom domain.
+	site: process.env.SITE_URL || 'http://localhost:4321',
 	integrations: [mdx(), sitemap()],
 	vite: {
 		build: {

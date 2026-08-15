@@ -13,7 +13,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 const { title, description, pubDate, updatedDate, heroImage, showComments = true } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
@@ -23,12 +23,19 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				margin: 40px auto;
 				padding: 2.5rem;
 				box-sizing: border-box;
+				background: var(--material-thick);
+				-webkit-backdrop-filter: blur(14px) saturate(135%);
+				backdrop-filter: blur(14px) saturate(135%);
 			}
 			@media (max-width: 720px) {
 				article {
 					width: calc(100% - 1rem) !important;
 					padding: 1.5rem 1.1rem !important;
 					margin: 20px auto !important;
+				}
+				.title h1 {
+					font-size: clamp(1.75rem, 8vw, 2rem) !important;
+					letter-spacing: -0.02em;
 				}
 			}
 			.hero-image {
@@ -82,6 +89,9 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 				margin: 30px auto 40px auto;
 				padding: 2.5rem;
 				box-sizing: border-box;
+				background: var(--material-thick);
+				-webkit-backdrop-filter: blur(14px) saturate(135%);
+				backdrop-filter: blur(14px) saturate(135%);
 			}
 			@media (max-width: 720px) {
 				.comment-section {
@@ -245,7 +255,7 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 		<main>
 			<article class="glass-card">
 				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+					{heroImage && <Image width={1020} height={510} src={heroImage} alt={`${title} 封面图`} />}
 				</div>
 				<div class="prose">
 					<div class="title">
@@ -254,7 +264,7 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 							{
 								updatedDate && (
 									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
+								更新于 <FormattedDate date={updatedDate} />
 									</div>
 								)
 							}
@@ -310,10 +320,9 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 		</main>
 		<Footer />
 		<script>
-			import { init } from '@waline/client';
 			import '@waline/client/style';
-			// Only execute script if comment container exists on the page
-			if (document.getElementById('waline')) {
+			const setupWaline = async () => {
+				const { init } = await import('@waline/client');
 				// Intercept outgoing comments at the network layer to inject custom avatars silently
 				const originalFetch = window.fetch;
 				window.fetch = function (input, init) {
@@ -595,6 +604,22 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 			if (container) {
 				observer.observe(container, { childList: true, subtree: true });
 			}
+			};
+
+			const walineRoot = document.getElementById('waline');
+			if (walineRoot) {
+				const loadComments = () => setupWaline().catch((error) => console.error('评论区加载失败：', error));
+				if ('IntersectionObserver' in window) {
+					const loader = new IntersectionObserver((entries) => {
+						if (entries.some((entry) => entry.isIntersecting)) {
+							loader.disconnect();
+							loadComments();
+						}
+					}, { rootMargin: '500px 0px' });
+					loader.observe(walineRoot);
+				} else {
+					loadComments();
+				}
 			}
 		</script>
 	</body>
