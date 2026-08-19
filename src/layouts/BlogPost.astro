@@ -150,17 +150,37 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 			}
 			.avatar-options {
 				display: flex;
+				flex: 1 1 auto;
+				min-width: 0;
 				gap: 0.5rem;
 				align-items: center;
 				overflow-x: auto;
+				overflow-y: hidden;
 				max-width: 100%;
-				padding: 4px 2px;
-				scrollbar-width: none;
-				-ms-overflow-style: none;
+				padding: 4px 2px 8px;
+				scrollbar-width: thin;
+				scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+				-ms-overflow-style: auto;
 				-webkit-overflow-scrolling: touch;
+				overscroll-behavior-x: contain;
 			}
 			.avatar-options::-webkit-scrollbar {
-				display: none;
+				display: block;
+				height: 7px;
+			}
+			.avatar-options::-webkit-scrollbar-track {
+				background: var(--scrollbar-track);
+				border-radius: 999px;
+			}
+			.avatar-options::-webkit-scrollbar-thumb {
+				background: var(--scrollbar-thumb);
+				background-clip: padding-box;
+				border: 1px solid transparent;
+				border-radius: 999px;
+			}
+			.avatar-options::-webkit-scrollbar-thumb:hover {
+				background-color: var(--scrollbar-thumb-hover);
+				background-clip: padding-box;
 			}
 			.avatar-random-btn {
 				width: 38px !important;
