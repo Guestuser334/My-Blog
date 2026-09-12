@@ -9,7 +9,7 @@ import avatarImage from '../assets/avatar.png';
 
 const allPosts = await getCollection('blog');
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
-const latestPost = posts[0];
+const featuredPost = allPosts.find((post) => post.id === 'rememberance') ?? posts[0];
 const searchPosts = allPosts.map((post) => ({
 	title: post.data.title,
 	description: post.data.description,
@@ -48,8 +48,8 @@ const formatDateSpaced = (date: Date) => {
 				display: flex;
 				gap: 1.5rem;
 			}
-			.w-60 { width: 60%; }
-			.w-40 { width: 40%; }
+			.w-58 { width: 58%; }
+			.w-42 { width: 42%; }
 			.w-35 { width: 35%; }
 			.w-65 { width: 65%; }
 			.w-100 { width: 100%; }
@@ -119,7 +119,7 @@ const formatDateSpaced = (date: Date) => {
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				height: 250px;
+				height: 320px;
 				position: relative;
 				top: 0;
 				/* Hover animation defined via top property, shadow inherits from global */
@@ -154,28 +154,62 @@ const formatDateSpaced = (date: Date) => {
 			}
 			.profile-top {
 				display: flex;
-				gap: 1.5rem;
+				gap: 1.65rem;
 				align-items: center;
 			}
 			.profile-avatar {
-				width: 80px;
-				height: 80px;
-				border-radius: 20px;
+				width: 112px;
+				height: 112px;
+				border-radius: 46% 54% 48% 52% / 51% 44% 56% 49%;
 				object-fit: cover;
-				border: 2px solid var(--glass-border);
-				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+				border: 2px solid rgba(255, 255, 255, 0.42);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 12px 28px rgba(28, 20, 40, 0.2);
+				transition: border-radius 600ms var(--ease-spring), transform 400ms var(--ease-spring), box-shadow 300ms var(--ease-out);
+			}
+			.profile-card:hover .profile-avatar {
+				border-radius: 56% 44% 54% 46% / 43% 57% 43% 57%;
+				transform: scale(1.045) rotate(-1deg);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 14px 34px rgba(var(--accent-color), 0.2);
 			}
 			.profile-info h2 {
 				margin: 0 0 0.3rem 0;
 				font-size: 1.7rem;
 				font-weight: 800;
 				letter-spacing: -0.02em;
+				font-family: var(--font-display);
+				font-weight: 600;
 			}
 			.profile-info p {
 				margin: 0;
 				font-size: 1rem;
 				color: var(--text-color);
 				line-height: 1.5;
+			}
+			.profile-signature {
+				display: flex;
+				align-items: center;
+				gap: 0.7rem;
+				margin: 0.9rem 0 0.15rem;
+				padding-top: 0.8rem;
+				border-top: 1px solid var(--map-divider);
+				color: var(--text-color);
+				font-size: 0.95rem;
+				letter-spacing: 0.01em;
+			}
+			.profile-signature::before {
+				content: '“';
+				color: var(--accent);
+				font-family: Georgia, serif;
+				font-size: 1.8rem;
+				line-height: 0.7;
+			}
+			.profile-signature::after {
+				content: '”';
+				margin-left: -0.28rem;
+				color: var(--accent);
+				font-family: Georgia, serif;
+				font-size: 1.8rem;
+				line-height: 0.7;
 			}
 			.profile-bottom {
 				display: flex;
@@ -232,33 +266,23 @@ const formatDateSpaced = (date: Date) => {
 
 			/* Location widget uses the same material system as the surrounding cards. */
 			.map-widget {
-				height: 250px;
+				height: 320px;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
 				position: relative;
 				overflow: hidden;
+				isolation: isolate;
 			}
-			.map-header h3 {
-				margin: 0;
-				font-size: 1.05rem;
-				color: #ffffff;
-				text-shadow: var(--surface-text-shadow);
-			}
-			.map-title-wrapper {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				color: #ffffff;
-				text-shadow: var(--surface-text-shadow);
-			}
-
 			/* SVG Map */
 			.svg-map-wrapper {
 				flex-grow: 1;
 				position: relative;
 				overflow: hidden;
-				margin: 0.2rem 0;
+				min-height: 245px;
+				margin: -0.8rem -0.75rem -0.25rem;
+				-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+				mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
 			}
 			.svg-map-wrapper svg {
 				display: block;
@@ -276,29 +300,54 @@ const formatDateSpaced = (date: Date) => {
 				pointer-events: none !important;
 			}
 			:global(.map-dot) {
-				fill: rgba(255, 255, 255, 0.16);
+				fill: rgba(240, 220, 231, 0.32);
 				transition: fill 200ms var(--ease-out);
 			}
 			:global(.map-dot.active-land) {
-				fill: var(--accent) !important;
+				fill: #ffd2bd !important;
 				opacity: 1;
 			}
 			.city-marker {
-				fill: #10b981;
-				filter: drop-shadow(0 0 4px #10b981);
+				fill: #fff4d8;
+				stroke: #ffffff;
+				stroke-width: 2;
+				filter: drop-shadow(0 0 7px #ffd1a9) drop-shadow(0 0 13px rgba(255, 198, 158, 0.78));
 				animation: pulse-city 2s infinite;
+				transform-box: fill-box;
+				transform-origin: center;
+			}
+			.city-halo {
+				fill: rgba(255, 205, 169, 0.34);
+				filter: drop-shadow(0 0 13px rgba(255, 210, 178, 0.82));
+			}
+			.city-core-glow {
+				fill: rgba(255, 243, 213, 0.44);
+				filter: blur(2px);
+			}
+			.city-spark {
+				stroke: rgba(255, 239, 205, 0.92);
+				stroke-width: 1.35;
+				stroke-linecap: round;
+				filter: drop-shadow(0 0 4px rgba(255, 208, 166, 0.9));
+				animation: sparkle-city 2.4s ease-in-out infinite;
+				transform-box: fill-box;
+				transform-origin: center;
 			}
 			.city-ring {
 				fill: none;
-				stroke: #10b981;
-				stroke-width: 0.6;
+				stroke: #ffd6b5;
+				stroke-width: 1;
 				animation: expand-ring 2s infinite;
 				transform-box: fill-box;
 				transform-origin: center;
 			}
 			@keyframes pulse-city {
-				0%, 100% { opacity: 1; r: 2.2; }
-				50% { opacity: 0.7; r: 3.5; }
+				0%, 100% { opacity: 1; transform: scale(0.92); }
+				50% { opacity: 0.82; transform: scale(1.12); }
+			}
+			@keyframes sparkle-city {
+				0%, 100% { opacity: 0.48; transform: scale(0.82) rotate(0deg); }
+				50% { opacity: 1; transform: scale(1.12) rotate(8deg); }
 			}
 			@keyframes expand-ring {
 				0% { transform: scale(1); opacity: 0.8; }
@@ -309,17 +358,17 @@ const formatDateSpaced = (date: Date) => {
 				display: flex;
 				align-items: center;
 				gap: 0.5rem;
-				font-size: 0.85rem;
-				border-top: 1px solid var(--map-divider);
-				padding-top: 0.4rem;
+				position: relative;
+				z-index: 2;
+				font-size: 0.98rem;
+				padding-top: 0.7rem;
 			}
-			.location-dot-pulse {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				background-color: #10b981;
-				box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-				animation: pulse 2s infinite;
+			.location-pin {
+				width: 18px;
+				height: 18px;
+				color: #e97b93;
+				filter: drop-shadow(0 0 5px rgba(233, 123, 147, 0.38));
+				flex: 0 0 auto;
 			}
 			.location-text {
 				color: var(--map-text-color);
@@ -327,30 +376,8 @@ const formatDateSpaced = (date: Date) => {
 				text-shadow: var(--surface-text-shadow);
 			}
 			.location-text strong {
-				color: var(--accent);
-			}
-
-			/* Status Banner / Lyric Marquee */
-			.status-banner {
-				padding: 0.8rem 1.5rem;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				font-size: 0.95rem;
-				overflow: hidden;
-			}
-			.lyric-text {
+				color: #f19a8d;
 				font-weight: 700;
-				color: var(--accent);
-				text-shadow: 0 1px 3px rgba(255, 255, 255, 0.85);
-			}
-			:root[data-theme="dark"] .lyric-text {
-				text-shadow: 0 0 10px rgba(var(--accent-color), 0.4);
-			}
-			@media (prefers-color-scheme: dark) {
-				:root:not([data-theme="light"]) .lyric-text {
-					text-shadow: 0 0 10px rgba(var(--accent-color), 0.4);
-				}
 			}
 
 			/* Featured Post Card */
@@ -787,7 +814,7 @@ const formatDateSpaced = (date: Date) => {
 					flex-direction: column;
 					gap: 1rem;
 				}
-				.w-60, .w-40, .w-35, .w-65, .w-50 {
+				.w-58, .w-42, .w-35, .w-65, .w-50 {
 					width: 100% !important;
 				}
 				.glass-card {
@@ -806,8 +833,8 @@ const formatDateSpaced = (date: Date) => {
 				}
 				.profile-avatar {
 					margin: 0 auto;
-					width: 76px;
-					height: 76px;
+					width: 104px;
+					height: 104px;
 				}
 				.profile-info h2 {
 					font-size: 1.5rem;
@@ -818,6 +845,11 @@ const formatDateSpaced = (date: Date) => {
 					align-items: center;
 					margin-top: 1.5rem;
 				}
+				.profile-signature {
+					justify-content: center;
+					text-align: left;
+					margin-top: 1.1rem;
+				}
 				.profile-stats {
 					width: 100%;
 					justify-content: space-around;
@@ -826,7 +858,7 @@ const formatDateSpaced = (date: Date) => {
 				
 				/* Map Card Mobile Optimization */
 				.map-widget {
-					height: 240px !important;
+					height: 290px !important;
 				}
 				
 				/* Sub-row / Column Layout Stacking */
@@ -835,19 +867,6 @@ const formatDateSpaced = (date: Date) => {
 					gap: 1rem;
 				}
 				
-				/* Status Banner / Signature Mobile Optimization */
-				.status-banner {
-					flex-direction: column;
-					gap: 0.6rem;
-					align-items: center;
-					text-align: center;
-					padding: 1rem 1.2rem !important;
-					font-size: 0.9rem;
-				}
-				.status-banner > div {
-					width: 100%;
-				}
-
 				/* Footer Bar Mobile Optimization */
 				.footer-bar {
 					flex-direction: column;
@@ -872,9 +891,11 @@ const formatDateSpaced = (date: Date) => {
 				}
 			}
 			@media (prefers-reduced-motion: reduce) {
-				.city-marker, .city-ring, .location-dot-pulse, .theme-circle .sun-svg, .theme-circle .moon-svg, .nixie-dot {
+				.city-marker, .city-ring, .theme-circle .sun-svg, .theme-circle .moon-svg, .nixie-dot {
 					animation: none !important;
 				}
+				.profile-avatar { transition: none; }
+				.profile-card:hover .profile-avatar { transform: none; }
 			}
 		</style>
 	</head>
@@ -898,18 +919,16 @@ const formatDateSpaced = (date: Date) => {
 				<!-- Row 1: Profile + Music Player -->
 				<div class="row-flex">
 					<!-- Profile Card -->
-					<div class="glass-card profile-card w-60">
+					<div class="glass-card profile-card w-58">
 						<div class="profile-card-noise"></div>
 						<div class="profile-top">
 							<Image src={avatarImage} alt="Skittles 的头像" class="profile-avatar" width={160} height={160} format="webp" quality={80} />
 							<div class="profile-info">
 								<h2><a href="/about" class="profile-title-link">Hi, I'm Skittles!</a></h2>
-								<p>Grade 2024 student in EE, Xi'an Jiaotong University<br />
-								   Designing quantitative trading based on power grids<br />
-								   I am learning everything I found interesting<br />
-								</p>
+								<p>Grade 2024 student in EE, Xi'an Jiaotong University</p>
 							</div>
 						</div>
+						<div class="profile-signature">独有南山桂花发，飞来飞去袭人裾。</div>
 						<div class="profile-bottom">
 							<div class="profile-stats">
 								<div class="stat-item">
@@ -947,28 +966,23 @@ const formatDateSpaced = (date: Date) => {
 					</div>
 
 					<!-- Interactive Location Map Card - SVG based -->
-					<div class="glass-card map-widget w-40">
-						<div class="map-header">
-							<div class="map-title-wrapper">
-								<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-									<circle cx="12" cy="12" r="10"></circle>
-									<line x1="2" y1="12" x2="22" y2="12"></line>
-									<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-								</svg>
-								<h3>My location</h3>
-							</div>
-						</div>
+					<div class="glass-card map-widget w-42" role="group" aria-label="My location: Wuxi">
 
 						<!-- SVG World Map -->
 						<div class="svg-map-wrapper">
-							<svg id="world-map-svg" viewBox="0 0 1010 505" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg">
+							<svg id="world-map-svg" viewBox="0 0 1010 610" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg">
 								<defs>
 									<radialGradient id="earth-gradient" cx="50%" cy="50%" r="50%">
-										<stop offset="0%" stop-color="rgba(73, 83, 126, 0.08)" />
-										<stop offset="86%" stop-color="rgba(73, 83, 126, 0.12)" />
-										<stop offset="98%" stop-color="rgba(218, 228, 255, 0.16)" />
-										<stop offset="100%" stop-color="rgba(255, 255, 255, 0.02)" />
+										<stop offset="0%" stop-color="rgba(87, 77, 123, 0.05)" />
+										<stop offset="76%" stop-color="rgba(91, 72, 120, 0.11)" />
+						<stop offset="94%" stop-color="rgba(229, 180, 198, 0.16)" />
+						<stop offset="100%" stop-color="rgba(255, 224, 208, 0)" />
 									</radialGradient>
+									<linearGradient id="atmosphere-gradient" x1="8%" y1="82%" x2="90%" y2="12%">
+										<stop stop-color="#e9a4c2" stop-opacity=".7" />
+										<stop offset=".48" stop-color="#ffd5bd" stop-opacity=".82" />
+										<stop offset="1" stop-color="#cabeea" stop-opacity=".58" />
+									</linearGradient>
 								</defs>
 								<!-- High-fidelity country paths loaded dynamically at runtime -->
 								<g id="map-paths-group"></g>
@@ -976,46 +990,45 @@ const formatDateSpaced = (date: Date) => {
 								<!-- Dynamic dot matrix grid container -->
 								<g id="dot-grid-group"></g>
 								
-								<!-- Location marker - updated by JS -->
-								<g id="city-marker-group" style="display: none;">
-									<circle class="city-ring" id="city-ring" cx="0" cy="0" r="10"/>
-									<circle class="city-marker" id="city-dot" cx="0" cy="0" r="4"/>
-								</g>
+				<!-- Location marker - updated by JS -->
+				<g id="city-marker-group" style="display: none;">
+					<circle class="city-halo" id="city-halo" cx="0" cy="0" r="22"/>
+					<circle class="city-core-glow" id="city-core-glow" cx="0" cy="0" r="12"/>
+					<circle class="city-ring" id="city-ring" cx="0" cy="0" r="16"/>
+					<g id="city-spark-position">
+						<g class="city-spark">
+							<path d="M0 -25V-18M0 18v7M-25 0h7M18 0h7M-17.5-17.5l5 5M12.5 12.5l5 5M17.5-17.5l-5 5M-12.5 12.5l-5 5" />
+						</g>
+					</g>
+					<circle class="city-marker" id="city-dot" cx="0" cy="0" r="7"/>
+				</g>
 							</svg>
 						</div>
 
 						<!-- Current Location Info -->
 						<div class="location-footer">
-							<span class="location-dot-pulse"></span>
-							<span class="location-text">📍 Currently in：<strong id="current-location-display">Wuxi</strong></span>
+							<svg class="location-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+								<circle cx="12" cy="10" r="2.5"></circle>
+							</svg>
+							<span class="location-text">Currently in: <strong id="current-location-display">Wuxi</strong></span>
 						</div>
-					</div>
-				</div>
-
-				<!-- Row 2: Status Bar / Lyric Marquee -->
-				<div class="glass-card status-banner w-100">
-					<div>
-						<span>签名：</span>
-						<span id="typing-lyric" class="lyric-text">独有南山桂花发，飞来飞去袭人裾。</span>
-					</div>
-					<div style="opacity: 0.7;">
-						<span>🔋 系统运行稳定中</span>
 					</div>
 				</div>
 
 				<!-- Row 3: Grid containing Featured Post + Right Side Widgets -->
 				<div class="row-flex">
 					<!-- Featured Post Card -->
-					<a href={`/blog/${latestPost.id}/`} class="glass-card glass-card-hover featured-widget w-35">
-						<span class="featured-tag">LATEST POST</span>
-						{latestPost.data.heroImage && <Image src={latestPost.data.heroImage} alt="Cover" class="featured-img" width={400} height={200} />}
+					<a href={`/blog/${featuredPost.id}/`} class="glass-card glass-card-hover featured-widget w-35">
+						<span class="featured-tag">FEATURED STORY</span>
+						{featuredPost.data.heroImage && <Image src={featuredPost.data.heroImage} alt="Cover" class="featured-img" width={400} height={200} />}
 						<div>
-							<h3>{latestPost.data.title}</h3>
-							<p style="margin-top: 0.5rem;">{latestPost.data.description}</p>
+							<h3>{featuredPost.data.title}</h3>
+							<p style="margin-top: 0.5rem;">{featuredPost.data.description}</p>
 						</div>
 						<div class="featured-bottom">
 							<span>阅读全文 &rarr;</span>
-							<span>{formatDate(latestPost.data.pubDate)}</span>
+							<span>{formatDate(featuredPost.data.pubDate)}</span>
 						</div>
 					</a>
 
@@ -1176,21 +1189,7 @@ const formatDateSpaced = (date: Date) => {
 				if (event.key === 'Escape') closeSearch();
 			});
 
-			// 1. Typing Lyric Effect
-			const lyrics = [
-				"独有南山桂花发，飞来飞去袭人裾。",
-				"曾经沧海难为水，除却巫山不是云。",
-				"取次花丛懒回顾，半缘修道半缘君。"
-			];
-			let lyricIndex = 0;
-			const lyricEl = document.getElementById('typing-lyric');
-			
-			setInterval(() => {
-				lyricIndex = (lyricIndex + 1) % lyrics.length;
-				if (lyricEl) lyricEl.textContent = lyrics[lyricIndex];
-			}, 6000);
-
-			// 2. Live Nixie Clock
+			// Live Nixie Clock
 			const updateClock = () => {
 				const now = new Date();
 				const hours = String(now.getHours()).padStart(2, '0');
@@ -1267,6 +1266,9 @@ const formatDateSpaced = (date: Date) => {
 				const svgMapContainer = document.getElementById('world-map-svg');
 				const cityDot = document.getElementById('city-dot');
 				const cityRing = document.getElementById('city-ring');
+				const cityHalo = document.getElementById('city-halo');
+				const cityCoreGlow = document.getElementById('city-core-glow');
+				const citySparkPosition = document.getElementById('city-spark-position');
 				const locationDisplay = document.getElementById('current-location-display');
 				const gridGroup = document.getElementById('dot-grid-group');
 				const cityMarkerGroup = document.getElementById('city-marker-group');
@@ -1311,21 +1313,21 @@ const formatDateSpaced = (date: Date) => {
 					const landFeature = topojson.feature(worldData, worldData.objects.land);
 
 					const width = 1010;
-					const height = 505;
-					const globeRadius = 420;
+					const height = 610;
+					const globeRadius = 430;
 					
-					// "再往赤道去一点，视角再斜一点" (Tilt aggressively by 30 degrees, placing camera right at the equator)
-					const tiltDegrees = 30; 
-					const cameraLat = cityLat - tiltDegrees;
+					// A raised northern viewpoint plus a subtle roll creates the slightly top-down angle.
+					const cameraLat = 22;
+					const cameraRoll = -8;
 					
 					// Anchor the sphere's top inside the SVG and keep almost a full hemisphere visible.
-					const centerYOffset = globeRadius - height / 2 + 0.5;
+					const centerYOffset = globeRadius - height / 2 + 3;
 
 					// Setup 3D Orthographic Projection with a gentle equatorial tilt
 					const projection = d3.geoOrthographic()
 						.scale(globeRadius)
 						.translate([width / 2, height / 2 + centerYOffset])
-						.rotate([-cityLon, -cameraLat, 0])
+						.rotate([-cityLon, -cameraLat, cameraRoll])
 						.clipAngle(90);
 
 					// --- ULTRA-FAST PERFORMANCE OPTIMIZATION ---
@@ -1349,8 +1351,8 @@ const formatDateSpaced = (date: Date) => {
 					sphereOutline.setAttribute('cy', String(height / 2 + centerYOffset));
 					sphereOutline.setAttribute('r', String(globeRadius));
 					sphereOutline.setAttribute('fill', 'url(#earth-gradient)'); // Natural atmospheric scattering
-					sphereOutline.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)'); // Crisp very faint horizon line
-					sphereOutline.setAttribute('stroke-width', '0.5'); // Ultra-thin
+					sphereOutline.setAttribute('stroke', 'none');
+					sphereOutline.setAttribute('style', 'filter: drop-shadow(0 0 11px rgba(246, 192, 190, 0.22))');
 					svgMapContainer.insertBefore(sphereOutline, gridGroup);
 
 					// Position city marker
@@ -1360,6 +1362,11 @@ const formatDateSpaced = (date: Date) => {
 						cityDot.setAttribute('cy', String(markerY));
 						cityRing.setAttribute('cx', String(markerX));
 						cityRing.setAttribute('cy', String(markerY));
+						cityHalo?.setAttribute('cx', String(markerX));
+						cityHalo?.setAttribute('cy', String(markerY));
+						cityCoreGlow?.setAttribute('cx', String(markerX));
+						cityCoreGlow?.setAttribute('cy', String(markerY));
+						citySparkPosition?.setAttribute('transform', `translate(${markerX} ${markerY})`);
 						if (cityMarkerGroup) cityMarkerGroup.style.display = 'block';
 					}
 
@@ -1367,40 +1374,34 @@ const formatDateSpaced = (date: Date) => {
 						locationDisplay.textContent = cityData.label;
 					}
 
-					// Sample a 2D screen grid over the globe boundaries and back-project each point to 3D sphere
-					const gridSize = 6; // Dense enough to preserve small coastlines such as Taiwan.
-					const startX = width / 2 - globeRadius;
-					const endX = width / 2 + globeRadius;
-					const startY = height / 2 + centerYOffset - globeRadius;
-					const endY = height / 2 + centerYOffset + globeRadius;
-
+					// Sample genuine latitude/longitude intersections, then project them onto the sphere.
+					// This makes rows bend along parallels and columns converge along meridians.
+					const latitudeStep = 1.15;
+					const longitudeStep = 1.15;
+					const viewCenter = [cityLon, cameraLat];
 					let dotsHTML = '';
 
-					for (let y = startY; y <= endY; y += gridSize) {
-						for (let x = startX; x <= endX; x += gridSize) {
-							// Check if dot falls within the circular boundary of the globe
-							const dx = x - width / 2;
-							const dy = y - (height / 2 + centerYOffset);
-							const distFromCenter = Math.sqrt(dx * dx + dy * dy);
-							
-							// Leave a 12px margin from the edge to prevent dots from entering the light atmospheric gradient
-							if (distFromCenter <= globeRadius - 12) {
-								// Check land status instantly via Canvas pixel lookup instead of slow d3.geoContains math
-								const pixelX = Math.floor(x);
-								const pixelY = Math.floor(y);
-								const pixelIdx = (pixelY * canvas.width + pixelX) * 4;
-								const isLand = imageData[pixelIdx + 3] > 128; // Check Alpha channel
+					for (let lat = -84.6; lat <= 84.6; lat += latitudeStep) {
+						for (let lon = -180; lon < 180; lon += longitudeStep) {
+							const angularDistance = d3.geoDistance(viewCenter, [lon, lat]);
+							if (angularDistance >= Math.PI / 2 - 0.018) continue;
 
-								// Simulating depth by shrinking dots slightly near the edges
-								const distToEdge = Math.sqrt(dx * dx + dy * dy) / globeRadius;
-								let r = Math.max(0.8, 1.8 * (1 - distToEdge * 0.4));
-								if (isLand) {
-									r = r * 1.35; // Boost size of active land dots to define continents
-								}
-								
-								const cssClass = isLand ? 'map-dot active-land' : 'map-dot';
-								dotsHTML += `<circle cx="${x}" cy="${y}" r="${r}" class="${cssClass}"></circle>`;
-							}
+							const projectedPoint = projection([lon, lat]);
+							if (!projectedPoint) continue;
+							const [x, y] = projectedPoint;
+							const pixelX = Math.max(0, Math.min(canvas.width - 1, Math.floor(x)));
+							const pixelY = Math.max(0, Math.min(canvas.height - 1, Math.floor(y)));
+							const pixelIdx = (pixelY * canvas.width + pixelX) * 4;
+							const isLand = imageData[pixelIdx + 3] > 128;
+
+							const surfaceDepth = Math.cos(angularDistance);
+							let r = 0.82 + surfaceDepth * 0.72;
+							if (isLand) r *= 1.18;
+							const cssClass = isLand ? 'map-dot active-land' : 'map-dot';
+							const dotOpacity = isLand
+								? Math.min(1, 0.48 + surfaceDepth * 0.62)
+								: 0.12 + surfaceDepth * 0.42;
+							dotsHTML += `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" class="${cssClass}" opacity="${dotOpacity.toFixed(2)}"></circle>`;
 						}
 					}
 					

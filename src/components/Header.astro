@@ -7,7 +7,19 @@ import HeaderLink from './HeaderLink.astro';
 	<nav class="glass-card" aria-label="主导航">
 		<h2>
 			<a href="/" class="logo-link" aria-label="返回首页">
-				<span class="logo-badge">S</span>
+				<span class="logo-badge" aria-hidden="true">
+					<svg viewBox="0 0 40 40">
+						<defs>
+							<linearGradient id="brand-s" x1="7" y1="5" x2="33" y2="35" gradientUnits="userSpaceOnUse">
+								<stop stop-color="#fff2c8" />
+								<stop offset="0.48" stop-color="#e9bd70" />
+								<stop offset="1" stop-color="#c98a45" />
+							</linearGradient>
+						</defs>
+						<path d="M31.5 8.6C27.8 4.1 17.1 4.7 11 9.2c-5.9 4.4-3.4 9.5 5 10.3 8.6.8 12.1 2.1 8.4 7.2-3.6 5-12.5 7.4-18 2.4" fill="none" stroke="url(#brand-s)" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round" />
+						<path d="M8.2 31.2c6.6 5.1 18.3 3.8 26.1-3.1M9.8 12.2c5.4-4.4 14.3-5.2 20.1-1.8" fill="none" stroke="url(#brand-s)" stroke-width="1.15" stroke-linecap="round" opacity=".88" />
+					</svg>
+				</span>
 				<span class="logo-text">Skittles's <span>Blog</span></span>
 			</a>
 		</h2>
@@ -74,17 +86,38 @@ import HeaderLink from './HeaderLink.astro';
 		text-decoration: none;
 	}
 	.logo-badge {
+		position: relative;
 		display: grid;
 		place-items: center;
-		width: 28px;
-		height: 28px;
-		border-radius: 8px;
-		background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-		color: white;
-		font-weight: 800;
-		box-shadow: 0 4px 12px rgba(var(--accent-color), 0.35);
+		width: 34px;
+		height: 34px;
+		border: 1px solid rgba(255, 255, 255, 0.46);
+		border-radius: 11px;
+		background: linear-gradient(145deg, #33405b, #222b46 54%, #171d31);
+		box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.34), 0 5px 16px rgba(20, 27, 49, 0.34), 0 0 0 1px rgba(224, 178, 102, 0.12);
+		overflow: hidden;
 	}
-	.logo-text { color: white; font-weight: 700; white-space: nowrap; }
+	:root[data-theme="light"] .logo-badge {
+		background: linear-gradient(145deg, #a98a89, #806873 55%, #625264);
+		border-color: rgba(255, 236, 210, 0.5);
+		box-shadow: inset 0 1px 1px rgba(255, 249, 235, 0.36), 0 5px 15px rgba(72, 50, 65, 0.24), 0 0 0 1px rgba(224, 178, 102, 0.12);
+	}
+	.logo-badge::before {
+		content: '';
+		position: absolute;
+		inset: 1px 4px 55% 4px;
+		border-radius: 9px 9px 50% 50%;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent);
+	}
+	.logo-badge svg { position: relative; width: 31px; height: 31px; filter: drop-shadow(0 1px 2px rgba(240, 197, 123, 0.28)); }
+	.logo-text {
+		color: white;
+		font-family: var(--font-display);
+		font-size: 1.08em;
+		font-weight: 600;
+		letter-spacing: -0.025em;
+		white-space: nowrap;
+	}
 	.logo-text span { color: var(--accent); font-weight: 800; }
 	.internal-links { display: flex; align-items: center; gap: 0.35rem; }
 	.internal-links :global(a) {
@@ -101,6 +134,11 @@ import HeaderLink from './HeaderLink.astro';
 		background: rgba(var(--accent-color), 0.16) !important;
 	}
 	.internal-links :global(a.active) { color: var(--accent) !important; }
+	:root[data-theme="light"] .internal-links :global(a.active) {
+		color: #fff !important;
+		background: rgba(var(--accent-color), 0.3) !important;
+		box-shadow: inset 0 0 0 1px rgba(255, 218, 228, 0.7), 0 0 0 1px rgba(var(--accent-color), 0.2), 0 5px 16px rgba(150, 61, 94, 0.2);
+	}
 	.nav-actions { display: flex; align-items: center; gap: 0.25rem; }
 	.github-link,
 	.icon-button {
