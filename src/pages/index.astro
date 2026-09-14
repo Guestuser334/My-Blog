@@ -966,7 +966,7 @@ const formatDateSpaced = (date: Date) => {
 					</div>
 
 					<!-- Interactive Location Map Card - SVG based -->
-					<div class="glass-card map-widget w-42" role="group" aria-label="My location: Wuxi">
+					<div class="glass-card map-widget w-42" role="group" aria-label="My location: Xi'an">
 
 						<!-- SVG World Map -->
 						<div class="svg-map-wrapper">
@@ -1011,7 +1011,7 @@ const formatDateSpaced = (date: Date) => {
 								<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
 								<circle cx="12" cy="10" r="2.5"></circle>
 							</svg>
-							<span class="location-text">Currently in: <strong id="current-location-display">Wuxi</strong></span>
+							<span class="location-text">Currently in: <strong id="current-location-display">Xi'an</strong></span>
 						</div>
 					</div>
 				</div>
@@ -1289,8 +1289,8 @@ const formatDateSpaced = (date: Date) => {
 					Sydney:         { coords: [151.2093, -33.8688], label: "Sydney" }
 				};
 
-				const cityKey = CURRENT_LOCATION || 'Wuxi';
-				const cityData = CITIES[cityKey] || CITIES.Wuxi;
+				const cityKey = CURRENT_LOCATION || 'Xian';
+				const cityData = CITIES[cityKey] || CITIES.Xian;
 				const [cityLon, cityLat] = cityData.coords;
 
 				try {
