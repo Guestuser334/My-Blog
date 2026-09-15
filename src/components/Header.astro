@@ -73,8 +73,8 @@ import HeaderLink from './HeaderLink.astro';
 		border-radius: 20px;
 		background: var(--material-thick) !important;
 		border-color: var(--material-border) !important;
-		-webkit-backdrop-filter: blur(12px) saturate(140%);
-		backdrop-filter: blur(12px) saturate(140%);
+		-webkit-backdrop-filter: blur(calc(var(--glass-blur) + 2px)) saturate(var(--glass-saturation));
+		backdrop-filter: blur(calc(var(--glass-blur) + 2px)) saturate(var(--glass-saturation));
 		transition: none;
 	}
 	h2 { margin: 0; font-size: 1.15rem; }
@@ -248,7 +248,9 @@ import HeaderLink from './HeaderLink.astro';
 	const getTheme = () => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 	themeToggle?.addEventListener('click', () => {
 		const theme = getTheme() === 'dark' ? 'light' : 'dark';
+		document.documentElement.classList.add('theme-switching');
 		document.documentElement.setAttribute('data-theme', theme);
 		localStorage.setItem('theme', theme);
+		window.setTimeout(() => document.documentElement.classList.remove('theme-switching'), 260);
 	});
 </script>

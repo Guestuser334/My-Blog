@@ -299,13 +299,14 @@ const formatDateSpaced = (date: Date) => {
 				stroke: none !important;
 				pointer-events: none !important;
 			}
-			:global(.map-dot) {
-				fill: rgba(240, 220, 231, 0.32);
-				transition: fill 200ms var(--ease-out);
-			}
-			:global(.map-dot.active-land) {
-				fill: #ffd2bd !important;
+			.dot-grid-image {
 				opacity: 1;
+				filter: brightness(1.18) saturate(1.1) drop-shadow(0 0 8px rgba(241, 183, 184, 0.22));
+				pointer-events: none;
+			}
+			:root[data-theme="dark"] .dot-grid-image {
+				opacity: 1;
+				filter: brightness(1.22) saturate(1.08) drop-shadow(0 0 9px rgba(241, 183, 184, 0.18));
 			}
 			.city-marker {
 				fill: #fff4d8;
@@ -988,7 +989,7 @@ const formatDateSpaced = (date: Date) => {
 								<g id="map-paths-group"></g>
 								
 								<!-- Dynamic dot matrix grid container -->
-								<g id="dot-grid-group"></g>
+								<image id="dot-grid-image" class="dot-grid-image" x="0" y="0" width="1010" height="610" preserveAspectRatio="none"></image>
 								
 				<!-- Location marker - updated by JS -->
 				<g id="city-marker-group" style="display: none;">
@@ -1270,7 +1271,7 @@ const formatDateSpaced = (date: Date) => {
 				const cityCoreGlow = document.getElementById('city-core-glow');
 				const citySparkPosition = document.getElementById('city-spark-position');
 				const locationDisplay = document.getElementById('current-location-display');
-				const gridGroup = document.getElementById('dot-grid-group');
+				const dotGridImage = document.getElementById('dot-grid-image');
 				const cityMarkerGroup = document.getElementById('city-marker-group');
 
 				const CITIES = {
@@ -1297,7 +1298,7 @@ const formatDateSpaced = (date: Date) => {
 					// Dynamically import D3.js and TopoJSON Client
 					const d3 = await import('https://cdn.jsdelivr.net/npm/d3@7/+esm');
 					const topojson = await import('https://cdn.jsdelivr.net/npm/topojson-client@3/+esm');
-					if (!svgMapContainer || !gridGroup) return;
+					if (!svgMapContainer || !dotGridImage) return;
 
 					// Fetch world TopoJSON (with sessionStorage caching for instant subsequent loads)
 					let worldData;
@@ -1353,7 +1354,7 @@ const formatDateSpaced = (date: Date) => {
 					sphereOutline.setAttribute('fill', 'url(#earth-gradient)'); // Natural atmospheric scattering
 					sphereOutline.setAttribute('stroke', 'none');
 					sphereOutline.setAttribute('style', 'filter: drop-shadow(0 0 11px rgba(246, 192, 190, 0.22))');
-					svgMapContainer.insertBefore(sphereOutline, gridGroup);
+					svgMapContainer.insertBefore(sphereOutline, dotGridImage);
 
 					// Position city marker
 					const [markerX, markerY] = projection([cityLon, cityLat]);
@@ -1379,7 +1380,13 @@ const formatDateSpaced = (date: Date) => {
 					const latitudeStep = 1.15;
 					const longitudeStep = 1.15;
 					const viewCenter = [cityLon, cameraLat];
-					let dotsHTML = '';
+					const rasterScale = Math.min(2, window.devicePixelRatio || 1);
+					const dotCanvas = document.createElement('canvas');
+					dotCanvas.width = width * rasterScale;
+					dotCanvas.height = height * rasterScale;
+					const dotContext = dotCanvas.getContext('2d');
+					if (!dotContext) return;
+					dotContext.scale(rasterScale, rasterScale);
 
 					for (let lat = -84.6; lat <= 84.6; lat += latitudeStep) {
 						for (let lon = -180; lon < 180; lon += longitudeStep) {
@@ -1397,16 +1404,20 @@ const formatDateSpaced = (date: Date) => {
 							const surfaceDepth = Math.cos(angularDistance);
 							let r = 0.82 + surfaceDepth * 0.72;
 							if (isLand) r *= 1.18;
-							const cssClass = isLand ? 'map-dot active-land' : 'map-dot';
 							const dotOpacity = isLand
 								? Math.min(1, 0.48 + surfaceDepth * 0.62)
 								: 0.12 + surfaceDepth * 0.42;
-							dotsHTML += `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" class="${cssClass}" opacity="${dotOpacity.toFixed(2)}"></circle>`;
+							dotContext.beginPath();
+							dotContext.arc(x, y, r, 0, Math.PI * 2);
+							dotContext.fillStyle = isLand
+								? `rgba(235, 182, 174, ${dotOpacity})`
+								: `rgba(196, 178, 200, ${dotOpacity})`;
+							dotContext.fill();
 						}
 					}
 					
-					// Ultra-fast bulk DOM insertion to prevent rendering bottlenecks
-					gridGroup.innerHTML = dotsHTML;
+					// Keep the detailed point texture without making every dot a DOM node.
+					dotGridImage.setAttribute('href', dotCanvas.toDataURL('image/png'));
 				} catch (err) {
 					console.error('Error rendering 3D dot-matrix globe:', err);
 				}
