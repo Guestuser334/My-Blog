@@ -8,7 +8,7 @@ import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	(a, b) => (b.data.updatedDate ?? b.data.pubDate).valueOf() - (a.data.updatedDate ?? a.data.pubDate).valueOf(),
 );
 ---
 
@@ -137,7 +137,7 @@ const posts = (await getCollection('blog')).sort(
 									<div class="content">
 										<h4 class="title">{post.data.title}</h4>
 										<p class="date">
-											<FormattedDate date={post.data.pubDate} />
+											{post.data.updatedDate ? '更新于' : '发表于'} <FormattedDate date={post.data.updatedDate ?? post.data.pubDate} />
 										</p>
 										{post.data.description && (
 											<p class="description">{post.data.description}</p>
