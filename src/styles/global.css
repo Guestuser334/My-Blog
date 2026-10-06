@@ -198,11 +198,14 @@ body::after {
 }
 
 @media (prefers-contrast: more) {
+	/* Enhance legibility without covering the glass with an almost opaque fill. */
 	.glass-card {
-		background: rgba(18, 21, 32, 0.94) !important;
 		border-color: rgba(255, 255, 255, 0.58) !important;
 	}
-	:root { --text-muted: #f0f0f4; }
+	:root {
+		--text-color: #fff !important;
+		--text-muted: #f0f0f4 !important;
+	}
 }
 
 .glass-card-hover:hover {
