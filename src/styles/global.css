@@ -20,8 +20,6 @@
 	--material-thick: rgba(39, 32, 52, 0.23);
 	--material-border: rgba(255, 242, 246, 0.27);
 	--material-highlight: rgba(255, 248, 250, 0.38);
-	--glass-blur: 9px;
-	--glass-saturation: 118%;
 	--background-dim: 0.3;
 	
 	/* Clear Liquid Glass - Light Mode */
@@ -55,8 +53,6 @@
 	--material-thick: rgba(13, 11, 23, 0.5);
 	--material-border: rgba(255, 255, 255, 0.17);
 	--material-highlight: rgba(255, 255, 255, 0.25);
-	--glass-blur: 10px;
-	--glass-saturation: 116%;
 	--background-dim: 0.57;
 	
 	/* Clear Liquid Glass - Dark Mode */
@@ -90,8 +86,6 @@
 		--material-thick: rgba(13, 11, 23, 0.5);
 		--material-border: rgba(255, 255, 255, 0.17);
 		--material-highlight: rgba(255, 255, 255, 0.25);
-		--glass-blur: 10px;
-		--glass-saturation: 116%;
 		--background-dim: 0.57;
 		
 		/* Clear Liquid Glass - Dark Mode */
@@ -122,6 +116,8 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	position: relative;
+	/* Keep the negative background layers above the body's solid fallback in Safari. */
+	z-index: 0;
 	background-color: #0c0d12;
 	transition: background-color 220ms var(--ease-out);
 }
@@ -160,8 +156,9 @@ body::after {
 	background: var(--glass-bg);
 	border: 1px solid var(--material-border);
 	border-top-color: var(--material-highlight);
-	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
-	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+	/* Literal filter values avoid Safari's custom-property backdrop-filter regression. */
+	-webkit-backdrop-filter: blur(9px) saturate(118%);
+	backdrop-filter: blur(9px) saturate(118%);
 	isolation: isolate;
 	border-radius: 24px;
 	box-shadow: var(--glass-shadow);
@@ -169,6 +166,18 @@ body::after {
 	box-sizing: border-box;
 	transition: background-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out), transform 200ms var(--ease-spring);
 	position: relative;
+}
+
+:where(:root[data-theme="dark"]) .glass-card {
+	-webkit-backdrop-filter: blur(10px) saturate(116%);
+	backdrop-filter: blur(10px) saturate(116%);
+}
+
+@media (prefers-color-scheme: dark) {
+	:where(:root:not([data-theme="light"])) .glass-card {
+		-webkit-backdrop-filter: blur(10px) saturate(116%);
+		backdrop-filter: blur(10px) saturate(116%);
+	}
 }
 
 .glass-card::before {
@@ -725,18 +734,29 @@ html {
 /* Outer comment section container glass enhancement */
 .comment-section.glass-card {
 	background: rgba(255, 255, 255, 0.06) !important;
+	-webkit-backdrop-filter: blur(12px) !important;
 	backdrop-filter: blur(12px) !important;
 }
 
 :root[data-theme="dark"] .comment-section.glass-card {
 	background: rgba(72, 58, 92, 0.16) !important;
+	-webkit-backdrop-filter: blur(12px) !important;
 	backdrop-filter: blur(12px) !important;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) .comment-section.glass-card {
 		background: rgba(72, 58, 92, 0.16) !important;
+		-webkit-backdrop-filter: blur(12px) !important;
 		backdrop-filter: blur(12px) !important;
+	}
+}
+
+@media (prefers-reduced-transparency: reduce) {
+	.comment-section.glass-card {
+		background: #252838 !important;
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
 	}
 }
 

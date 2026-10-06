@@ -73,9 +73,19 @@ import HeaderLink from './HeaderLink.astro';
 		border-radius: 20px;
 		background: var(--material-thick) !important;
 		border-color: var(--material-border) !important;
-		-webkit-backdrop-filter: blur(calc(var(--glass-blur) + 2px)) saturate(var(--glass-saturation));
-		backdrop-filter: blur(calc(var(--glass-blur) + 2px)) saturate(var(--glass-saturation));
+		-webkit-backdrop-filter: blur(11px) saturate(118%);
+		backdrop-filter: blur(11px) saturate(118%);
 		transition: none;
+	}
+	:root[data-theme="dark"] nav.glass-card {
+		-webkit-backdrop-filter: blur(12px) saturate(116%);
+		backdrop-filter: blur(12px) saturate(116%);
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) nav.glass-card {
+			-webkit-backdrop-filter: blur(12px) saturate(116%);
+			backdrop-filter: blur(12px) saturate(116%);
+		}
 	}
 	h2 { margin: 0; font-size: 1.15rem; }
 	.logo-link {
