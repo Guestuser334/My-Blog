@@ -141,6 +141,9 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 			}
 			.custom-avatar-selector {
 				display: flex;
+				min-width: 0;
+				max-width: 100%;
+				box-sizing: border-box;
 				align-items: center;
 				gap: 0.8rem;
 				margin: 0 !important;
@@ -157,7 +160,9 @@ const { title, description, pubDate, updatedDate, heroImage, showComments = true
 			}
 			.avatar-options {
 				display: flex;
-				flex: 1 1 auto;
+				flex: 1 1 0;
+				width: 0;
+				box-sizing: border-box;
 				min-width: 0;
 				gap: 0.5rem;
 				align-items: center;
