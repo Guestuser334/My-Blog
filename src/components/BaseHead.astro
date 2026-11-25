@@ -24,8 +24,9 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="color-scheme" content="light dark" />
-<link rel="icon" type="image/png" sizes="256x256" href="/favicon.png?v=2" />
-<link rel="shortcut icon" href="/favicon.ico?v=2" />
+<link rel="preload" as="image" href="/bg.webp" />
+<link rel="icon" href="/favicon.ico?v=3" sizes="16x16 32x32 48x48" />
+<link rel="apple-touch-icon" href="/favicon.png?v=3" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
 	rel="alternate"
@@ -76,3 +77,8 @@ const { title, description, image = FallbackImage } = Astro.props;
 <!-- Vercel Analytics & Speed Insights -->
 <Analytics />
 <SpeedInsights />
+
+<script>
+	import { mountLiquidGlassSvg } from '../scripts/liquid-glass-svg';
+	mountLiquidGlassSvg();
+</script>

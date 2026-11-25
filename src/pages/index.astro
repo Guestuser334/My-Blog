@@ -3,9 +3,11 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { CONTACT_EMAIL, GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE, CURRENT_LOCATION } from '../consts';
 import avatarImage from '../assets/avatar.png';
+import xianGlobe from '../assets/xian-globe.webp';
 
 const allPosts = await getCollection('blog');
 const posts = [...allPosts]
@@ -18,21 +20,6 @@ const searchPosts = allPosts.map((post) => ({
 	url: `/blog/${post.id}/`,
 }));
 
-const formatDate = (date: Date) => {
-	const d = new Date(date);
-	const y = d.getFullYear();
-	const m = String(d.getMonth() + 1).padStart(2, '0');
-	const day = String(d.getDate()).padStart(2, '0');
-	return `${y}/${m}/${day}`;
-};
-
-const formatDateSpaced = (date: Date) => {
-	const d = new Date(date);
-	const y = d.getFullYear();
-	const m = String(d.getMonth() + 1).padStart(2, '0');
-	const day = String(d.getDate()).padStart(2, '0');
-	return `${y} / ${m} / ${day}`;
-};
 ---
 
 <!doctype html>
@@ -40,48 +27,41 @@ const formatDateSpaced = (date: Date) => {
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
-			.widget-grid {
-				display: flex;
-				flex-direction: column;
-				gap: 1.5rem;
-				padding: 1.5rem 0;
+			.widget-grid { display: grid; gap: var(--layout-gap); }
+			.home-hero,
+			.home-journal {
+				display: grid;
+				gap: var(--layout-gap);
 			}
-			.row-flex {
-				display: flex;
-				gap: 1.5rem;
-			}
-			.w-58 { width: 58%; }
-			.w-42 { width: 42%; }
-			.w-35 { width: 35%; }
-			.w-65 { width: 65%; }
-			.w-100 { width: 100%; }
+			.home-hero { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); }
+			.home-journal { grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr); }
+			.home-hero > *, .home-journal > * { min-width: 0; }
 
-			/* Search Widget */
-			.search-widget {
-				padding: 0;
-				z-index: 30;
-			}
+			.search-widget { position: relative; z-index: 3; min-width: 0; }
 			.search-inner {
 				display: flex;
 				align-items: center;
-				gap: 0.8rem;
-				padding: 1rem 1.5rem;
-				color: rgba(255, 255, 255, 0.82);
-				font-size: 1.05rem;
+				gap: 0.6rem;
+				padding: 0.62rem 0.85rem;
+				border: 1px solid var(--panel-line);
+				border-radius: 12px;
+				background: rgb(22 13 29 / 0.36);
+				color: var(--rose-ink);
 			}
-			.search-inner svg {
-				opacity: 0.9;
-				flex: 0 0 auto;
-			}
+			.search-inner:focus-within { border-color: var(--rose-ink); }
+			.search-inner svg { flex: 0 0 auto; }
 			.search-input {
 				width: 100%;
+				min-width: 0;
 				border: 0;
 				outline: 0;
 				background: transparent;
-				color: #fff;
+				color: var(--text-color);
 				font: inherit;
+				font-size: 0.92rem;
 			}
-			.search-input::placeholder { color: rgba(255, 255, 255, 0.7); }
+			.search-input::placeholder { color: var(--text-muted); }
+
 			.search-results {
 				display: none;
 				position: absolute;
@@ -89,200 +69,125 @@ const formatDateSpaced = (date: Date) => {
 				left: 0;
 				right: 0;
 				padding: 0.55rem;
-				border: 1px solid rgba(255, 255, 255, 0.16);
-				border-radius: 16px;
-				background: rgba(24, 26, 38, 0.94);
-				box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
-				-webkit-backdrop-filter: blur(20px);
-				backdrop-filter: blur(20px);
+				border: 1px solid rgba(255, 255, 255, 0.24);
+				border-radius: 20px;
+				background: rgba(28, 22, 42, 0.62);
+				box-shadow: var(--glass-inner-bevel), 0 20px 50px rgba(10, 6, 20, 0.34);
+				-webkit-backdrop-filter: blur(1px) saturate(120%);
+				backdrop-filter: blur(1px) saturate(120%);
 			}
-			.search-results.visible { display: grid; gap: 0.25rem; }
+			:root[data-theme="dark"] .search-results {
+				background: rgba(16, 14, 26, 0.72);
+				border-color: rgba(255, 255, 255, 0.18);
+				box-shadow: var(--glass-inner-bevel), 0 22px 54px rgba(4, 3, 10, 0.48);
+			}
+			@media (prefers-color-scheme: dark) {
+				:root:not([data-theme="light"]) .search-results {
+					background: rgba(16, 14, 26, 0.72);
+					border-color: rgba(255, 255, 255, 0.18);
+					box-shadow: var(--glass-inner-bevel), 0 22px 54px rgba(4, 3, 10, 0.48);
+				}
+			}
+			.search-results.visible { display: block; }
+			.search-result-list { display: grid; gap: 0.25rem; }
 			.search-result {
 				display: block;
 				padding: 0.7rem 0.8rem;
 				border-radius: 10px;
-				color: #fff;
+				color: var(--text-color);
 				text-decoration: none;
 			}
 			.search-result:hover,
-			.search-result:focus { background: rgba(var(--accent-color), 0.16); }
+			.search-result:focus { background: rgba(var(--accent-color), 0.12); }
 			.search-result strong { display: block; }
 			.search-result span {
 				display: block;
 				margin-top: 0.15rem;
-				color: rgba(255, 255, 255, 0.68);
+				color: var(--text-muted);
 				font-size: 0.85rem;
 			}
-			.search-empty { margin: 0; padding: 0.75rem; color: rgba(255, 255, 255, 0.7); }
-			}
+			.search-empty { margin: 0; padding: 0.75rem; color: var(--text-muted); }
 
-			/* Profile Card */
 			.profile-card {
 				display: flex;
 				flex-direction: column;
-				justify-content: space-between;
-				height: 320px;
-				position: relative;
-				top: 0;
-				/* Hover animation defined via top property, shadow inherits from global */
-				transition: top 200ms var(--ease-spring), box-shadow 200ms var(--ease-out), transform 150ms var(--ease-out);
+				justify-content: center;
+				min-height: 390px;
+				padding: clamp(1.4rem, 3.2vw, 2.8rem);
+				background: linear-gradient(145deg, rgb(104 44 79 / 0.24), rgb(38 24 58 / 0.30)), var(--material-thin);
 			}
-			
-			.profile-card:hover {
-				top: -4px;
-				/* Add an accent shadow glow on hover on top of the global hover shadow */
-				box-shadow: 
-					inset 0 1px 1.5px rgba(255, 255, 255, 0.5),
-					0 16px 40px rgba(0, 0, 0, 0.15), 
-					0 0 1px 1px rgba(var(--accent-color), 0.3);
-			}
-			.profile-card:active {
-				transform: scale(0.98);
-			}
-			.profile-title-link {
-				color: inherit;
-				text-decoration: none;
-				outline: none;
-			}
-			.profile-title-link::after {
-				content: '';
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				z-index: 1;
-				border-radius: 24px;
-			}
-			.profile-top {
-				display: flex;
-				gap: 1.65rem;
-				align-items: center;
-			}
+			.profile-title-link { color: inherit; text-decoration: none; }
+			.profile-title-link:hover { color: var(--rose-ink); }
+			.profile-title-link span { color: var(--rose-ink); }
+			.profile-top { display: grid; gap: 1.1rem; justify-items: start; }
 			.profile-avatar {
-				width: 112px;
-				height: 112px;
-				border-radius: 46% 54% 48% 52% / 51% 44% 56% 49%;
+				width: 70px;
+				height: 70px;
+				border: 2px solid rgb(255 234 245 / 0.65);
+				border-radius: 50%;
 				object-fit: cover;
-				border: 2px solid rgba(255, 255, 255, 0.42);
-				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 12px 28px rgba(28, 20, 40, 0.2);
-				transition: border-radius 600ms var(--ease-spring), transform 400ms var(--ease-spring), box-shadow 300ms var(--ease-out);
+				box-shadow: 0 0 0 5px rgb(255 228 243 / 0.08), 0 8px 22px rgb(27 14 33 / 0.32);
 			}
-			.profile-card:hover .profile-avatar {
-				border-radius: 56% 44% 54% 46% / 43% 57% 43% 57%;
-				transform: scale(1.045) rotate(-1deg);
-				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 14px 34px rgba(var(--accent-color), 0.2);
-			}
-			.profile-info h2 {
-				margin: 0 0 0.3rem 0;
-				font-size: 1.7rem;
-				font-weight: 800;
-				letter-spacing: -0.02em;
-				font-family: var(--font-display);
-				font-weight: 600;
-			}
-			.profile-info p {
+			.profile-info h1 {
 				margin: 0;
-				font-size: 1rem;
-				color: var(--text-color);
-				line-height: 1.5;
+				font: 500 clamp(2.15rem, 5.1vw, 4.25rem)/1.03 var(--font-display);
+				letter-spacing: -0.06em;
+				text-wrap: balance;
 			}
+			.profile-info p { margin: 0.85rem 0 0; font-size: 0.98rem; color: var(--text-muted); }
 			.profile-signature {
-				display: flex;
-				align-items: center;
-				gap: 0.7rem;
-				margin: 0.9rem 0 0.15rem;
-				padding-top: 0.8rem;
-				border-top: 1px solid var(--map-divider);
-				color: var(--text-color);
-				font-size: 0.95rem;
-				letter-spacing: 0.01em;
-			}
-			.profile-signature::before {
-				content: '“';
-				color: var(--accent);
-				font-family: Georgia, serif;
-				font-size: 1.8rem;
-				line-height: 0.7;
-			}
-			.profile-signature::after {
-				content: '”';
-				margin-left: -0.28rem;
-				color: var(--accent);
-				font-family: Georgia, serif;
-				font-size: 1.8rem;
-				line-height: 0.7;
+				margin: 1.2rem 0;
+				padding-left: 0.8rem;
+				border-left: 2px solid var(--warm-ink);
+				font: 500 1rem/1.65 var(--font-display);
+				color: var(--warm-ink);
 			}
 			.profile-bottom {
 				display: flex;
+				flex-wrap: wrap;
 				justify-content: space-between;
 				align-items: center;
-				margin-top: 1rem;
+				gap: 0.8rem;
+				padding-top: 0.85rem;
+				border-top: 1px solid var(--panel-line);
 			}
-			.profile-stats {
-				display: flex;
-				gap: 1.5rem;
-			}
-			.stat-item {
-				text-align: center;
-			}
-			.stat-val {
-				font-size: 1.45rem;
-				font-weight: 800;
-				color: var(--accent);
-				display: block;
-			}
-			.stat-lbl {
-				font-size: 0.85rem;
-				color: var(--text-muted);
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-			}
-			.profile-socials {
-				display: flex;
-				gap: 0.6rem;
-				position: relative;
-				z-index: 2;
-			}
+			.profile-stats, .profile-socials { display: flex; align-items: center; }
+			.profile-stats { gap: clamp(0.7rem, 1.75vw, 1.5rem); }
+			.profile-socials { gap: 0.4rem; }
+			.stat-val { display: block; color: var(--rose-ink); font-size: 1.12rem; font-weight: 720; line-height: 1.2; }
+			.stat-lbl { color: var(--text-muted); font-size: 0.81rem; }
 			.social-btn {
-				width: 38px;
-				height: 38px;
+				display: grid;
+				place-items: center;
+				width: 40px;
+				height: 40px;
+				border: 1px solid var(--panel-line);
 				border-radius: 50%;
-				background: rgba(var(--accent-color), 0.05);
-				border: 1px solid rgba(var(--accent-color), 0.1);
-				display: flex;
-				align-items: center;
-				justify-content: center;
+				background: rgb(245 219 238 / 0.07);
 				color: var(--text-color);
-				transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out), transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+				transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
 			}
-			.social-btn:hover {
-				background: var(--accent);
-				color: white !important;
-				transform: translateY(-2px);
-				box-shadow: 0 4px 12px rgba(var(--accent-color), 0.35);
-			}
-			.social-btn:active {
-				transform: scale(0.95);
-			}
+			.social-btn:hover { background: var(--rose-ink); color: #342139; }
 
 			/* Location widget uses the same material system as the surrounding cards. */
 			.map-widget {
-				height: 320px;
+				min-height: 255px;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
 				position: relative;
 				overflow: hidden;
 				isolation: isolate;
+				background: radial-gradient(ellipse at 50% 36%, rgb(48 34 61 / 0.74), rgb(44 28 55 / 0.48) 72%, transparent),
+					var(--journal-glass);
 			}
 			/* SVG Map */
 			.svg-map-wrapper {
 				flex-grow: 1;
 				position: relative;
 				overflow: hidden;
-				min-height: 245px;
-				margin: -0.8rem -0.75rem -0.25rem;
+				min-height: 184px;
+				margin: -0.75rem -0.5rem -0.2rem;
 				-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
 				mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
 			}
@@ -302,44 +207,39 @@ const formatDateSpaced = (date: Date) => {
 				pointer-events: none !important;
 			}
 			.dot-grid-image {
-				opacity: 1;
-				filter: brightness(1.18) saturate(1.1) drop-shadow(0 0 8px rgba(241, 183, 184, 0.22));
+				filter: drop-shadow(0 0 7px rgb(207 171 218 / 0.17));
 				pointer-events: none;
 			}
-			:root[data-theme="dark"] .dot-grid-image {
-				opacity: 1;
-				filter: brightness(1.22) saturate(1.08) drop-shadow(0 0 9px rgba(241, 183, 184, 0.18));
-			}
 			.city-marker {
-				fill: #fff4d8;
-				stroke: #ffffff;
-				stroke-width: 2;
-				filter: drop-shadow(0 0 7px #ffd1a9) drop-shadow(0 0 13px rgba(255, 198, 158, 0.78));
+				fill: #fff1cc;
+				stroke: #ffe0a2;
+				stroke-width: 2.6;
+				filter: drop-shadow(0 0 6px #ffcf75) drop-shadow(0 0 11px rgb(255 173 85 / 0.72));
 				animation: pulse-city 2s infinite;
 				transform-box: fill-box;
 				transform-origin: center;
 			}
 			.city-halo {
-				fill: rgba(255, 205, 169, 0.34);
-				filter: drop-shadow(0 0 13px rgba(255, 210, 178, 0.82));
+				fill: rgb(255 185 99 / 0.34);
+				filter: drop-shadow(0 0 11px rgb(255 169 71 / 0.68));
 			}
 			.city-core-glow {
-				fill: rgba(255, 243, 213, 0.44);
+				fill: rgb(255 218 151 / 0.54);
 				filter: blur(2px);
 			}
 			.city-spark {
-				stroke: rgba(255, 239, 205, 0.92);
+				stroke: rgb(255 226 170 / 0.92);
 				stroke-width: 1.35;
 				stroke-linecap: round;
-				filter: drop-shadow(0 0 4px rgba(255, 208, 166, 0.9));
+				filter: drop-shadow(0 0 4px rgb(255 186 91 / 0.85));
 				animation: sparkle-city 2.4s ease-in-out infinite;
 				transform-box: fill-box;
 				transform-origin: center;
 			}
 			.city-ring {
 				fill: none;
-				stroke: #ffd6b5;
-				stroke-width: 1;
+				stroke: #ffc46d;
+				stroke-width: 1.5;
 				animation: expand-ring 2s infinite;
 				transform-box: fill-box;
 				transform-origin: center;
@@ -364,13 +264,14 @@ const formatDateSpaced = (date: Date) => {
 				position: relative;
 				z-index: 2;
 				font-size: 0.98rem;
-				padding-top: 0.7rem;
+				padding-top: 0.65rem;
+				border-top: 1px solid var(--cool-line);
 			}
 			.location-pin {
 				width: 18px;
 				height: 18px;
-				color: #e97b93;
-				filter: drop-shadow(0 0 5px rgba(233, 123, 147, 0.38));
+				color: var(--warm-ink);
+				filter: drop-shadow(0 0 5px rgb(255 185 99 / 0.34));
 				flex: 0 0 auto;
 			}
 			.location-text {
@@ -379,259 +280,136 @@ const formatDateSpaced = (date: Date) => {
 				text-shadow: var(--surface-text-shadow);
 			}
 			.location-text strong {
-				color: #f19a8d;
+				color: var(--warm-ink);
 				font-weight: 700;
 			}
 
-			/* Featured Post Card */
 			.featured-widget {
-				display: flex;
-				flex-direction: column;
-				gap: 1rem;
-				justify-content: space-between;
-				color: inherit;
+				display: grid;
+				grid-template-rows: 1fr auto auto;
+				gap: 0.75rem;
+				min-height: 390px;
+				padding: clamp(1.25rem, 2.8vw, 2.15rem);
+				overflow: hidden;
+				color: var(--text-color);
 				text-decoration: none;
+				background: var(--hero-glass);
 			}
-			.featured-tag {
-				font-size: 0.7rem;
-				font-weight: 800;
-				color: white;
-				background: linear-gradient(135deg, var(--accent), #f43f5e);
-				padding: 3px 8px;
-				border-radius: 6px;
-				align-self: flex-start;
-				letter-spacing: 0.05em;
-				text-transform: uppercase;
+			.featured-visual { position: absolute; inset: 0; pointer-events: none; }
+			.featured-visual::after {
+				content: '';
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(180deg, rgb(26 13 37 / 0.25), transparent 25%, rgb(21 13 33 / 0.22) 47%, rgb(22 13 33 / 0.88) 100%);
 			}
 			.featured-img {
+				display: block;
 				width: 100%;
-				height: 160px;
+				height: 100%;
 				object-fit: cover;
-				border-radius: 14px;
-				border: 1px solid var(--glass-border);
+				object-position: center 48%;
+				transition: transform 240ms var(--ease-out);
 			}
-			.featured-widget h3 {
-				margin: 0;
-				font-size: 1.35rem;
-				line-height: 1.3;
-				color: var(--text-color);
-				transition: color 150ms var(--ease-out);
+			.featured-widget:hover { opacity: 1; }
+			.featured-widget:hover .featured-img { transform: scale(1.025); }
+			.featured-widget[data-glass-photo] {
+				-webkit-backdrop-filter: none;
+				backdrop-filter: none;
 			}
-			.featured-widget:hover h3 {
-				color: var(--accent);
+			.featured-tag, .featured-copy, .featured-bottom { position: relative; z-index: 1; }
+			.featured-tag {
+				align-self: start;
+				justify-self: start;
+				padding: 0.35rem 0.65rem;
+				border: 1px solid rgb(255 218 239 / 0.52);
+				border-radius: 8px;
+				background: rgb(41 24 49 / 0.60);
+				color: var(--rose-ink);
+				font-size: 0.69rem;
+				font-weight: 720;
+				letter-spacing: 0.12em;
 			}
-			.featured-widget p {
-				font-size: 0.95rem;
-				color: var(--text-muted);
-				margin: 0;
-				line-height: 1.5;
-				display: -webkit-box;
-				-webkit-line-clamp: 3;
-				-webkit-box-orient: vertical;
-				overflow: hidden;
-			}
+			.featured-copy h2 { margin: 0; font: 600 clamp(1.85rem, 3.6vw, 2.95rem)/1.17 var(--font-display); text-wrap: balance; }
+			.featured-copy p { margin: 0.45rem 0 0; color: var(--text-muted); font-size: 1rem; }
 			.featured-bottom {
 				display: flex;
+				flex-wrap: wrap;
 				justify-content: space-between;
 				align-items: center;
-				font-size: 0.9rem;
+				gap: 0.45rem 0.8rem;
+				padding-top: 0.68rem;
+				border-top: 1px solid rgb(255 235 248 / 0.24);
 				color: var(--text-muted);
-				margin-top: 0.5rem;
+				font-size: 0.85rem;
 			}
+			.featured-bottom span:first-child { color: var(--rose-ink); font-weight: 700; }
+			.featured-bottom :global(time) { color: var(--cool-ink); font-variant-numeric: tabular-nums; }
+			.featured-widget:hover .featured-bottom span:first-child { text-decoration: underline; }
 
-			/* Right Grid Section (Posts List + Theme Widget) */
-			.right-content-grid {
-				display: flex;
-				flex-direction: column;
-				gap: 1.5rem;
-				height: 100%;
-			}
-			
-			/* Recent Posts Widget */
 			.recent-posts-widget {
-				flex-grow: 1;
-				display: flex;
-				flex-direction: column;
-				gap: 1rem;
+				padding: clamp(1.2rem, 2.3vw, 1.75rem);
+				background: linear-gradient(rgb(25 17 37 / 0.17), rgb(25 17 37 / 0.23)), var(--journal-glass);
 			}
-			.widget-title {
-				font-size: 1.25rem;
-				font-weight: 800;
-				margin: 0 0 0.5rem 0;
-				display: flex;
+			.recent-posts-widget:focus-within { z-index: 3; }
+			.journal-header {
+				display: grid;
+				grid-template-columns: auto minmax(0, 16rem);
 				align-items: center;
-				gap: 0.5rem;
+				justify-content: space-between;
+				gap: 0.75rem;
+				margin-bottom: 1rem;
 			}
+			.widget-title { margin: 0; display: flex; align-items: center; gap: 0.55rem; font-size: 1.22rem; }
+			.widget-title svg { color: var(--rose-ink); }
 			.post-row {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				padding: 0.6rem 0.8rem;
-				border-radius: 12px;
-				transition: background-color 150ms var(--ease-out), transform 150ms var(--ease-out);
+				gap: 0.7rem;
+				padding: 0.76rem 0.35rem;
+				border-top: 1px solid var(--panel-line);
+				text-decoration: none;
 			}
-			.post-row:hover {
-				background: rgba(var(--accent-color), 0.05);
-				transform: translateX(4px);
-			}
-			.post-row:active {
-				transform: scale(0.98);
-			}
-			.post-title-link {
-				color: var(--text-color);
-				font-weight: 600;
-				font-size: 1.05rem;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				max-width: 60%;
-			}
-			.post-row:hover .post-title-link {
-				color: var(--accent);
-			}
-			.post-meta-tag {
-				font-size: 0.9rem;
-				color: var(--text-muted);
-				white-space: nowrap;
-			}
+			.post-title-link { color: var(--text-color); font-size: 0.97rem; font-weight: 680; }
+			.post-row:hover, .post-row:focus-visible { background: rgb(29 20 42 / 0.20); }
+			.post-row:hover .post-title-link { color: var(--rose-ink); }
+			.post-meta-tag { color: var(--cool-ink); white-space: nowrap; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
 
-			/* Bottom sub-row */
-			.sub-row {
-				display: flex;
-				gap: 1.5rem;
-			}
-			.w-50 { width: 50%; }
-
-			/* Theme Widget */
-			.theme-widget {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				text-align: center;
-				padding: 1.5rem 1rem;
-				position: relative;
-			}
-
-			/* Theme Widget Icon (Sun & Moon) */
-			.theme-circle {
-				width: 50px;
-				height: 50px;
-				border-radius: 50%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				background: linear-gradient(135deg, #ff5e62 0%, #ff9966 100%);
-				box-shadow: 0 4px 15px rgba(255, 94, 98, 0.45);
-				margin-bottom: 0.8rem;
-				color: white;
-				transition: transform 200ms var(--ease-spring), box-shadow 200ms var(--ease-out), background 300ms var(--ease-out);
-			}
-			.theme-circle .sun-svg {
-				width: 24px;
-				height: 24px;
-				display: block;
-				animation: spin 20s linear infinite;
-			}
-			.theme-circle .moon-svg {
-				width: 22px;
-				height: 22px;
-				display: none;
-			}
-			.theme-widget:hover .theme-circle {
-				transform: scale(1.1);
-				box-shadow: 0 6px 20px rgba(255, 94, 98, 0.6);
-			}
-			.theme-widget:active .theme-circle {
-				transform: scale(0.95);
-			}
-			
-			/* Dark Mode styling */
-			:root[data-theme="dark"] .theme-circle {
-				background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
-				box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
-			}
-			:root[data-theme="dark"] .theme-circle .sun-svg {
-				display: none;
-			}
-			:root[data-theme="dark"] .theme-circle .moon-svg {
-				display: block;
-				color: white;
-				animation: float-moon 3s ease-in-out infinite;
-			}
-			:root[data-theme="dark"] .theme-widget:hover .theme-circle {
-				box-shadow: 0 6px 20px rgba(241, 196, 15, 0.6);
-			}
-			@media (prefers-color-scheme: dark) {
-				:root:not([data-theme="light"]) .theme-circle {
-					background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
-					box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
-				}
-				:root:not([data-theme="light"]) .theme-circle .sun-svg {
-					display: none;
-				}
-				:root:not([data-theme="light"]) .theme-circle .moon-svg {
-					display: block;
-					color: white;
-					animation: float-moon 3s ease-in-out infinite;
-				}
-				:root:not([data-theme="light"]) .theme-widget:hover .theme-circle {
-					box-shadow: 0 6px 20px rgba(241, 196, 15, 0.6);
-				}
-			}
-			@keyframes float-moon {
-				0%, 100% { transform: translateY(0); }
-				50% { transform: translateY(-2px); }
-			}
-
-			.theme-widget h4 {
-				margin: 0 0 0.2rem 0;
-				font-size: 1.08rem;
-				font-weight: 700;
-			}
-			.theme-widget p {
-				margin: 0;
-				font-size: 0.85rem;
-				color: var(--text-muted);
-			}
-
-			/* Tech Stack Widget */
-			.tech-widget {
+			.home-utility { padding: 1rem clamp(1.15rem, 2.5vw, 1.9rem); background: linear-gradient(rgb(23 17 37 / 0.25), rgb(23 17 37 / 0.28)), var(--journal-glass); }
+			.utility-details,
+			.footer-bar {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 0.5rem;
-				align-content: center;
-				justify-content: center;
-				padding: 1.2rem;
-			}
-			.tech-badge {
-				font-size: 0.85rem;
-				padding: 5px 10px;
-				border-radius: 8px;
-				background: rgba(255, 255, 255, 0.15);
-				border: 1px solid var(--glass-border);
-				color: var(--text-color);
-				font-weight: 600;
-			}
-			:root[data-theme="dark"] .tech-badge {
-				background: rgba(68, 50, 84, 0.26);
-			}
-			@media (prefers-color-scheme: dark) {
-				:root:not([data-theme="light"]) .tech-badge {
-					background: rgba(68, 50, 84, 0.26);
-				}
-			}
-
-			/* Status / Footer bar */
-			.footer-bar {
-				padding: 1rem 2rem;
-				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				font-size: 0.9rem;
-				color: var(--text-color);
+				gap: 0.75rem 1.25rem;
 			}
-			
+			.theme-widget { display: flex; align-items: center; gap: 0.65rem; }
+			.theme-circle {
+				display: grid;
+				place-items: center;
+				width: 37px;
+				height: 37px;
+				border: 1px solid rgb(255 219 240 / 0.35);
+				border-radius: 50%;
+				background: rgb(247 176 210 / 0.13);
+				color: var(--rose-ink);
+			}
+			.theme-circle svg { width: 18px; height: 18px; }
+			.theme-circle .moon-svg, :root[data-theme="dark"] .theme-circle .sun-svg { display: none; }
+			:root[data-theme="dark"] .theme-circle .moon-svg { display: block; }
+			.theme-widget h4 { margin: 0; font-size: 0.86rem; }
+			.theme-widget p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+			.tech-widget { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+			.tech-badge {
+				padding: 0.27rem 0.52rem;
+				border: 1px solid var(--cool-line);
+				border-radius: 6px;
+				color: var(--cool-ink);
+				font-size: 0.78rem;
+			}
+			.footer-bar { margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--panel-line); }
+
 			.footer-left {
 				display: flex;
 				align-items: center;
@@ -642,26 +420,26 @@ const formatDateSpaced = (date: Date) => {
 			.nixie-clock {
 				display: inline-flex;
 				align-items: center;
-				gap: 4px;
-				background: #09090b;
-				border: 2px solid rgba(255, 255, 255, 0.05);
-				border-radius: 10px;
-				padding: 4px 8px;
-				box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.95), 0 3px 10px rgba(0, 0, 0, 0.4);
+				gap: 2px;
+				background: rgba(7, 8, 8, 0.96);
+				border: 1px solid rgba(255, 125, 35, 0.08);
+				border-radius: 7px;
+				padding: 4px 7px;
+				box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.96), 0 2px 8px rgba(0, 0, 0, 0.34);
 				font-family: 'Courier New', Courier, monospace;
 			}
 			.nixie-tube {
 				position: relative;
-				width: 20px;
-				height: 34px;
-				background: radial-gradient(circle at center, rgba(30, 16, 5, 0.95) 0%, rgba(5, 4, 4, 0.98) 100%);
-				border: 1px solid rgba(255, 255, 255, 0.04);
-				border-radius: 6px;
+				width: 16px;
+				height: 30px;
+				background: radial-gradient(ellipse at center, rgba(42, 19, 4, 0.72) 0%, rgba(9, 8, 6, 0.97) 68%, #050505 100%);
+				border: 1px solid rgba(255, 126, 38, 0.07);
+				border-radius: 3px;
 				overflow: hidden;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				box-shadow: inset 0 0 5px rgba(0,0,0,0.9);
+				box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.92);
 			}
 			.nixie-tube::before {
 				content: '';
@@ -670,21 +448,18 @@ const formatDateSpaced = (date: Date) => {
 				left: 0;
 				right: 0;
 				bottom: 0;
-				background-image: 
-					linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-					linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-				background-size: 2px 2px;
+				background-image: repeating-linear-gradient(to bottom, rgba(255, 151, 63, 0.06) 0 1px, transparent 1px 3px);
 				z-index: 1;
 				pointer-events: none;
 			}
 			.nixie-num {
-				font-size: 1.35rem;
+				font-size: 1.18rem;
 				font-weight: 700;
-				color: #ff7700;
+				color: #ff7a0a;
 				text-shadow: 
-					0 0 2px #ff3c00, 
-					0 0 6px #ff7700, 
-					0 0 12px rgba(255, 119, 0, 0.8);
+					0 0 2px #ff4c00,
+					0 0 5px rgba(255, 102, 0, 0.88),
+					0 0 9px rgba(255, 91, 0, 0.5);
 				z-index: 2;
 				position: relative;
 				line-height: 1;
@@ -693,20 +468,16 @@ const formatDateSpaced = (date: Date) => {
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				width: 6px;
+				width: 5px;
 			}
 			.nixie-dot {
-				font-size: 1.2rem;
+				font-size: 1rem;
 				font-weight: 800;
-				color: #ff7700;
+				color: #ff7a0a;
 				text-shadow: 
-					0 0 2px #ff3c00, 
-					0 0 6px #ff7700;
-				animation: nixie-blink 1s step-end infinite;
-			}
-			@keyframes nixie-blink {
-				from, to { opacity: 1; }
-				50% { opacity: 0.15; }
+					0 0 2px #ff4c00,
+					0 0 5px rgba(255, 102, 0, 0.8);
+				opacity: 0.82;
 			}
 			
 			.runtime-wrapper {
@@ -742,7 +513,7 @@ const formatDateSpaced = (date: Date) => {
 			.footer-right {
 				display: flex;
 				align-items: center;
-				gap: 1.5rem;
+				gap: 1rem;
 			}
 			.tech-badges-list {
 				display: flex;
@@ -756,6 +527,7 @@ const formatDateSpaced = (date: Date) => {
 				border-radius: 8px;
 				font-size: 0.75rem;
 				font-weight: 600;
+				white-space: nowrap;
 				border: 1px solid rgba(var(--accent-color), 0.15);
 				background: rgba(var(--accent-color), 0.05);
 				color: var(--text-color);
@@ -770,31 +542,23 @@ const formatDateSpaced = (date: Date) => {
 				border-radius: 50%;
 			}
 			.tech-badge-pill.astro-pill {
-				border-color: rgba(255, 94, 0, 0.2);
-				background: rgba(255, 94, 0, 0.08);
-				color: #e65c00;
-			}
-			:root[data-theme="dark"] .tech-badge-pill.astro-pill {
-				color: #ff8533;
+				border-color: rgba(255, 94, 0, 0.28);
+				background: rgba(255, 94, 0, 0.12);
+				color: #ff9c59;
 			}
 			.tech-badge-pill.vite-pill {
-				border-color: rgba(100, 108, 255, 0.2);
-				background: rgba(100, 108, 255, 0.08);
-				color: #4f46e5;
-			}
-			:root[data-theme="dark"] .tech-badge-pill.vite-pill {
-				color: #818cf8;
+				border-color: rgba(129, 140, 248, 0.3);
+				background: rgba(100, 108, 255, 0.14);
+				color: #9aa4ff;
 			}
 			.tech-badge-pill.react-pill {
-				border-color: rgba(8, 126, 164, 0.2);
-				background: rgba(8, 126, 164, 0.08);
-				color: #087ea4;
-			}
-			:root[data-theme="dark"] .tech-badge-pill.react-pill {
-				color: #22d3ee;
+				border-color: rgba(56, 189, 248, 0.28);
+				background: rgba(8, 126, 164, 0.14);
+				color: #38bdf8;
 			}
 			.icp-link {
 				font-size: 0.8rem;
+				white-space: nowrap;
 				color: var(--text-muted);
 				transition: color 150ms var(--ease-out);
 			}
@@ -802,133 +566,39 @@ const formatDateSpaced = (date: Date) => {
 				color: var(--accent);
 			}
 
-			/* Keyframes */
-			@keyframes spin {
-				from { transform: rotate(0deg); }
-				to { transform: rotate(360deg); }
+			@media (max-width: 800px) {
+				.home-hero, .home-journal { grid-template-columns: minmax(0, 1fr); }
+				.profile-card { min-height: 0; }
+				.featured-widget { min-height: 320px; }
+				.map-widget { min-height: 245px; }
 			}
-			@keyframes blink {
-				from, to { border-color: transparent }
-				50% { border-color: var(--accent); }
+			@media (max-width: 480px) {
+				.featured-widget { min-height: 290px; }
+				.journal-header { grid-template-columns: minmax(0, 1fr); }
+				.post-row { align-items: start; flex-direction: column; gap: 0.1rem; padding-block: 0.6rem; }
+				.footer-right, .footer-left { flex-wrap: wrap; gap: 0.55rem; }
+				.tech-badges-list { flex-wrap: wrap; }
 			}
 
-			/* Responsive styling */
-			@media (max-width: 768px) {
-				.row-flex {
-					flex-direction: column;
-					gap: 1rem;
-				}
-				.w-58, .w-42, .w-35, .w-65, .w-50 {
-					width: 100% !important;
-				}
-				.glass-card {
-					padding: 1.2rem !important; /* more breathing room on mobile */
-				}
-				
-				/* Profile Card Mobile Optimization */
-				.profile-card {
-					height: auto !important;
-					padding-bottom: 1.5rem !important;
-				}
-				.profile-top {
-					flex-direction: column;
-					text-align: center;
-					gap: 1rem;
-				}
-				.profile-avatar {
-					margin: 0 auto;
-					width: 104px;
-					height: 104px;
-				}
-				.profile-info h2 {
-					font-size: 1.5rem;
-				}
-				.profile-bottom {
-					flex-direction: column;
-					gap: 1.2rem;
-					align-items: center;
-					margin-top: 1.5rem;
-				}
-				.profile-signature {
-					justify-content: center;
-					text-align: left;
-					margin-top: 1.1rem;
-				}
-				.profile-stats {
-					width: 100%;
-					justify-content: space-around;
-					gap: 1rem;
-				}
-				
-				/* Map Card Mobile Optimization */
-				.map-widget {
-					height: 290px !important;
-				}
-				
-				/* Sub-row / Column Layout Stacking */
-				.sub-row {
-					flex-direction: column;
-					gap: 1rem;
-				}
-				
-				/* Footer Bar Mobile Optimization */
-				.footer-bar {
-					flex-direction: column;
-					gap: 1.2rem;
-					text-align: center;
-					padding: 1.5rem 1rem !important;
-				}
-				.footer-left {
-					flex-direction: column;
-					align-items: center;
-					gap: 0.6rem;
-				}
-				.footer-right {
-					flex-direction: column;
-					align-items: center;
-					gap: 0.8rem;
-				}
-				.tech-badges-list {
-					justify-content: center;
-					flex-wrap: wrap;
-					gap: 0.4rem;
-				}
-			}
 			@media (prefers-reduced-motion: reduce) {
 				.city-marker, .city-ring, .theme-circle .sun-svg, .theme-circle .moon-svg, .nixie-dot {
 					animation: none !important;
 				}
-				.profile-avatar { transition: none; }
-				.profile-card:hover .profile-avatar { transform: none; }
+				.featured-img { transition: none; }
+				.featured-widget:hover .featured-img { transform: none; }
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main class="home-main">
 			<div class="widget-grid">
-				
-				<!-- Search / Welcome Bar -->
-				<form class="glass-card search-widget" id="site-search" role="search">
-					<label class="search-inner" for="site-search-input">
-						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-							<circle cx="11" cy="11" r="8"></circle>
-							<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-						</svg>
-						<input class="search-input" id="site-search-input" type="search" placeholder="搜索文章标题或简介…" autocomplete="off" aria-controls="search-results" />
-					</label>
-					<div class="search-results" id="search-results" aria-live="polite"></div>
-				</form>
-
-				<!-- Row 1: Profile + Music Player -->
-				<div class="row-flex">
-					<!-- Profile Card -->
-					<div class="glass-card profile-card w-58">
-						<div class="profile-card-noise"></div>
+				<div class="home-hero">
+					<div class="glass-card profile-card" data-glass-tier="intro">
 						<div class="profile-top">
 							<Image src={avatarImage} alt="Skittles 的头像" class="profile-avatar" width={160} height={160} format="webp" quality={80} />
 							<div class="profile-info">
-								<h2><a href="/about" class="profile-title-link">Hi, I'm Skittles!</a></h2>
+								<h1><a href="/about" class="profile-title-link">Hi, I'm <span>Skittles!</span></a></h1>
 								<p>Grade 2024 student in EE, Xi'an Jiaotong University</p>
 							</div>
 						</div>
@@ -954,9 +624,10 @@ const formatDateSpaced = (date: Date) => {
 										<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
 									</svg>
 								</a>
-							<a href="/rss.xml" class="social-btn" aria-label="RSS">
-									<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+					<a href="/rss.xml" class="social-btn" aria-label="RSS" title="订阅 RSS">
+									<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+										<path d="M4 5a15 15 0 0 1 15 15M4 11a9 9 0 0 1 9 9" />
+										<circle cx="5" cy="19" r="1.25" fill="currentColor" stroke="none" />
 									</svg>
 								</a>
 							<a href={`mailto:${CONTACT_EMAIL}`} class="social-btn" aria-label="Mail">
@@ -968,19 +639,69 @@ const formatDateSpaced = (date: Date) => {
 							</div>
 						</div>
 					</div>
-
-					<!-- Interactive Location Map Card - SVG based -->
-					<div class="glass-card map-widget w-42" role="group" aria-label="My location: Xi'an">
+					<a href={`/blog/${featuredPost.id}/`} class="glass-card featured-widget" data-glass-photo={featuredPost.data.heroImage ? '' : undefined}>
+						<div class="featured-visual">
+							{featuredPost.data.heroImage && <Image src={featuredPost.data.heroImage} alt="" class="featured-img" width={960} height={540} loading="eager" />}
+						</div>
+						<span class="featured-tag">FEATURED STORY</span>
+						<div class="featured-copy">
+							<h2>{featuredPost.data.title}</h2>
+							<p>{featuredPost.data.description}</p>
+						</div>
+						<div class="featured-bottom">
+							<span>阅读全文 &rarr;</span>
+							<span>{featuredPost.data.updatedDate ? '更新于' : '发表于'} <FormattedDate date={featuredPost.data.updatedDate ?? featuredPost.data.pubDate} /></span>
+						</div>
+					</a>
+				</div>
+				<div class="home-journal">
+					<section class="glass-card recent-posts-widget">
+						<div class="journal-header">
+							<h2 class="widget-title">
+								<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+									<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+									<polyline points="14 2 14 8 20 8"></polyline>
+									<line x1="16" y1="13" x2="8" y2="13"></line>
+									<line x1="16" y1="17" x2="8" y2="17"></line>
+									<polyline points="10 9 9 9 8 9"></polyline>
+								</svg>
+								文章动态
+							</h2>
+							<form class="search-widget" id="site-search" role="search">
+								<label class="search-inner" for="site-search-input">
+									<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+										<circle cx="11" cy="11" r="8"></circle>
+										<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+									</svg>
+									<input class="search-input" id="site-search-input" type="search" aria-label="搜索文章" placeholder="搜索文章标题或简介…" autocomplete="off" aria-controls="search-results" />
+								</label>
+								<div class="search-results" id="search-results" data-glass-floating>
+									<div class="search-result-list" aria-live="polite"></div>
+								</div>
+							</form>
+						</div>
+						{
+							posts.map((post) => (
+								<a href={`/blog/${post.id}/`} class="post-row">
+									<span class="post-title-link">{post.data.title}</span>
+									<span class="post-meta-tag">
+										{post.data.updatedDate ? '更新于' : '发表于'} <FormattedDate date={post.data.updatedDate ?? post.data.pubDate} />
+									</span>
+								</a>
+							))
+						}
+					</section>
+					<div class="glass-card map-widget" data-glass-face="map" role="group" aria-label="My location: Xi'an">
 
 						<!-- SVG World Map -->
 						<div class="svg-map-wrapper">
 							<svg id="world-map-svg" viewBox="0 0 1010 610" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg">
 								<defs>
 									<radialGradient id="earth-gradient" cx="50%" cy="50%" r="50%">
-										<stop offset="0%" stop-color="rgba(87, 77, 123, 0.05)" />
-										<stop offset="76%" stop-color="rgba(91, 72, 120, 0.11)" />
-						<stop offset="94%" stop-color="rgba(229, 180, 198, 0.16)" />
-						<stop offset="100%" stop-color="rgba(255, 224, 208, 0)" />
+										<stop offset="0%" stop-color="#362741" stop-opacity=".30" />
+										<stop offset="76%" stop-color="#584567" stop-opacity=".16" />
+										<stop offset="94%" stop-color="#ab90bf" stop-opacity=".26" />
+										<stop offset="100%" stop-color="#cdb8da" stop-opacity="0" />
 									</radialGradient>
 									<linearGradient id="atmosphere-gradient" x1="8%" y1="82%" x2="90%" y2="12%">
 										<stop stop-color="#e9a4c2" stop-opacity=".7" />
@@ -988,14 +709,23 @@ const formatDateSpaced = (date: Date) => {
 										<stop offset="1" stop-color="#cabeea" stop-opacity=".58" />
 									</linearGradient>
 								</defs>
+								<g id="globe-placeholder" aria-hidden="true">
+									<circle cx="505" cy="433" r="430" fill="url(#earth-gradient)" stroke="#cbb3d5" stroke-opacity=".32" stroke-width="2" />
+									<g fill="none" stroke="#a790b9" stroke-opacity=".34" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round">
+										<ellipse cx="505" cy="433" rx="342" ry="430" />
+										<ellipse cx="505" cy="433" rx="222" ry="430" />
+										<ellipse cx="505" cy="433" rx="94" ry="430" />
+										<path d="M90 325 Q505 455 920 325 M146 197 Q505 325 864 197 M266 76 Q505 165 744 76 M75 433 Q505 550 935 433 M98 570 Q505 672 912 570" />
+									</g>
+								</g>
 								<!-- High-fidelity country paths loaded dynamically at runtime -->
 								<g id="map-paths-group"></g>
 								
 								<!-- Dynamic dot matrix grid container -->
-								<image id="dot-grid-image" class="dot-grid-image" x="0" y="0" width="1010" height="610" preserveAspectRatio="none"></image>
+							<image id="dot-grid-image" class="dot-grid-image" href={CURRENT_LOCATION === 'Xian' ? xianGlobe.src : undefined} x="0" y="0" width="1010" height="610" preserveAspectRatio="none"></image>
 								
-				<!-- Location marker - updated by JS -->
-				<g id="city-marker-group" style="display: none;">
+					<!-- Location marker - updated by JS -->
+					<g id="city-marker-group" style="display: none;">
 					<circle class="city-halo" id="city-halo" cx="0" cy="0" r="22"/>
 					<circle class="city-core-glow" id="city-core-glow" cx="0" cy="0" r="12"/>
 					<circle class="city-ring" id="city-ring" cx="0" cy="0" r="16"/>
@@ -1005,7 +735,7 @@ const formatDateSpaced = (date: Date) => {
 						</g>
 					</g>
 					<circle class="city-marker" id="city-dot" cx="0" cy="0" r="7"/>
-				</g>
+					</g>
 							</svg>
 						</div>
 
@@ -1019,127 +749,77 @@ const formatDateSpaced = (date: Date) => {
 						</div>
 					</div>
 				</div>
-
-				<!-- Row 3: Grid containing Featured Post + Right Side Widgets -->
-				<div class="row-flex">
-					<!-- Featured Post Card -->
-					<a href={`/blog/${featuredPost.id}/`} class="glass-card glass-card-hover featured-widget w-35">
-						<span class="featured-tag">FEATURED STORY</span>
-						{featuredPost.data.heroImage && <Image src={featuredPost.data.heroImage} alt="Cover" class="featured-img" width={400} height={200} />}
-						<div>
-							<h3>{featuredPost.data.title}</h3>
-							<p style="margin-top: 0.5rem;">{featuredPost.data.description}</p>
-						</div>
-						<div class="featured-bottom">
-							<span>阅读全文 &rarr;</span>
-							<span>{featuredPost.data.updatedDate ? '更新于' : '发表于'} {formatDate(featuredPost.data.updatedDate ?? featuredPost.data.pubDate)}</span>
-						</div>
-					</a>
-
-					<!-- Right Columns Widget Grid -->
-					<div class="w-65 right-content-grid">
-						<!-- Recent Posts List -->
-						<div class="glass-card recent-posts-widget">
-							<h3 class="widget-title">
-								<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-									<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-									<polyline points="14 2 14 8 20 8"></polyline>
-									<line x1="16" y1="13" x2="8" y2="13"></line>
-									<line x1="16" y1="17" x2="8" y2="17"></line>
-									<polyline points="10 9 9 9 8 9"></polyline>
+				<section class="glass-card home-utility" aria-label="站点状态与技术栈">
+					<div class="utility-details">
+						<div class="theme-widget">
+							<div class="theme-circle">
+								<!-- Light Mode Sun SVG -->
+								<svg class="sun-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="12" cy="12" r="5"></circle>
+									<line x1="12" y1="1" x2="12" y2="3"></line>
+									<line x1="12" y1="21" x2="12" y2="23"></line>
+									<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+									<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+									<line x1="1" y1="12" x2="3" y2="12"></line>
+									<line x1="21" y1="12" x2="23" y2="12"></line>
+									<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+									<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
 								</svg>
-								文章动态
-							</h3>
-							{
-								posts.map((post) => (
-									<div class="post-row">
-										<a href={`/blog/${post.id}/`} class="post-title-link">
-											{post.data.title}
-										</a>
-										<span class="post-meta-tag">
-											{post.data.updatedDate ? '更新于' : '发表于'} {formatDateSpaced(post.data.updatedDate ?? post.data.pubDate)}
-										</span>
-									</div>
-								))
-							}
-						</div>
-
-						<!-- Sub Row for widgets -->
-						<div class="sub-row">
-							<!-- Theme Display Widget -->
-							<div class="glass-card theme-widget w-50">
-								<div class="theme-circle">
-									<!-- Light Mode Sun SVG -->
-									<svg class="sun-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-										<circle cx="12" cy="12" r="5"></circle>
-										<line x1="12" y1="1" x2="12" y2="3"></line>
-										<line x1="12" y1="21" x2="12" y2="23"></line>
-										<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-										<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-										<line x1="1" y1="12" x2="3" y2="12"></line>
-										<line x1="21" y1="12" x2="23" y2="12"></line>
-										<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-										<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-									</svg>
-									<!-- Dark Mode Moon SVG -->
-									<svg class="moon-svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-									</svg>
-								</div>
+								<!-- Dark Mode Moon SVG -->
+								<svg class="moon-svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+								</svg>
+							</div>
+							<div>
 								<h4 id="theme-status-title">日间模式</h4>
 								<p id="theme-status-desc">落樱漫舞的清晨</p>
 							</div>
-							
-							<!-- Tech Stack Tags Widget -->
-							<div class="glass-card tech-widget w-50">
-								<span class="tech-badge">Astro 7.0</span>
-								<span class="tech-badge">Vite 6.0</span>
-								<span class="tech-badge">MDX</span>
-								<span class="tech-badge">Waline</span>
-								<span class="tech-badge">TypeScript</span>
-								<span class="tech-badge">Glassmorphism</span>
+						</div>
+						<div class="tech-widget">
+							<span class="tech-badge">Astro 7.0</span>
+							<span class="tech-badge">Vite 6.0</span>
+							<span class="tech-badge">MDX</span>
+							<span class="tech-badge">Waline</span>
+							<span class="tech-badge">TypeScript</span>
+							<span class="tech-badge">Glassmorphism</span>
+						</div>
+					</div>
+					<div class="footer-bar">
+						<div class="footer-left">
+							<div class="nixie-clock" id="nixie-clock">
+								<div class="nixie-tube" id="nixie-h1"><span class="nixie-num">0</span></div>
+								<div class="nixie-tube" id="nixie-h2"><span class="nixie-num">0</span></div>
+								<div class="nixie-colon"><span class="nixie-dot">:</span></div>
+								<div class="nixie-tube" id="nixie-m1"><span class="nixie-num">0</span></div>
+								<div class="nixie-tube" id="nixie-m2"><span class="nixie-num">0</span></div>
+								<div class="nixie-colon"><span class="nixie-dot">:</span></div>
+								<div class="nixie-tube" id="nixie-s1"><span class="nixie-num">0</span></div>
+								<div class="nixie-tube" id="nixie-s2"><span class="nixie-num">0</span></div>
+							</div>
+							<div class="runtime-wrapper">
+								<span class="status-pulse"></span>
+								<span>系统已稳定运行：<span id="runtime-counter">9天 11小时</span></span>
 							</div>
 						</div>
-					</div>
-				</div>
-
-				<!-- Row 4: Status / Footer info bar -->
-				<div class="glass-card footer-bar w-100">
-					<div class="footer-left">
-						<div class="nixie-clock" id="nixie-clock">
-							<div class="nixie-tube" id="nixie-h1"><span class="nixie-num">0</span></div>
-							<div class="nixie-tube" id="nixie-h2"><span class="nixie-num">0</span></div>
-							<div class="nixie-colon"><span class="nixie-dot">:</span></div>
-							<div class="nixie-tube" id="nixie-m1"><span class="nixie-num">0</span></div>
-							<div class="nixie-tube" id="nixie-m2"><span class="nixie-num">0</span></div>
-							<div class="nixie-colon"><span class="nixie-dot">:</span></div>
-							<div class="nixie-tube" id="nixie-s1"><span class="nixie-num">0</span></div>
-							<div class="nixie-tube" id="nixie-s2"><span class="nixie-num">0</span></div>
-						</div>
-						<div class="runtime-wrapper">
-							<span class="status-pulse"></span>
-							<span>系统已稳定运行：<span id="runtime-counter">9天 11小时</span></span>
+						<div class="footer-right">
+							<div class="tech-badges-list">
+								<span class="tech-badge-pill astro-pill">
+									<span class="dot-indicator" style="background-color: #ff5e00;"></span>
+									Astro 7.0
+								</span>
+								<span class="tech-badge-pill vite-pill">
+									<span class="dot-indicator" style="background-color: #747bff;"></span>
+									Vite 6.0
+								</span>
+								<span class="tech-badge-pill react-pill">
+									<span class="dot-indicator" style="background-color: #38bdf8;"></span>
+									Waline
+								</span>
+							</div>
+							<a href="https://icp.gov.cn" target="_blank" class="icp-link">萌ICP备 20260240号</a>
 						</div>
 					</div>
-					<div class="footer-right">
-						<div class="tech-badges-list">
-							<span class="tech-badge-pill astro-pill">
-								<span class="dot-indicator" style="background-color: #ff5e00;"></span>
-								Astro 7.0
-							</span>
-							<span class="tech-badge-pill vite-pill">
-								<span class="dot-indicator" style="background-color: #747bff;"></span>
-								Vite 6.0
-							</span>
-							<span class="tech-badge-pill react-pill">
-								<span class="dot-indicator" style="background-color: #38bdf8;"></span>
-								Waline
-							</span>
-						</div>
-						<a href="https://icp.gov.cn" target="_blank" class="icp-link">萌ICP备 20260240号</a>
-					</div>
-				</div>
-
+				</section>
 			</div>
 		</main>
 		<Footer />
@@ -1149,11 +829,12 @@ const formatDateSpaced = (date: Date) => {
 			const searchForm = document.getElementById('site-search');
 			const searchInput = document.getElementById('site-search-input');
 			const searchResults = document.getElementById('search-results');
+			const searchResultList = searchResults?.querySelector('.search-result-list');
 
 			const closeSearch = () => searchResults?.classList.remove('visible');
 			const renderSearchResults = (query) => {
-				if (!searchResults) return;
-				searchResults.replaceChildren();
+				if (!searchResultList) return;
+				searchResultList.replaceChildren();
 				const normalized = query.trim().toLocaleLowerCase('zh-CN');
 				if (!normalized) {
 					closeSearch();
@@ -1164,7 +845,7 @@ const formatDateSpaced = (date: Date) => {
 					const empty = document.createElement('p');
 					empty.className = 'search-empty';
 					empty.textContent = '没有找到相关文章';
-					searchResults.appendChild(empty);
+					searchResultList.appendChild(empty);
 				} else {
 					matches.forEach((post) => {
 						const link = document.createElement('a');
@@ -1175,7 +856,7 @@ const formatDateSpaced = (date: Date) => {
 						const description = document.createElement('span');
 						description.textContent = post.description;
 						link.append(title, description);
-						searchResults.appendChild(link);
+						searchResultList.appendChild(link);
 					});
 				}
 				searchResults.classList.add('visible');
@@ -1183,14 +864,20 @@ const formatDateSpaced = (date: Date) => {
 			searchInput?.addEventListener('input', (event) => renderSearchResults(event.target.value));
 			searchForm?.addEventListener('submit', (event) => {
 				event.preventDefault();
-				const firstResult = searchResults?.querySelector('a');
+				const firstResult = searchResults?.matches('.visible') && searchResults.querySelector('a');
 				if (firstResult) window.location.href = firstResult.href;
 			});
 			document.addEventListener('click', (event) => {
 				if (!searchForm?.contains(event.target)) closeSearch();
 			});
-			document.addEventListener('keydown', (event) => {
-				if (event.key === 'Escape') closeSearch();
+			searchForm?.addEventListener('focusout', (event) => {
+				if (!searchForm.contains(event.relatedTarget)) closeSearch();
+			});
+			searchForm?.addEventListener('keydown', (event) => {
+				if (event.key !== 'Escape' || !searchResults?.matches('.visible')) return;
+				event.preventDefault();
+				searchInput?.focus();
+				closeSearch();
 			});
 
 			// Live Nixie Clock
@@ -1276,6 +963,7 @@ const formatDateSpaced = (date: Date) => {
 				const locationDisplay = document.getElementById('current-location-display');
 				const dotGridImage = document.getElementById('dot-grid-image');
 				const cityMarkerGroup = document.getElementById('city-marker-group');
+				const globePlaceholder = document.getElementById('globe-placeholder');
 
 				const CITIES = {
 					Beijing:        { coords: [116.4074, 39.9042], label: "Beijing" },
@@ -1296,6 +984,25 @@ const formatDateSpaced = (date: Date) => {
 				const cityKey = CURRENT_LOCATION || 'Xian';
 				const cityData = CITIES[cityKey] || CITIES.Xian;
 				const [cityLon, cityLat] = cityData.coords;
+				const width = 1010;
+				const height = 610;
+				const globeRadius = 430;
+				const cameraLat = 22;
+				const cameraRoll = -8;
+				const centerYOffset = globeRadius - height / 2 + 3;
+
+				const positionMarker = (x, y) => {
+					for (const point of [cityDot, cityRing, cityHalo, cityCoreGlow]) {
+						point?.setAttribute('cx', String(x));
+						point?.setAttribute('cy', String(y));
+					}
+					citySparkPosition?.setAttribute('transform', `translate(${x} ${y})`);
+					if (cityMarkerGroup) cityMarkerGroup.style.display = 'block';
+				};
+				const north = globeRadius * Math.sin((cityLat - cameraLat) * Math.PI / 180);
+				const roll = cameraRoll * Math.PI / 180;
+				positionMarker(width / 2 - north * Math.sin(roll), height / 2 + centerYOffset - north * Math.cos(roll));
+				if (locationDisplay) locationDisplay.textContent = cityData.label;
 
 				try {
 					// Dynamically import D3.js and TopoJSON Client
@@ -1315,17 +1022,6 @@ const formatDateSpaced = (date: Date) => {
 						sessionStorage.setItem(worldCacheKey, JSON.stringify(worldData));
 					}
 					const landFeature = topojson.feature(worldData, worldData.objects.land);
-
-					const width = 1010;
-					const height = 610;
-					const globeRadius = 430;
-					
-					// A raised northern viewpoint plus a subtle roll creates the slightly top-down angle.
-					const cameraLat = 22;
-					const cameraRoll = -8;
-					
-					// Anchor the sphere's top inside the SVG and keep almost a full hemisphere visible.
-					const centerYOffset = globeRadius - height / 2 + 3;
 
 					// Setup 3D Orthographic Projection with a gentle equatorial tilt
 					const projection = d3.geoOrthographic()
@@ -1356,27 +1052,12 @@ const formatDateSpaced = (date: Date) => {
 					sphereOutline.setAttribute('r', String(globeRadius));
 					sphereOutline.setAttribute('fill', 'url(#earth-gradient)'); // Natural atmospheric scattering
 					sphereOutline.setAttribute('stroke', 'none');
-					sphereOutline.setAttribute('style', 'filter: drop-shadow(0 0 11px rgba(246, 192, 190, 0.22))');
+					sphereOutline.setAttribute('style', 'filter: drop-shadow(0 0 9px rgba(207, 171, 218, 0.16))');
 					svgMapContainer.insertBefore(sphereOutline, dotGridImage);
 
 					// Position city marker
 					const [markerX, markerY] = projection([cityLon, cityLat]);
-					if (cityDot && cityRing) {
-						cityDot.setAttribute('cx', String(markerX));
-						cityDot.setAttribute('cy', String(markerY));
-						cityRing.setAttribute('cx', String(markerX));
-						cityRing.setAttribute('cy', String(markerY));
-						cityHalo?.setAttribute('cx', String(markerX));
-						cityHalo?.setAttribute('cy', String(markerY));
-						cityCoreGlow?.setAttribute('cx', String(markerX));
-						cityCoreGlow?.setAttribute('cy', String(markerY));
-						citySparkPosition?.setAttribute('transform', `translate(${markerX} ${markerY})`);
-						if (cityMarkerGroup) cityMarkerGroup.style.display = 'block';
-					}
-
-					if (locationDisplay) {
-						locationDisplay.textContent = cityData.label;
-					}
+					positionMarker(markerX, markerY);
 
 					// Sample genuine latitude/longitude intersections, then project them onto the sphere.
 					// This makes rows bend along parallels and columns converge along meridians.
@@ -1406,21 +1087,22 @@ const formatDateSpaced = (date: Date) => {
 
 							const surfaceDepth = Math.cos(angularDistance);
 							let r = 0.82 + surfaceDepth * 0.72;
-							if (isLand) r *= 1.18;
+							if (isLand) r *= 1.29;
 							const dotOpacity = isLand
-								? Math.min(1, 0.48 + surfaceDepth * 0.62)
-								: 0.12 + surfaceDepth * 0.42;
+								? Math.min(1, 0.62 + surfaceDepth * 0.40)
+								: 0.08 + surfaceDepth * 0.25;
 							dotContext.beginPath();
 							dotContext.arc(x, y, r, 0, Math.PI * 2);
 							dotContext.fillStyle = isLand
-								? `rgba(235, 182, 174, ${dotOpacity})`
-								: `rgba(196, 178, 200, ${dotOpacity})`;
+								? `rgba(217, 198, 223, ${dotOpacity})`
+								: `rgba(138, 124, 158, ${dotOpacity})`;
 							dotContext.fill();
 						}
 					}
 					
 					// Keep the detailed point texture without making every dot a DOM node.
 					dotGridImage.setAttribute('href', dotCanvas.toDataURL('image/png'));
+					globePlaceholder?.remove();
 				} catch (err) {
 					console.error('Error rendering 3D dot-matrix globe:', err);
 				}

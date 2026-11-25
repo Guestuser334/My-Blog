@@ -1,0 +1,22 @@
+---
+interface Props {
+	title: string;
+	breakAfter?: string;
+}
+
+const { title, breakAfter } = Astro.props;
+const suffix = breakAfter && title.startsWith(breakAfter) ? title.slice(breakAfter.length) : '';
+---
+
+{suffix.trim() && breakAfter ? (
+	<><span>{breakAfter}</span>{suffix.match(/^\s*/)?.[0]}<span>{suffix.trimStart()}</span></>
+) : title}
+
+<style>
+	span {
+		display: inline-block;
+		max-inline-size: 100%;
+		text-wrap: wrap;
+		overflow-wrap: anywhere;
+	}
+</style>

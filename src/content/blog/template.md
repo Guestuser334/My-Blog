@@ -1,5 +1,6 @@
 ---
 title: '文章模板: 开启你的新创作'
+titleBreakAfter: '文章模板:'
 description: '在这里写下简短的文章摘要或简介，它将展示在主页以及文章列表页面中。'
 pubDate: 'Jul 08 2026'
 heroImage: '../../assets/post-template.jpg'

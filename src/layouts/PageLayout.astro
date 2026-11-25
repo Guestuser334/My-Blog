@@ -22,17 +22,17 @@ const { title, description, heroImage } = Astro.props;
 	<body>
 		<Header />
 		<main>
-			<article class="page-card glass-card">
+			<article class="page-card glass-card" data-glass-tier="reading">
+				<div class="page-heading">
+					<p class="eyebrow">SKITTLES’S BLOG</p>
+					<h1 class="editorial-title">{title}</h1>
+					<p>{description}</p>
+				</div>
 				{heroImage && (
 					<div class="hero-image">
 						<Image width={1020} height={510} src={heroImage} alt={`${title} 页面封面`} />
 					</div>
 				)}
-				<header class="page-heading">
-					<p class="eyebrow">SKITTLES’S BLOG</p>
-					<h1>{title}</h1>
-					<p>{description}</p>
-				</header>
 				<div class="page-content">
 					<slot />
 				</div>
@@ -43,13 +43,9 @@ const { title, description, heroImage } = Astro.props;
 </html>
 
 <style>
-	main { max-width: 900px; }
+	main { max-width: 960px; }
 	.page-card {
-		padding: 2.4rem;
-		background: var(--material-thick);
-		border-color: var(--material-border);
-		-webkit-backdrop-filter: blur(14px) saturate(135%);
-		backdrop-filter: blur(14px) saturate(135%);
+		padding: clamp(1.2rem, 5vw, 3.3rem);
 	}
 	.hero-image { margin-bottom: 2rem; }
 	.hero-image :global(img) {
@@ -61,26 +57,24 @@ const { title, description, heroImage } = Astro.props;
 	}
 	.page-heading {
 		max-width: 720px;
-		margin: 0 auto 2.4rem;
-		text-align: center;
+		margin: 0 auto 1.6rem;
+		padding-bottom: 1.2rem;
+		border-bottom: 1px solid var(--panel-line);
 	}
 	.eyebrow {
 		margin: 0 0 0.45rem;
-		color: var(--accent);
+		color: var(--rose-ink);
 		font-size: 0.75rem;
 		font-weight: 800;
 		letter-spacing: 0.14em;
 	}
-	h1 { margin-bottom: 0.65rem; font-size: 2.35rem; }
-	.page-heading > p:last-child { margin: 0; color: rgba(255, 255, 255, 0.76); }
+	h1 { margin-bottom: 0.65rem; }
+	.page-heading > p:last-child { margin: 0; color: var(--text-muted); }
 	.page-content { max-width: 720px; margin: 0 auto; }
 
 	@media (max-width: 720px) {
-		main { max-width: calc(100% - 1rem); }
-		.page-card { padding: 1.1rem; }
 		.hero-image { margin-bottom: 1.4rem; }
 		.hero-image :global(img) { border-radius: 13px; }
 		.page-heading { margin-bottom: 1.7rem; }
-		h1 { font-size: 1.9rem; }
 	}
 </style>

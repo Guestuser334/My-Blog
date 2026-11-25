@@ -4,27 +4,18 @@ import HeaderLink from './HeaderLink.astro';
 ---
 
 <header>
-	<nav class="glass-card" aria-label="主导航">
-		<h2>
+	<nav class="glass-card" data-glass-floating aria-label="主导航">
+		<span class="nav-glass-background" aria-hidden="true"></span>
+		<div class="site-brand">
 			<a href="/" class="logo-link" aria-label="返回首页">
-				<span class="logo-badge" aria-hidden="true">
-					<svg viewBox="0 0 40 40">
-						<defs>
-							<linearGradient id="brand-s" x1="7" y1="5" x2="33" y2="35" gradientUnits="userSpaceOnUse">
-								<stop stop-color="#fff2c8" />
-								<stop offset="0.48" stop-color="#e9bd70" />
-								<stop offset="1" stop-color="#c98a45" />
-							</linearGradient>
-						</defs>
-						<path d="M31.5 8.6C27.8 4.1 17.1 4.7 11 9.2c-5.9 4.4-3.4 9.5 5 10.3 8.6.8 12.1 2.1 8.4 7.2-3.6 5-12.5 7.4-18 2.4" fill="none" stroke="url(#brand-s)" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round" />
-						<path d="M8.2 31.2c6.6 5.1 18.3 3.8 26.1-3.1M9.8 12.2c5.4-4.4 14.3-5.2 20.1-1.8" fill="none" stroke="url(#brand-s)" stroke-width="1.15" stroke-linecap="round" opacity=".88" />
-					</svg>
-				</span>
+				<img class="logo-badge" src="/favicon.png?v=3" alt="" width="36" height="36" />
 				<span class="logo-text">Skittles's <span>Blog</span></span>
 			</a>
-		</h2>
+		</div>
 
-		<div class="internal-links" id="primary-navigation">
+		<div class="internal-links" id="primary-navigation" data-glass-floating>
+			<span class="menu-glass-background" aria-hidden="true"></span>
+			<span class="nav-lens" aria-hidden="true" data-glass-floating></span>
 			<HeaderLink href="/">首页</HeaderLink>
 			<HeaderLink href="/blog">文章</HeaderLink>
 			<HeaderLink href="/about">关于</HeaderLink>
@@ -60,34 +51,53 @@ import HeaderLink from './HeaderLink.astro';
 		top: 0;
 		z-index: 100;
 		width: 100%;
-		padding: 0.8rem 0;
+		padding: 0.95rem 0 0.45rem;
 	}
 	nav.glass-card {
-		display: flex;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 		align-items: center;
 		justify-content: space-between;
-		width: 900px;
-		max-width: calc(100% - 2.5rem);
+		width: min(var(--content-width), 100% - 2 * var(--site-gutter));
 		margin: 0 auto;
-		padding: 0.5rem 1.35rem;
-		border-radius: 20px;
-		background: var(--material-thick) !important;
-		border-color: var(--material-border) !important;
-		-webkit-backdrop-filter: blur(11px) saturate(118%);
-		backdrop-filter: blur(11px) saturate(118%);
+		padding: 0.45rem 1.25rem;
+		border-radius: 22px;
+		background: transparent !important;
+		border: none !important;
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
 		transition: none;
+		box-shadow: var(--glass-inner-bevel), var(--glass-shadow);
 	}
-	:root[data-theme="dark"] nav.glass-card {
-		-webkit-backdrop-filter: blur(12px) saturate(116%);
-		backdrop-filter: blur(12px) saturate(116%);
+	nav.glass-card::before { display: none; }
+	:root[data-theme="light"] nav.glass-card {
+		--navigation-glass-fill: rgb(47 26 54 / 0.30);
+		--navigation-glass-sheen: linear-gradient(180deg, rgb(255 245 252 / 0.045), transparent 55%);
+		--navigation-glass-contrast: 1.03;
+		--navigation-glass-brightness: 0.96;
+		--navigation-glass-saturation: 1.05;
+		--navigation-lens-fill: rgb(240 219 236 / 0.055);
+		--glass-inner-bevel: inset 0 1px 1px rgb(255 245 252 / 0.26), inset 0 -5px 14px rgb(31 21 42 / 0.14);
+		--glass-rim-gradient: linear-gradient(135deg, rgb(255 246 252 / 0.42), rgb(255 246 252 / 0.12) 50%, rgb(255 246 252 / 0.28));
 	}
-	@media (prefers-color-scheme: dark) {
-		:root:not([data-theme="light"]) nav.glass-card {
-			-webkit-backdrop-filter: blur(12px) saturate(116%);
-			backdrop-filter: blur(12px) saturate(116%);
-		}
+	.nav-glass-background,
+	.menu-glass-background {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-radius: inherit;
+		pointer-events: none;
+		background: var(--navigation-glass-sheen, var(--glass-sheen)), var(--navigation-glass-fill, var(--material-thin));
+		-webkit-backdrop-filter: blur(var(--navigation-glass-blur, 1px)) brightness(var(--navigation-glass-brightness, 1)) saturate(var(--navigation-glass-saturation, 1.25));
+		backdrop-filter: blur(var(--navigation-glass-blur, 1px)) brightness(var(--navigation-glass-brightness, 1)) saturate(var(--navigation-glass-saturation, 1.25));
+		transition: --navigation-glass-blur 100ms ease, background-color 100ms ease;
 	}
-	h2 { margin: 0; font-size: 1.15rem; }
+	.menu-glass-background { display: none; }
+	nav[data-nav-scrolled]:not([data-lens-moving]) .nav-glass-background {
+		--navigation-glass-blur: 4px;
+		background: linear-gradient(180deg, rgb(32 20 41 / 0.66), rgb(32 20 41 / 0.47));
+	}
+	.site-brand { font-size: 1.15rem; }
 	.logo-link {
 		display: flex;
 		align-items: center;
@@ -96,60 +106,141 @@ import HeaderLink from './HeaderLink.astro';
 		text-decoration: none;
 	}
 	.logo-badge {
-		position: relative;
-		display: grid;
-		place-items: center;
-		width: 34px;
-		height: 34px;
-		border: 1px solid rgba(255, 255, 255, 0.46);
+		display: block;
+		flex: none;
+		width: 36px;
+		height: 36px;
 		border-radius: 11px;
-		background: linear-gradient(145deg, #33405b, #222b46 54%, #171d31);
-		box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.34), 0 5px 16px rgba(20, 27, 49, 0.34), 0 0 0 1px rgba(224, 178, 102, 0.12);
-		overflow: hidden;
+		box-shadow: 0 3px 9px rgb(39 13 35 / 0.28);
 	}
-	:root[data-theme="light"] .logo-badge {
-		background: linear-gradient(145deg, #a98a89, #806873 55%, #625264);
-		border-color: rgba(255, 236, 210, 0.5);
-		box-shadow: inset 0 1px 1px rgba(255, 249, 235, 0.36), 0 5px 15px rgba(72, 50, 65, 0.24), 0 0 0 1px rgba(224, 178, 102, 0.12);
-	}
-	.logo-badge::before {
-		content: '';
-		position: absolute;
-		inset: 1px 4px 55% 4px;
-		border-radius: 9px 9px 50% 50%;
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent);
-	}
-	.logo-badge svg { position: relative; width: 31px; height: 31px; filter: drop-shadow(0 1px 2px rgba(240, 197, 123, 0.28)); }
 	.logo-text {
-		color: white;
+		color: var(--text-color);
 		font-family: var(--font-display);
 		font-size: 1.08em;
 		font-weight: 600;
 		letter-spacing: -0.025em;
 		white-space: nowrap;
+		text-shadow: var(--surface-text-shadow);
 	}
 	.logo-text span { color: var(--accent); font-weight: 800; }
-	.internal-links { display: flex; align-items: center; gap: 0.35rem; }
+	.internal-links {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.25rem;
+		position: relative;
+	}
 	.internal-links :global(a) {
-		padding: 0.7rem 0.85rem;
-		border-radius: 10px;
-		color: rgba(255, 255, 255, 0.78) !important;
+		grid-row: 1;
+		position: relative;
+		padding: 0.52rem 0.9rem;
+		border-radius: 12px;
+		color: var(--text-muted) !important;
 		font-size: 0.95rem;
 		font-weight: 600;
+		text-align: center;
+		white-space: nowrap;
 		text-decoration: none;
 	}
+	.internal-links :global(a:nth-of-type(1)) { grid-column: 1; }
+	.internal-links :global(a:nth-of-type(2)) { grid-column: 2; }
+	.internal-links :global(a:nth-of-type(3)) { grid-column: 3; }
+	.internal-links :global(a:nth-of-type(4)) { grid-column: 4; }
 	.internal-links :global(a:hover),
 	.internal-links :global(a.active) {
-		color: white !important;
-		background: rgba(var(--accent-color), 0.16) !important;
+		color: var(--text-color) !important;
 	}
-	.internal-links :global(a.active) { color: var(--accent) !important; }
-	:root[data-theme="light"] .internal-links :global(a.active) {
-		color: #fff !important;
-		background: rgba(var(--accent-color), 0.3) !important;
-		box-shadow: inset 0 0 0 1px rgba(255, 218, 228, 0.7), 0 0 0 1px rgba(var(--accent-color), 0.2), 0 5px 16px rgba(150, 61, 94, 0.2);
+	.internal-links :global(a.active) { background: rgba(255, 228, 241, 0.16); }
+	.internal-links :global(a:focus-visible) {
+		outline: 2px solid #fff;
+		outline-offset: 3px;
 	}
-	.nav-actions { display: flex; align-items: center; gap: 0.25rem; }
+	.nav-lens { display: none; }
+	@supports selector(:has(a.active)) {
+		.internal-links :global(a.active) { background: transparent; }
+	}
+	.nav-lens {
+		grid-row: 1;
+		grid-column: var(--active-slot);
+		align-self: stretch;
+		position: relative;
+		border-radius: 12px;
+		isolation: isolate;
+		pointer-events: none;
+		background: var(--navigation-lens-fill, rgba(255, 255, 255, 0.14));
+		border: 1px solid rgba(255, 255, 255, 0.48);
+		border-top-color: rgba(255, 255, 255, 0.85);
+		-webkit-backdrop-filter: blur(var(--navigation-glass-blur, 1px)) contrast(var(--navigation-glass-contrast, 1.1)) brightness(var(--navigation-glass-brightness, 1.07)) saturate(var(--navigation-glass-saturation, 1.25));
+		backdrop-filter: blur(var(--navigation-glass-blur, 1px)) contrast(var(--navigation-glass-contrast, 1.1)) brightness(var(--navigation-glass-brightness, 1.07)) saturate(var(--navigation-glass-saturation, 1.25));
+		box-shadow:
+			inset 2px 2px 1.5px 0 rgba(255, 255, 255, 0.58),
+			inset -1px -1px 1.5px 0.5px rgba(255, 255, 255, 0.34),
+			inset 0 -3px 6px rgba(255, 224, 244, 0.16),
+			0 4px 14px rgba(14, 8, 26, 0.22);
+		transition: --navigation-glass-blur 100ms ease, background-color 100ms ease;
+	}
+	:root[data-theme="light"] .nav-lens {
+		border-color: rgb(255 244 252 / 0.34);
+		border-top-color: rgb(255 244 252 / 0.55);
+		box-shadow:
+			inset 1px 1px 1.5px rgb(255 246 252 / 0.32),
+			inset -1px -1px 1.5px rgb(255 246 252 / 0.16),
+			0 3px 10px rgb(24 15 33 / 0.2);
+	}
+	:root[data-theme="dark"] .nav-lens {
+		background: rgba(255, 255, 255, 0.10);
+		border-color: rgba(255, 255, 255, 0.34);
+		border-top-color: rgba(255, 255, 255, 0.68);
+		box-shadow:
+			inset 2px 2px 1.5px 0 rgba(255, 255, 255, 0.44),
+			inset -1px -1px 1.5px 0.5px rgba(255, 255, 255, 0.22),
+			inset 0 -3px 6px rgba(235, 210, 255, 0.12),
+			0 4px 14px rgba(8, 4, 18, 0.32);
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) .nav-lens {
+			background: rgba(255, 255, 255, 0.10);
+			border-color: rgba(255, 255, 255, 0.34);
+			border-top-color: rgba(255, 255, 255, 0.68);
+			box-shadow:
+				inset 2px 2px 1.5px 0 rgba(255, 255, 255, 0.44),
+				inset -1px -1px 1.5px 0.5px rgba(255, 255, 255, 0.22),
+				inset 0 -3px 6px rgba(235, 210, 255, 0.12),
+				0 4px 14px rgba(8, 4, 18, 0.32);
+		}
+	}
+	.nav-lens::before {
+		content: '';
+		position: absolute;
+		inset: 1px 6px 52% 6px;
+		border-radius: inherit;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent);
+		pointer-events: none;
+		transition: opacity 100ms ease;
+	}
+	:root[data-theme="light"] .nav-lens::before {
+		background: linear-gradient(180deg, rgb(255 246 252 / 0.16), transparent);
+	}
+	nav[data-lens-moving] .nav-lens {
+		--navigation-glass-blur: 0.25px;
+		background-color: rgba(255, 255, 255, 0.025);
+	}
+	nav[data-lens-moving] .nav-lens::before { opacity: 0.35; }
+	nav[data-lens-moving] .nav-glass-background,
+	nav[data-lens-moving] .menu-glass-background {
+		--navigation-glass-blur: 0px;
+		background: rgb(20 16 30 / 0.10);
+	}
+	@media (min-width: 721px) {
+		#primary-navigation {
+			background: transparent;
+			border: 0;
+			box-shadow: none;
+			-webkit-backdrop-filter: none;
+			backdrop-filter: none;
+		}
+		#primary-navigation::before { display: none; }
+	}
+	.nav-actions { display: flex; justify-self: end; align-items: center; gap: 0.35rem; }
 	.github-link,
 	.icon-button {
 		display: grid;
@@ -161,14 +252,52 @@ import HeaderLink from './HeaderLink.astro';
 		border: 0;
 		border-radius: 10px;
 		background: transparent;
-		color: rgba(255, 255, 255, 0.75);
+		color: var(--text-muted);
 		cursor: pointer;
 	}
 	.github-link:hover,
 	.icon-button:hover,
 	.icon-button[aria-expanded="true"] {
-		color: white;
-		background: rgba(var(--accent-color), 0.16);
+		color: var(--text-color);
+		background: rgba(255, 255, 255, 0.14);
+	}
+	#theme-toggle {
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.12);
+		border: 1px solid rgba(255, 255, 255, 0.34);
+		border-top-color: rgba(255, 255, 255, 0.72);
+		-webkit-backdrop-filter: blur(1px) contrast(1.1) brightness(1.07) saturate(125%);
+		backdrop-filter: blur(1px) contrast(1.1) brightness(1.07) saturate(125%);
+		box-shadow:
+			inset 1.5px 1.5px 1px rgba(255, 255, 255, 0.45),
+			inset -1px -1px 1px rgba(255, 255, 255, 0.22),
+			0 2px 8px rgba(14, 8, 26, 0.18);
+		color: var(--text-color);
+	}
+	#theme-toggle:hover {
+		background: rgba(255, 255, 255, 0.20);
+		border-color: rgba(255, 255, 255, 0.52);
+		border-top-color: rgba(255, 255, 255, 0.88);
+		box-shadow:
+			inset 2px 2px 1.5px rgba(255, 255, 255, 0.62),
+			inset -1px -1px 1.5px rgba(255, 255, 255, 0.34),
+			0 4px 12px rgba(14, 8, 26, 0.24);
+		transform: scale(1.06);
+	}
+	#theme-toggle:active {
+		transform: scale(0.94);
+	}
+	:root[data-theme="dark"] #theme-toggle {
+		background: rgba(255, 255, 255, 0.09);
+		border-color: rgba(255, 255, 255, 0.26);
+		border-top-color: rgba(255, 255, 255, 0.56);
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) #theme-toggle {
+			background: rgba(255, 255, 255, 0.09);
+			border-color: rgba(255, 255, 255, 0.26);
+			border-top-color: rgba(255, 255, 255, 0.56);
+		}
 	}
 	.github-link,
 	.icon-button { transition: color 150ms ease, background-color 150ms ease, transform 120ms var(--ease-out); }
@@ -182,50 +311,30 @@ import HeaderLink from './HeaderLink.astro';
 	@media (max-width: 720px) {
 		header { padding: 0.4rem 0; }
 		nav.glass-card {
-			max-width: calc(100% - 1.25rem);
+			display: flex;
 			padding: 0.5rem 0.65rem;
-			border-radius: 15px;
-			/* Filter a sibling background layer so the dropdown can sample the page. */
-			background: transparent !important;
-			-webkit-backdrop-filter: none !important;
-			backdrop-filter: none !important;
+			border-radius: 18px;
 		}
-		nav.glass-card::before {
-			z-index: -1;
-			background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent 38%, rgba(255, 255, 255, 0.025)), var(--material-thick);
-			-webkit-backdrop-filter: blur(11px) saturate(118%);
-			backdrop-filter: blur(11px) saturate(118%);
-		}
-		:root[data-theme="dark"] nav.glass-card::before,
-		:root[data-theme="dark"] .internal-links {
-			-webkit-backdrop-filter: blur(12px) saturate(116%);
-			backdrop-filter: blur(12px) saturate(116%);
-		}
-		@media (prefers-color-scheme: dark) {
-			:root:not([data-theme="light"]) nav.glass-card::before,
-			:root:not([data-theme="light"]) .internal-links {
-				-webkit-backdrop-filter: blur(12px) saturate(116%);
-				backdrop-filter: blur(12px) saturate(116%);
-			}
+		.menu-glass-background {
+			display: block;
+			background: var(--glass-sheen), var(--material-thick);
 		}
 		.github-link { display: none; }
 		.menu-toggle { display: grid; }
 		.internal-links {
-			display: flex;
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-rows: repeat(4, auto);
 			position: absolute;
 			top: calc(100% + 0.6rem);
 			left: 0;
 			right: 0;
-			flex-direction: column;
-			align-items: stretch;
 			gap: 0.2rem;
 			padding: 0.65rem;
 			border: 1px solid var(--material-border);
-			border-radius: 16px;
-			background: var(--glass-bg);
-			box-shadow: var(--glass-shadow);
-			-webkit-backdrop-filter: blur(9px) saturate(118%);
-			backdrop-filter: blur(9px) saturate(118%);
+			border-top-color: var(--material-highlight);
+			border-radius: 18px;
+			isolation: isolate;
+			box-shadow: var(--glass-inner-bevel), var(--glass-shadow);
 			opacity: 0;
 			visibility: hidden;
 			pointer-events: none;
@@ -240,15 +349,26 @@ import HeaderLink from './HeaderLink.astro';
 			transform: translateY(0) scale(1);
 		}
 		.internal-links :global(a) { padding: 0.7rem; text-align: center; }
+		.internal-links :global(a:nth-of-type(1)) { grid-area: 1 / 1; }
+		.internal-links :global(a:nth-of-type(2)) { grid-area: 2 / 1; }
+		.internal-links :global(a:nth-of-type(3)) { grid-area: 3 / 1; }
+		.internal-links :global(a:nth-of-type(4)) { grid-area: 4 / 1; }
+		.nav-lens { grid-area: var(--active-slot) / 1; }
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.internal-links { transition: opacity 120ms ease; transform: none; }
 	}
 	@media (prefers-reduced-transparency: reduce) {
-		nav.glass-card,
-		nav.glass-card::before,
-		.internal-links {
-			background: #252838 !important;
+		.nav-glass-background,
+		.menu-glass-background {
+			background: #232030 !important;
+			color: #f7f7fa !important;
+			-webkit-backdrop-filter: none !important;
+			backdrop-filter: none !important;
+		}
+		.nav-lens,
+		#theme-toggle {
+			background: #554957 !important;
 			-webkit-backdrop-filter: none !important;
 			backdrop-filter: none !important;
 		}
@@ -257,30 +377,53 @@ import HeaderLink from './HeaderLink.astro';
 		.internal-links {
 			border-color: rgba(255, 255, 255, 0.58);
 		}
+		.nav-lens { outline: 1px solid rgba(255, 246, 252, 0.8); }
 	}
 	@media (max-width: 380px) {
 		.logo-text { font-size: 0.9rem; }
-		.logo-text span { display: none; }
 	}
+</style>
+
+<style is:global>
+	@property --navigation-glass-blur {
+		syntax: '<length>';
+		inherits: false;
+		initial-value: 1px;
+	}
+
+	#primary-navigation:has(> a:nth-of-type(1).active) { --active-slot: 1; }
+	#primary-navigation:has(> a:nth-of-type(2).active) { --active-slot: 2; }
+	#primary-navigation:has(> a:nth-of-type(3).active) { --active-slot: 3; }
+	#primary-navigation:has(> a:nth-of-type(4).active) { --active-slot: 4; }
+	#primary-navigation:has(> a.active) > .nav-lens { display: block; }
 </style>
 
 <script>
 	const themeToggle = document.getElementById('theme-toggle');
 	const menuToggle = document.getElementById('menu-toggle');
 	const nav = menuToggle?.closest('nav');
+	const updateScrollMaterial = () => nav?.toggleAttribute('data-nav-scrolled', window.scrollY > 24);
+	window.addEventListener('scroll', updateScrollMaterial, { passive: true });
+	updateScrollMaterial();
 
 	const closeMenu = () => {
 		nav?.classList.remove('menu-open');
 		menuToggle?.setAttribute('aria-expanded', 'false');
+		menuToggle?.setAttribute('aria-label', '打开导航菜单');
 	};
 
 	menuToggle?.addEventListener('click', () => {
 		const isOpen = nav?.classList.toggle('menu-open') ?? false;
 		menuToggle.setAttribute('aria-expanded', String(isOpen));
+		menuToggle.setAttribute('aria-label', isOpen ? '关闭导航菜单' : '打开导航菜单');
 	});
-	document.querySelectorAll('#primary-navigation a').forEach((link) => link.addEventListener('click', closeMenu));
 	document.addEventListener('keydown', (event) => {
-		if (event.key === 'Escape') closeMenu();
+		if (event.key !== 'Escape' || !nav?.classList.contains('menu-open')) return;
+		closeMenu();
+		menuToggle?.focus();
+	});
+	document.addEventListener('pointerdown', (event) => {
+		if (event.target instanceof Node && !nav?.contains(event.target)) closeMenu();
 	});
 
 	const getTheme = () => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -291,4 +434,115 @@ import HeaderLink from './HeaderLink.astro';
 		localStorage.setItem('theme', theme);
 		window.setTimeout(() => document.documentElement.classList.remove('theme-switching'), 260);
 	});
+
+	// Animate the live backdrop so it keeps sampling the page as the lens moves.
+	const primaryNav = document.getElementById('primary-navigation');
+	const navLens = primaryNav?.querySelector<HTMLElement>('.nav-lens');
+	const navLinks = Array.from(primaryNav?.querySelectorAll<HTMLAnchorElement>('a') ?? []);
+	const desktopQuery = window.matchMedia('(min-width: 721px)');
+	const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	if (primaryNav && navLens && navLinks.length) {
+		const activeLink = navLinks.find((link) => link.classList.contains('active'));
+		const storageKey = 'blog-navigation-lens';
+		const pathKey = (address: URL) => address.pathname.replace(/\/$/, '') || '/';
+		let lensAnimation: Animation | undefined;
+		let targetLink = activeLink;
+		let navigatingFromMenu = false;
+
+		const moveLensTo = (destination = activeLink, startLeft?: number) => {
+			if (!activeLink || !destination || motionQuery.matches) return;
+			if (destination === targetLink && startLeft === undefined) return;
+			const start = getComputedStyle(navLens).transform;
+			const x = destination.offsetLeft - activeLink.offsetLeft;
+			const y = destination.offsetTop - activeLink.offsetTop;
+			const from = startLeft === undefined ? start : `translateX(${startLeft - activeLink.offsetLeft}px)`;
+			const to = `translate(${x}px, ${y}px)`;
+			targetLink = destination;
+			lensAnimation?.cancel();
+			navLens.style.transform = to;
+			nav?.setAttribute('data-lens-moving', '');
+			const animation = navLens.animate([
+				{ transform: from },
+				{ transform: `${to} scale(1.06, 0.96)`, offset: 0.74 },
+				{ transform: to },
+			], { duration: 290, easing: 'cubic-bezier(0.24, 0.78, 0.34, 1)' });
+			lensAnimation = animation;
+			const settle = () => {
+				if (lensAnimation !== animation) return;
+				lensAnimation = undefined;
+				nav?.removeAttribute('data-lens-moving');
+			};
+			void animation.finished.then(settle, settle);
+			return animation;
+		};
+
+		navLinks.forEach((link) => {
+			link.addEventListener('pointerenter', (event) => {
+				if (desktopQuery.matches && event.pointerType !== 'touch') moveLensTo(link);
+			});
+			link.addEventListener('focus', () => {
+				if (desktopQuery.matches) moveLensTo(link);
+			});
+			link.addEventListener('click', (event) => {
+				if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+				if (navigatingFromMenu) {
+					event.preventDefault();
+					return;
+				}
+				const url = new URL(link.href);
+				const targetPath = pathKey(url);
+				if (targetPath === pathKey(new URL(location.href)) || motionQuery.matches) {
+					closeMenu();
+					return;
+				}
+				if (desktopQuery.matches) {
+					try {
+						const left = navLens.getBoundingClientRect().left - primaryNav.getBoundingClientRect().left;
+						sessionStorage.setItem(storageKey, JSON.stringify({ targetPath, left, time: Date.now() }));
+					} catch { /* Storage can be disabled independently of navigation. */ }
+					return;
+				}
+				const animation = moveLensTo(link);
+				if (!animation) return;
+				event.preventDefault();
+				navigatingFromMenu = true;
+				const followLink = () => location.assign(url.href);
+				void animation.finished.then(followLink, followLink);
+			});
+		});
+		primaryNav.addEventListener('pointerleave', () => {
+			if (desktopQuery.matches) moveLensTo();
+		});
+		primaryNav.addEventListener('focusout', (event) => {
+			if (desktopQuery.matches && !primaryNav.contains(event.relatedTarget as Node | null)) {
+				moveLensTo();
+			}
+		});
+		const resetLens = () => {
+			lensAnimation?.cancel();
+			targetLink = activeLink;
+			navLens.style.transform = '';
+		};
+		desktopQuery.addEventListener('change', resetLens);
+		motionQuery.addEventListener('change', resetLens);
+		window.addEventListener('pageshow', (event) => {
+			if (event.persisted) {
+				resetLens();
+				navigatingFromMenu = false;
+				closeMenu();
+			}
+		});
+		try {
+			const pending = sessionStorage.getItem(storageKey);
+			if (pending) {
+				sessionStorage.removeItem(storageKey);
+				const { targetPath, left, time } = JSON.parse(pending);
+				if (desktopQuery.matches && activeLink && targetPath === pathKey(new URL(location.href))
+					&& Date.now() - time < 5000 && Number.isFinite(left) && Math.abs(left - activeLink.offsetLeft) > 2) {
+					moveLensTo(activeLink, left);
+				}
+			}
+		} catch { /* An unavailable or invalid saved position is optional. */ }
+	}
 </script>
