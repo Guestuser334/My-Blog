@@ -75,33 +75,19 @@ const links = [
 		padding: 1.3rem 1.4rem;
 		min-height: 112px;
 		box-sizing: border-box;
-		border-radius: 22px;
-		background: var(--journal-glass);
-		border: 1px solid var(--panel-line);
-		-webkit-backdrop-filter: blur(1px) saturate(120%) brightness(1.03);
-		backdrop-filter: blur(1px) saturate(120%) brightness(1.03);
-		box-shadow: var(--glass-inner-bevel), var(--glass-shadow);
+		border-radius: var(--liquid-glass-panel-radius);
+		box-shadow: var(--liquid-glass-edge), var(--glass-shadow);
 		transition: transform 220ms var(--ease-spring), background-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
 		position: relative;
 		isolation: isolate;
 		overflow: hidden;
 	}
 
-	:root[data-theme="dark"] .link-card {
-		-webkit-backdrop-filter: blur(1.2px) saturate(120%) brightness(1.02);
-		backdrop-filter: blur(1.2px) saturate(120%) brightness(1.02);
-	}
-	@media (prefers-color-scheme: dark) {
-		:root:not([data-theme="light"]) .link-card {
-			-webkit-backdrop-filter: blur(1.2px) saturate(120%) brightness(1.02);
-			backdrop-filter: blur(1.2px) saturate(120%) brightness(1.02);
-		}
-	}
 
 	.link-card-wrapper:hover .link-card {
 		transform: translateY(-3px);
 		background: var(--card-hover-bg);
-		box-shadow: var(--glass-inner-bevel), 0 14px 32px rgba(36, 20, 38, 0.16);
+		box-shadow: var(--liquid-glass-edge), 0 14px 32px rgba(36, 20, 38, 0.16);
 	}
 	
 	.link-card-wrapper:active .link-card {

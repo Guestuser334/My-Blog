@@ -44,7 +44,8 @@ const searchPosts = allPosts.map((post) => ({
 				gap: 0.6rem;
 				padding: 0.62rem 0.85rem;
 				border: 1px solid var(--panel-line);
-				border-radius: 12px;
+				border-radius: var(--liquid-glass-control-radius);
+				corner-shape: superellipse(var(--liquid-glass-corner));
 				background: rgb(22 13 29 / 0.36);
 				color: var(--rose-ink);
 			}
@@ -69,23 +70,19 @@ const searchPosts = allPosts.map((post) => ({
 				left: 0;
 				right: 0;
 				padding: 0.55rem;
-				border: 1px solid rgba(255, 255, 255, 0.24);
-				border-radius: 20px;
-				background: rgba(28, 22, 42, 0.62);
-				box-shadow: var(--glass-inner-bevel), 0 20px 50px rgba(10, 6, 20, 0.34);
-				-webkit-backdrop-filter: blur(1px) saturate(120%);
-				backdrop-filter: blur(1px) saturate(120%);
+				border-radius: var(--liquid-glass-panel-radius);
+				background: var(--liquid-glass-floating-tint);
+				corner-shape: superellipse(var(--liquid-glass-corner));
+				box-shadow: var(--liquid-glass-edge), 0 20px 50px rgba(10, 6, 20, 0.34);
+				-webkit-backdrop-filter: blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation));
+				backdrop-filter: blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation));
 			}
 			:root[data-theme="dark"] .search-results {
-				background: rgba(16, 14, 26, 0.72);
-				border-color: rgba(255, 255, 255, 0.18);
-				box-shadow: var(--glass-inner-bevel), 0 22px 54px rgba(4, 3, 10, 0.48);
+				box-shadow: var(--liquid-glass-edge), 0 22px 54px rgba(4, 3, 10, 0.48);
 			}
 			@media (prefers-color-scheme: dark) {
 				:root:not([data-theme="light"]) .search-results {
-					background: rgba(16, 14, 26, 0.72);
-					border-color: rgba(255, 255, 255, 0.18);
-					box-shadow: var(--glass-inner-bevel), 0 22px 54px rgba(4, 3, 10, 0.48);
+					box-shadow: var(--liquid-glass-edge), 0 22px 54px rgba(4, 3, 10, 0.48);
 				}
 			}
 			.search-results.visible { display: block; }
@@ -93,7 +90,8 @@ const searchPosts = allPosts.map((post) => ({
 			.search-result {
 				display: block;
 				padding: 0.7rem 0.8rem;
-				border-radius: 10px;
+				border-radius: max(10px, calc(var(--liquid-glass-panel-radius) - 0.55rem));
+				corner-shape: superellipse(var(--liquid-glass-corner));
 				color: var(--text-color);
 				text-decoration: none;
 			}
@@ -114,7 +112,6 @@ const searchPosts = allPosts.map((post) => ({
 				justify-content: center;
 				min-height: 390px;
 				padding: clamp(1.4rem, 3.2vw, 2.8rem);
-				background: linear-gradient(145deg, rgb(104 44 79 / 0.24), rgb(38 24 58 / 0.30)), var(--material-thin);
 			}
 			.profile-title-link { color: inherit; text-decoration: none; }
 			.profile-title-link:hover { color: var(--rose-ink); }
@@ -178,8 +175,6 @@ const searchPosts = allPosts.map((post) => ({
 				position: relative;
 				overflow: hidden;
 				isolation: isolate;
-				background: radial-gradient(ellipse at 50% 36%, rgb(48 34 61 / 0.74), rgb(44 28 55 / 0.48) 72%, transparent),
-					var(--journal-glass);
 			}
 			/* SVG Map */
 			.svg-map-wrapper {
@@ -348,7 +343,6 @@ const searchPosts = allPosts.map((post) => ({
 
 			.recent-posts-widget {
 				padding: clamp(1.2rem, 2.3vw, 1.75rem);
-				background: linear-gradient(rgb(25 17 37 / 0.17), rgb(25 17 37 / 0.23)), var(--journal-glass);
 			}
 			.recent-posts-widget:focus-within { z-index: 3; }
 			.journal-header {
@@ -375,7 +369,7 @@ const searchPosts = allPosts.map((post) => ({
 			.post-row:hover .post-title-link { color: var(--rose-ink); }
 			.post-meta-tag { color: var(--cool-ink); white-space: nowrap; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
 
-			.home-utility { padding: 1rem clamp(1.15rem, 2.5vw, 1.9rem); background: linear-gradient(rgb(23 17 37 / 0.25), rgb(23 17 37 / 0.28)), var(--journal-glass); }
+			.home-utility { padding: 1rem clamp(1.15rem, 2.5vw, 1.9rem); }
 			.utility-details,
 			.footer-bar {
 				display: flex;

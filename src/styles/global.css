@@ -40,7 +40,6 @@
 		inset 0 -10px 22px rgba(10, 6, 20, 0.16),
 		inset 0 0 8px rgba(255, 248, 252, 0.08);
 	--glass-shadow: 0 12px 34px rgba(16, 10, 28, 0.22), 0 3px 8px rgba(16, 10, 28, 0.12);
-	--glass-rim-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.34) 26%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.10) 68%, rgba(255, 255, 255, 0.48) 100%);
 	--glass-sheen: linear-gradient(160deg, var(--rose-glint), transparent 41%);
 	--text-color: #f7f7fa;
 	--text-muted: #e9e0ee;
@@ -81,7 +80,6 @@
 	--glass-inner-bevel: inset 0 1px 1.5px rgba(255, 255, 255, 0.30),
 		inset 0 -10px 24px rgba(0, 0, 0, 0.32);
 	--glass-shadow: 0 16px 44px rgba(4, 3, 10, 0.44), 0 3px 10px rgba(4, 3, 10, 0.24);
-	--glass-rim-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.22) 28%, rgba(255, 255, 255, 0.04) 52%, rgba(255, 255, 255, 0.08) 70%, rgba(255, 255, 255, 0.36) 100%);
 	--glass-sheen: linear-gradient(160deg, rgb(238 141 192 / 0.12), transparent 43%);
 	--text-color: #f5f5f7;
 	--text-muted: #ddd4e4;
@@ -122,7 +120,6 @@
 		--glass-inner-bevel: inset 0 1px 1.5px rgba(255, 255, 255, 0.30),
 			inset 0 -10px 24px rgba(0, 0, 0, 0.32);
 		--glass-shadow: 0 16px 44px rgba(4, 3, 10, 0.44), 0 3px 10px rgba(4, 3, 10, 0.24);
-		--glass-rim-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.22) 28%, rgba(255, 255, 255, 0.04) 52%, rgba(255, 255, 255, 0.08) 70%, rgba(255, 255, 255, 0.36) 100%);
 		--glass-sheen: linear-gradient(160deg, rgb(238 141 192 / 0.12), transparent 43%);
 		--text-color: #f5f5f7;
 		--text-muted: #ddd4e4;
@@ -188,17 +185,34 @@ body::after {
 :root {
 	/* The inline thumbnail keeps the first paint close to the wallpaper while it loads. */
 	--wallpaper-preview: url('../assets/bg-preview.webp?inline');
+	--wallpaper-dimming: linear-gradient(rgb(8 7 13 / var(--background-dim)), rgb(8 7 13 / var(--background-dim)));
+	--liquid-glass-blur: 3.75px;
+	--liquid-glass-saturation: 112%;
+	--liquid-glass-padding: 48px;
+	--liquid-glass-corner: 1.72;
+	--liquid-glass-card-radius: clamp(30px, 3.2vw, 40px);
+	--liquid-glass-panel-radius: clamp(24px, 2.5vw, 34px);
+	--liquid-glass-control-radius: 13px;
+	--liquid-glass-veil: linear-gradient(170deg, rgb(255 248 251 / 0.11), rgb(255 248 251 / 0.035) 72%);
+	--liquid-glass-tint: var(--liquid-glass-veil), rgb(27 19 34 / 0.09);
+	--liquid-glass-page-tint: var(--liquid-glass-veil), rgb(27 19 34 / 0.12);
+	--liquid-glass-reading-tint: var(--liquid-glass-veil), rgb(26 19 34 / 0.20);
+	--liquid-glass-floating-tint: var(--liquid-glass-veil), rgb(26 19 34 / 0.40);
+	--liquid-glass-rim:
+		radial-gradient(ellipse 62% 44% at 30% 0%, rgb(255 252 251 / 0.72), transparent),
+		radial-gradient(ellipse 52% 40% at 70% 100%, rgb(255 248 251 / 0.48), transparent),
+		linear-gradient(90deg, rgb(25 19 28 / 0.28), transparent 18% 82%, rgb(25 19 28 / 0.28)),
+		linear-gradient(180deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0.07) 50%, rgb(255 255 255 / 0.16));
+	--liquid-glass-edge: inset 0 0 0 1px rgb(21 17 25 / 0.18);
 }
 
 .glass-card {
 	background: var(--glass-bg);
 	border: none;
-	/* Crisp optical glass fallback (upgraded to roundedRectSDF SVG displacement in Chromium). */
-	-webkit-backdrop-filter: blur(1px) contrast(1.1) brightness(1.05) saturate(120%);
-	backdrop-filter: blur(1px) contrast(1.1) brightness(1.05) saturate(120%);
 	isolation: isolate;
-	border-radius: 26px;
-	box-shadow: var(--glass-inner-bevel), var(--glass-shadow);
+	border-radius: var(--liquid-glass-card-radius);
+	corner-shape: superellipse(var(--liquid-glass-corner));
+	box-shadow: var(--liquid-glass-edge), var(--glass-shadow);
 	padding: 1.5rem;
 	box-sizing: border-box;
 	text-shadow: var(--surface-text-shadow);
@@ -206,49 +220,63 @@ body::after {
 	position: relative;
 }
 
-:where(:root[data-theme="dark"]) .glass-card {
-	-webkit-backdrop-filter: blur(1.2px) contrast(1.08) brightness(1.03) saturate(120%);
-	backdrop-filter: blur(1.2px) contrast(1.08) brightness(1.03) saturate(120%);
-}
-
-@media (prefers-color-scheme: dark) {
-	:where(:root:not([data-theme="light"])) .glass-card {
-		-webkit-backdrop-filter: blur(1.2px) contrast(1.08) brightness(1.03) saturate(120%);
-		backdrop-filter: blur(1.2px) contrast(1.08) brightness(1.03) saturate(120%);
-	}
+:is(.glass-card:not(nav, [data-glass-photo]), .link-card[data-glass]) {
+	--glass-sheen: none;
+	--glass-surface-tint: var(--liquid-glass-tint);
+	background: var(--glass-surface-tint);
+	-webkit-backdrop-filter: blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation));
+	backdrop-filter: blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation));
+	corner-shape: superellipse(var(--liquid-glass-corner));
 }
 
 .glass-card[data-glass-tier="reading"] {
-	background: var(--reading-glass);
-	-webkit-backdrop-filter: blur(2.2px) contrast(1.05) brightness(1.02) saturate(120%);
-	backdrop-filter: blur(2.2px) contrast(1.05) brightness(1.02) saturate(120%);
+	--glass-surface-tint: var(--liquid-glass-reading-tint);
+	--liquid-glass-blur: 4.5px;
 }
 
-/* The viewport-sized layer handles the live backdrop on tall reading surfaces. */
-.glass-card[data-glass-tier="reading"][data-liquid-glass-sliced] {
-	-webkit-backdrop-filter: none;
-	backdrop-filter: none;
+.glass-card[data-glass-tier="page"] {
+	--glass-surface-tint: var(--liquid-glass-page-tint);
 }
 
-.liquid-glass-reading-layer {
+[data-liquid-glass-wallpaper] {
+	background: transparent !important;
+	-webkit-backdrop-filter: none !important;
+	backdrop-filter: none !important;
+	/* A transformed ancestor changes the containing block of a fixed wallpaper. */
+	transform: none !important;
+}
+
+.glass-wallpaper-clip {
 	position: absolute;
-	inset: 0 0 auto;
-	z-index: -1;
+	inset: 0;
 	border-radius: inherit;
+	corner-shape: inherit;
+	overflow: clip;
+	z-index: -2;
 	pointer-events: none;
 }
 
-:where(:root[data-theme="dark"]) .glass-card[data-glass-tier="reading"] {
-	-webkit-backdrop-filter: blur(2.6px) contrast(1.04) saturate(120%);
-	backdrop-filter: blur(2.6px) contrast(1.04) saturate(120%);
+[data-liquid-glass-wallpaper] > .glass-wallpaper-clip::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: var(--glass-surface-tint);
+	box-shadow: var(--liquid-glass-edge);
 }
 
-@media (prefers-color-scheme: dark) {
-	:where(:root:not([data-theme="light"])) .glass-card[data-glass-tier="reading"] {
-		-webkit-backdrop-filter: blur(2.6px) contrast(1.04) saturate(120%);
-		backdrop-filter: blur(2.6px) contrast(1.04) saturate(120%);
-	}
+.glass-wallpaper-optics {
+	position: absolute;
+	left: calc(-1 * var(--liquid-glass-padding));
+	right: calc(-1 * var(--liquid-glass-padding));
+	background: var(--wallpaper-dimming), var(--background-vignette), var(--bg-url), var(--wallpaper-preview);
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+	background-color: #0c0d12;
+	visibility: hidden;
 }
+
+.glass-wallpaper-optics[data-liquid-glass-ready] { visibility: visible; }
 
 .glass-card::before {
 	content: "";
@@ -256,19 +284,20 @@ body::after {
 	inset: 0;
 	z-index: -1;
 	border-radius: inherit;
+	corner-shape: inherit;
 	background: var(--glass-sheen);
 	pointer-events: none;
 }
 
-/* Directional angle-fading specular edge rim (stronger on diagonal light faces, fading on transitions) */
-.glass-card::after,
-.link-card::after {
+/* Separate a narrow specular reflection from the dark optical edge. */
+:is(.glass-card, .link-card, .nav-lens, .search-results, .menu-glass-background, :where(#waline) .wl-panel, :where(#waline) .wl-card-item)::after {
 	content: "";
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
-	padding: 1.2px;
-	background: var(--glass-rim-gradient);
+	corner-shape: inherit;
+	padding: 1px;
+	background: var(--liquid-glass-rim);
 	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
 	-webkit-mask-composite: xor;
 	mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -278,8 +307,7 @@ body::after {
 }
 
 @supports not ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
-	.glass-card::after,
-	.link-card::after {
+	:is(.glass-card, .link-card, .nav-lens, .search-results, .menu-glass-background, :where(#waline) .wl-panel, :where(#waline) .wl-card-item)::after {
 		display: none;
 	}
 	.glass-card,
@@ -323,7 +351,7 @@ body::after {
 .glass-card-hover:hover {
 	transform: translateY(-4px);
 	background: var(--card-hover-bg);
-	box-shadow: var(--glass-inner-bevel), 0 16px 38px rgba(36, 20, 38, 0.16);
+	box-shadow: var(--liquid-glass-edge), 0 16px 38px rgba(36, 20, 38, 0.16);
 }
 
 .glass-card-hover:active {
@@ -562,104 +590,135 @@ html {
 	box-sizing: border-box;
 }
 
+#waline :is(.wl-panel, .wl-cards .wl-card-item) {
+	--glass-surface-tint: var(--liquid-glass-page-tint);
+	position: relative;
+	isolation: isolate;
+	min-width: 0;
+	border: 0;
+	border-radius: var(--liquid-glass-panel-radius);
+	corner-shape: superellipse(var(--liquid-glass-corner));
+	background: var(--glass-surface-tint);
+	-webkit-backdrop-filter: blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation));
+	backdrop-filter: blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation));
+	box-shadow: var(--liquid-glass-edge), 0 7px 20px rgb(18 12 24 / 0.15);
+}
+
 #waline .wl-panel {
 	flex: 1 1 0;
-	width: auto;
-	min-width: 0;
 	max-width: 100%;
-	margin: 0.5em 0;
+	margin: 0 0 1rem;
+	padding: clamp(0.75rem, 2vw, 1.15rem);
 	box-sizing: border-box;
 }
 
-#waline .wl-header,
-#waline .wl-header-item {
-	min-width: 0;
-	box-sizing: border-box;
+#waline .wl-reply-wrapper {
+	margin-top: 0.9rem;
 }
 
-#waline .wl-editor {
-	background: rgba(255, 255, 255, 0.06) !important;
-	border: 1px solid rgba(255, 255, 255, 0.12) !important;
-	border-radius: 12px;
-	color: var(--text-color) !important;
-	padding: 12px !important;
-	transition: border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
-	background-clip: padding-box !important;
-	min-height: 80px !important;
-	height: 90px !important; /* Reduced height */
-	font-size: 1.1rem !important;
+#waline .wl-cards .wl-card-item {
+	display: flex;
+	align-items: flex-start;
+	padding: clamp(0.8rem, 2vw, 1.25rem);
+	margin-bottom: 0.9rem;
 }
 
-:root[data-theme="dark"] #waline .wl-editor {
-	background: rgba(45, 36, 60, 0.52) !important;
-	border: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) #waline .wl-editor {
-		background: rgba(45, 36, 60, 0.52) !important;
-		border: 1px solid rgba(255, 255, 255, 0.05) !important;
-	}
-}
-
-#waline .wl-editor:focus {
-	border-color: var(--accent) !important;
-	box-shadow: 0 0 10px rgba(var(--accent-color), 0.2) !important;
-}
-
-/* Header Inputs (Nick, Email, Link) */
 #waline .wl-header {
-	border-bottom: 1px solid var(--glass-border) !important;
-	display: flex !important;
-	flex-direction: column !important;
-	align-items: stretch !important;
-	gap: 0.5rem !important;
-	padding: 0.6rem 0.8rem !important;
+	display: grid;
+	gap: 0.8rem;
+	min-width: 0;
+	padding: 0 0 0.85rem;
+	border-bottom: 0;
 }
 
-#waline .wl-header input {
-	border-bottom: 1px solid transparent !important;
-	color: var(--text-color) !important;
-	transition: border-color 200ms var(--ease-out);
+#waline .wl-header-item:has(input[name="mail"]),
+#waline .wl-header-item:has(input[name="link"]) {
+	display: none;
 }
 
-#waline .wl-header input:focus {
-	border-bottom: 1px solid var(--accent) !important;
+#waline .wl-header-item:has(input[name="nick"]) {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	margin: 0;
+	padding: 0;
+	border: 0;
 }
 
-/* Hide Email and Link inputs in Waline Comments */
-#waline .wl-header .wl-header-item:has(label[for="wl-mail"]),
-#waline .wl-header .wl-header-item:has(label[for="wl-link"]) {
-	display: none !important;
+#waline .wl-header-item label,
+.comment-avatar-heading {
+	color: var(--text-color);
+	font-weight: 650;
+	font-size: 0.9rem;
 }
 
-/* Make Nickname input take available space since others are hidden */
-#waline .wl-header .wl-header-item:has(label[for="wl-nick"]) {
-	flex: 1 !important;
-	width: 100% !important;
-	border-right: none !important;
-	padding: 0 !important;
-	margin: 0 !important;
-	display: flex !important;
-	align-items: center !important;
-	gap: 0.8rem !important;
-}
-
-/* Make Nickname input text and label larger */
-#waline .wl-header .wl-header-item label[for="wl-nick"] {
-	font-size: 1.1rem !important; /* Match to 1.1rem of avatar label */
-	font-weight: 600 !important;
-	color: var(--accent) !important; /* Signature Pink! */
-	padding: 0 !important;
-	margin: 0 !important;
-}
-
-#waline #wl-nick {
+#waline .wl-header-item input[name="nick"],
+#waline .wl-editor {
 	min-width: 0;
 	box-sizing: border-box;
-	font-size: 1.25rem !important;
-	font-weight: 600 !important;
-	color: var(--text-color) !important;
+	border: 1px solid rgb(255 255 255 / 0.15);
+	border-radius: var(--liquid-glass-control-radius);
+	corner-shape: superellipse(var(--liquid-glass-corner));
+	background: rgb(18 13 23 / 0.14);
+	color: var(--text-color);
+}
+
+#waline .wl-header-item input[name="nick"] { padding: 0.45rem 0.65rem; font: inherit; }
+#waline .wl-editor { min-height: 6rem; padding: 0.8rem; font-size: 1rem; }
+#waline :is(.wl-header-item input[name="nick"], .wl-editor):focus { border-color: var(--rose-ink); }
+
+.comment-avatar-picker { min-width: 0; }
+.comment-avatar-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 0.35rem;
+}
+.comment-avatar-actions { display: flex; gap: 0.35rem; }
+.comment-avatar-actions button {
+	padding: 0.25rem 0.55rem;
+	border: 1px solid rgb(255 255 255 / 0.16);
+	border-radius: 8px;
+	corner-shape: superellipse(var(--liquid-glass-corner));
+	background: rgb(255 255 255 / 0.08) center / cover;
+	color: var(--text-color);
+	font: inherit;
+	font-size: 0.77rem;
+	cursor: pointer;
+}
+.comment-avatar-options {
+	display: flex;
+	gap: 0.35rem;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	padding: 0.2rem 0.2rem 0.55rem;
+	scrollbar-width: thin;
+	scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+.comment-avatar-options button {
+	flex: 0 0 auto;
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	padding: 2px;
+	border: 1px solid transparent;
+	border-radius: 50%;
+	background: transparent;
+	cursor: pointer;
+}
+.comment-avatar-options img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.comment-avatar-picker button:hover { background-color: rgb(255 255 255 / 0.14); }
+.comment-avatar-picker button[aria-pressed="true"] { border-color: var(--rose-ink); }
+.comment-avatar-status { margin: 0.25rem 0 0; color: var(--rose-ink); font-size: 0.82rem; }
+
+@media (prefers-reduced-transparency: reduce) {
+	#waline :is(.wl-panel, .wl-cards .wl-card-item) {
+		background: #282333;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
 }
 
 /* Hide login buttons and profile admin edit links in comment section */
@@ -742,32 +801,6 @@ html {
 	line-height: 1.7 !important;
 }
 
-/* Strengthen comment cards frosted glass & tighten vertical spacing */
-#waline .wl-cards .wl-card-item {
-	position: relative;
-	isolation: isolate;
-	background: rgba(255, 255, 255, 0.06) !important;
-	border: 1px solid rgba(255, 255, 255, 0.12) !important;
-	border-radius: 20px !important;
-	padding: 1.25rem 1.5rem !important;
-	margin-bottom: 1.5rem !important;
-	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-	transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out), transform 200ms var(--ease-spring) !important;
-	background-clip: padding-box !important;
-	display: flex !important;
-	align-items: flex-start !important;
-}
-
-#waline .wl-cards .wl-card-item:hover {
-	background-color: rgba(255, 255, 255, 0.10) !important;
-	border-color: rgba(255, 255, 255, 0.2) !important;
-	transform: translateY(-2px);
-}
-
-#waline .wl-cards .wl-card-item:active {
-	transform: scale(0.98);
-}
-
 #waline .wl-cards .wl-user {
 	margin-right: 14px !important;
 	margin-left: 0 !important;
@@ -808,29 +841,6 @@ html {
 
 #waline .wl-card .wl-content {
 	margin-top: 0.3rem !important; /* Tighten gap above comment body */
-}
-
-:root[data-theme="dark"] #waline .wl-cards .wl-card-item {
-	background: rgba(31, 26, 44, 0.72) !important;
-	border: 1px solid rgba(255, 255, 255, 0.05) !important;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-}
-
-:root[data-theme="dark"] #waline .wl-cards .wl-card-item:hover {
-	background-color: rgba(40, 32, 55, 0.8) !important;
-	border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) #waline .wl-cards .wl-card-item {
-		background: rgba(31, 26, 44, 0.72) !important;
-		border: 1px solid rgba(255, 255, 255, 0.05) !important;
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-	}
-	:root:not([data-theme="light"]) #waline .wl-cards .wl-card-item:hover {
-		background-color: rgba(40, 32, 55, 0.8) !important;
-		border-color: rgba(255, 255, 255, 0.08) !important;
-	}
 }
 
 /* Comment Header list spacing & Mobile responsiveness */

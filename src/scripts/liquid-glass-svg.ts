@@ -9,11 +9,15 @@ interface FilterEntry {
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 const FULL_FILTER_HEIGHT = 1400;
-const READING_OVERSCAN = 72;
+const SLICE_STEP = 192;
+const SLICE_OVERSCAN = 96;
 
-function roundedRectSDF(px: number, py: number, halfW: number, halfH: number, radius: number): number {
+function roundedRectSDF(px: number, py: number, halfW: number, halfH: number, radius: number, cornerPower: number): number {
 	const qx = Math.abs(px) - halfW + radius;
 	const qy = Math.abs(py) - halfH + radius;
+	if (cornerPower !== 2 && qx > 0 && qy > 0) {
+		return (qx ** cornerPower + qy ** cornerPower) ** (1 / cornerPower) - radius;
+	}
 	return Math.min(Math.max(qx, qy), 0) + Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) - radius;
 }
 
@@ -30,12 +34,11 @@ export function mountLiquidGlassSvg() {
 		/Chrome|Chromium|Edg/i.test(navigator.userAgent) && !/Firefox/i.test(navigator.userAgent);
 	if (!isChromium) return;
 
-	const targets = Array.from(
-		document.querySelectorAll<HTMLElement>(
-			'.glass-card:not(nav, [data-glass-photo]), .link-card, .menu-glass-background, .nav-lens, #theme-toggle, .search-results',
-		),
-	);
-	if (!targets.length) return;
+	const wallpaperSelector = '.glass-card:not(nav, [data-glass-photo]), .link-card[data-glass], #waline .wl-panel, #waline .wl-card-item';
+	const targets = new Set(document.querySelectorAll<HTMLElement>(
+		`${wallpaperSelector}, .nav-glass-background, .menu-glass-background, .nav-lens, #theme-toggle, .search-results`,
+	));
+	if (!targets.size) return;
 
 	let svg = document.getElementById('liquid-glass-svg-defs') as SVGSVGElement | null;
 	if (!svg) {
@@ -54,52 +57,69 @@ export function mountLiquidGlassSvg() {
 	if (!mapCtx) return;
 
 	const entries = new Map<HTMLElement, FilterEntry>();
-	const readingLayers = new Map<HTMLElement, HTMLSpanElement>();
+	const wallpaperLayers = new Map<HTMLElement, { layer: HTMLSpanElement; top: number }>();
 	let nextId = 1;
 	let rafId = 0;
 
 	const clearElementFilter = (el: HTMLElement) => {
 		el.style.removeProperty('backdrop-filter');
 		el.style.removeProperty('-webkit-backdrop-filter');
+		if (el.classList.contains('glass-wallpaper-optics')) el.style.removeProperty('filter');
 		el.removeAttribute('data-liquid-glass-ready');
 	};
 
-	const buildFilterCss = (el: HTMLElement, id: string): string => {
-		if (el.matches('.nav-lens, .menu-glass-background')) {
-			return `url(#${id}) blur(var(--navigation-glass-blur, 1px)) contrast(var(--navigation-glass-contrast, 1.12)) brightness(var(--navigation-glass-brightness, 1.05)) saturate(var(--navigation-glass-saturation, 1.2))`;
-		}
-		if (el.id === 'theme-toggle') {
-			return `url(#${id}) blur(1px) contrast(1.12) brightness(1.07) saturate(125%)`;
-		}
-		if (el.dataset.glassTier === 'reading') {
-			return `url(#${id}) blur(2.2px) contrast(1.05) brightness(1.03) saturate(120%)`;
-		}
-		return `url(#${id}) blur(1px) contrast(1.12) brightness(1.05) saturate(120%)`;
+	const setElementFilter = (el: HTMLElement, property: string, value: string) => {
+		if (property === 'backdrop-filter') el.style.setProperty('-webkit-backdrop-filter', value);
+		el.style.setProperty(property, value);
+		el.setAttribute('data-liquid-glass-ready', '');
 	};
 
-	const applyFilter = (el: HTMLElement) => {
+	const buildFilterCss = (el: HTMLElement, id: string): string => {
+		if (el.matches('.nav-lens, .nav-glass-background, .menu-glass-background')) {
+			return `url(#${id}) blur(var(--navigation-glass-blur, var(--liquid-glass-blur))) saturate(var(--liquid-glass-saturation))`;
+		}
+		return `url(#${id}) blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation))`;
+	};
+
+	const applyFilter = (el: HTMLElement, surface?: HTMLElement, top = 0) => {
 		if (reducedTransparency.matches) {
 			clearElementFilter(el);
 			return;
 		}
 		const width = el.offsetWidth;
 		const height = el.offsetHeight;
-		if (width <= 0 || height <= 0 || (height > FULL_FILTER_HEIGHT && !el.classList.contains('liquid-glass-reading-layer'))) {
+		if (width <= 0 || height <= 0) {
 			clearElementFilter(el);
 			return;
 		}
 
-		const computedRadius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
-		const radius = Math.min(computedRadius, width / 2, height / 2);
-		const signature = `${width}x${height}x${Math.round(radius)}`;
+		const filterProperty = surface ? 'filter' : 'backdrop-filter';
+		const style = getComputedStyle(surface ?? el);
+		const padding = surface ? parseFloat(style.getPropertyValue('--liquid-glass-padding')) : 0;
+		const halfW = (surface?.clientWidth ?? width) * 0.5;
+		const halfH = (surface?.clientHeight ?? height) * 0.5;
+		const computedRadius = parseFloat(style.borderTopLeftRadius) || 0;
+		const radius = Math.min(computedRadius, halfW, halfH);
+		const corner = style.getPropertyValue('corner-top-left-shape').match(/superellipse\(([^)]+)\)/);
+		const cornerPower = corner ? 2 ** Number(corner[1]) : 2;
+		const bounds = surface?.getBoundingClientRect();
+		// Fixed wallpaper pixels end at the viewport, including on narrow phones.
+		const leftTravel = bounds ? Math.max(0, Math.min(24, Math.floor(bounds.left) - 6)) : 24;
+		const rightTravel = bounds ? Math.max(0, Math.min(24, Math.floor(document.documentElement.clientWidth - bounds.right) - 6)) : 24;
+		const isLongSurface = halfH * 2 > FULL_FILTER_HEIGHT;
+		const isInterior = top > 0 && top + height - 2 * padding < 2 * halfH;
+		if (isLongSurface && isInterior) {
+			// The middle of a long article needs only the native blur. Edge slices retain the lens.
+			setElementFilter(el, filterProperty, 'blur(var(--liquid-glass-blur)) saturate(var(--liquid-glass-saturation))');
+			return;
+		}
+		const signature = [width, height, halfW, halfH, radius, padding, cornerPower, top, leftTravel, rightTravel].join(':');
 
 		let entry = entries.get(el);
 		if (entry && entry.signature === signature) {
 			const filterCss = buildFilterCss(el, entry.id);
-			if (el.style.backdropFilter !== filterCss) {
-				el.style.setProperty('-webkit-backdrop-filter', filterCss);
-				el.style.setProperty('backdrop-filter', filterCss);
-				el.setAttribute('data-liquid-glass-ready', '');
+			if (el.style.getPropertyValue(filterProperty) !== filterCss) {
+				setElementFilter(el, filterProperty, filterCss);
 			}
 			return;
 		}
@@ -127,21 +147,13 @@ export function mountLiquidGlassSvg() {
 			entries.set(el, entry);
 		}
 
-		const halfW = width * 0.5;
-		const halfH = height * 0.5;
 		const minHalf = Math.min(halfW, halfH);
-		const bevelWidth = Math.max(8, Math.min(26, minHalf * 0.45));
-
-		let strength: number;
-		if (el.classList.contains('nav-lens') || el.id === 'theme-toggle') {
-			strength = Math.min(14, minHalf * 0.55);
-		} else if (el.dataset.glassTier === 'reading') {
-			strength = 12;
-		} else {
-			strength = Math.min(22, bevelWidth * 0.85);
-		}
+		const bevelWidth = Math.min(40, minHalf * 0.38);
+		const strength = surface ? Math.min(24, bevelWidth * 0.65) : Math.min(8, bevelWidth * 0.65);
 		const scale = Math.max(2, strength * 2);
-		const centerStrength = Math.min(el.dataset.glassTier === 'intro' ? 9 : 4, minHalf * 0.18, strength);
+		const centerStrength = Math.min(2, minHalf * 0.18, strength);
+		// A padded wallpaper copy reaches beyond the outline. Live backdrop filters stay within their surface.
+		const edgeStrength = surface ? strength : -strength;
 
 		const mapScale = Math.min(0.5, 512 / Math.max(width, height));
 		const mw = Math.max(16, Math.round(width * mapScale));
@@ -155,30 +167,31 @@ export function mountLiquidGlassSvg() {
 		const eps = 1.0;
 
 		for (let my = 0; my < mh; my++) {
-			const py = ((my + 0.5) / mh) * height - halfH;
+			const py = ((my + 0.5) / mh) * height + top - padding - halfH;
 			for (let mx = 0; mx < mw; mx++) {
-				const px = ((mx + 0.5) / mw) * width - halfW;
-				const sd = roundedRectSDF(px, py, halfW, halfH, radius);
+				const px = ((mx + 0.5) / mw) * width - padding - halfW;
+				const sd = roundedRectSDF(px, py, halfW, halfH, radius, cornerPower);
 				const d = Math.max(0, -sd);
 
 				// A gentle magnification in the face connects continuously to the stronger bevel.
 				let dx = -(px / halfW) * centerStrength;
-				let dy = -(py / halfH) * centerStrength;
+				let dy = isLongSurface ? 0 : -(py / halfH) * centerStrength;
 				if (d < bevelWidth) {
 					const gx =
-						roundedRectSDF(px + eps, py, halfW, halfH, radius) -
-						roundedRectSDF(px - eps, py, halfW, halfH, radius);
+						roundedRectSDF(px + eps, py, halfW, halfH, radius, cornerPower) -
+						roundedRectSDF(px - eps, py, halfW, halfH, radius, cornerPower);
 					const gy =
-						roundedRectSDF(px, py + eps, halfW, halfH, radius) -
-						roundedRectSDF(px, py - eps, halfW, halfH, radius);
+						roundedRectSDF(px, py + eps, halfW, halfH, radius, cornerPower) -
+						roundedRectSDF(px, py - eps, halfW, halfH, radius, cornerPower);
 					const gLen = Math.hypot(gx, gy);
 					const nx = gLen > 1e-4 ? gx / gLen : 0;
 					const ny = gLen > 1e-4 ? gy / gLen : -1;
 
 					const curve = smoothStep(0, 1, 1 - d / bevelWidth);
-					dx = dx * (1 - curve) - nx * strength * curve;
-					dy = dy * (1 - curve) - ny * strength * curve;
+					dx = dx * (1 - curve) + nx * edgeStrength * curve;
+					dy = dy * (1 - curve) + ny * edgeStrength * curve;
 				}
+				if (surface) dx = Math.max(-leftTravel, Math.min(rightTravel, dx));
 
 				const idx = (my * mw + mx) * 4;
 				data[idx] = Math.max(0, Math.min(255, Math.round((dx / scale + 0.5) * 255)));
@@ -205,48 +218,46 @@ export function mountLiquidGlassSvg() {
 		entry.signature = signature;
 
 		const filterCss = buildFilterCss(el, entry.id);
-		el.style.setProperty('-webkit-backdrop-filter', filterCss);
-		el.style.setProperty('backdrop-filter', filterCss);
-		el.setAttribute('data-liquid-glass-ready', '');
+		setElementFilter(el, filterProperty, filterCss);
+	};
+
+	const sliceSize = (height: number) => Math.min(height, window.innerHeight + SLICE_STEP + SLICE_OVERSCAN * 2);
+	const sliceTop = (surface: HTMLElement, height: number, size: number) => {
+		const scrollOffset = -surface.getBoundingClientRect().top - SLICE_OVERSCAN;
+		return Math.max(0, Math.min(height - size, Math.floor(scrollOffset / SLICE_STEP) * SLICE_STEP));
 	};
 
 	const updateElement = (surface: HTMLElement) => {
-		const surfaceHeight = surface.clientHeight;
-		const needsSlice = surface.dataset.glassTier === 'reading' && surfaceHeight > FULL_FILTER_HEIGHT
-			&& !reducedTransparency.matches;
-		let layer = readingLayers.get(surface);
-
-		if (!needsSlice) {
-			if (layer) {
-				entries.get(layer)?.filter.remove();
-				entries.delete(layer);
-				layer.remove();
-				readingLayers.delete(surface);
-				surface.removeAttribute('data-liquid-glass-sliced');
-			}
+		if (!surface.matches(wallpaperSelector)) {
 			applyFilter(surface);
 			return;
 		}
+		const surfaceHeight = surface.clientHeight;
+		let entry = wallpaperLayers.get(surface);
+		if (reducedTransparency.matches && !entry) return;
 
-		if (!layer) {
-			clearElementFilter(surface);
-			layer = document.createElement('span');
-			layer.className = 'liquid-glass-reading-layer';
-			layer.dataset.glassTier = 'reading';
-			layer.setAttribute('aria-hidden', 'true');
-			surface.prepend(layer);
-			readingLayers.set(surface, layer);
+		if (!entry) {
+			const clip = document.createElement('span');
+			clip.className = 'glass-wallpaper-clip';
+			clip.setAttribute('aria-hidden', 'true');
+			const layer = document.createElement('span');
+			layer.className = 'glass-wallpaper-optics';
+			clip.append(layer);
+			surface.prepend(clip);
+			entry = { layer, top: 0 };
+			wallpaperLayers.set(surface, entry);
 		}
 
-		// Keep the moving edges outside the viewport except at the true ends of the article.
-		const size = Math.min(surfaceHeight, window.innerHeight + READING_OVERSCAN * 2);
-		const top = Math.max(0, Math.min(surfaceHeight - size, Math.round(-surface.getBoundingClientRect().top - READING_OVERSCAN)));
-		const height = `${size}px`;
-		const transform = `translateY(${top}px)`;
-		if (layer.style.height !== height) layer.style.height = height;
-		if (layer.style.transform !== transform) layer.style.transform = transform;
-		applyFilter(layer);
-		surface.toggleAttribute('data-liquid-glass-sliced', layer.hasAttribute('data-liquid-glass-ready'));
+		// Large articles paint one overscanned slice. Its map still uses the true article edges.
+		const sliced = surfaceHeight > FULL_FILTER_HEIGHT;
+		const size = sliced ? sliceSize(surfaceHeight) : surfaceHeight;
+		const top = sliced ? sliceTop(surface, surfaceHeight, size) : 0;
+		const { layer } = entry;
+		entry.top = top;
+		layer.style.top = `calc(${top}px - var(--liquid-glass-padding))`;
+		layer.style.height = `calc(${size}px + var(--liquid-glass-padding) * 2)`;
+		applyFilter(layer, surface, top);
+		surface.toggleAttribute('data-liquid-glass-wallpaper', layer.hasAttribute('data-liquid-glass-ready'));
 	};
 
 	const pending = new Set<HTMLElement>(targets);
@@ -278,11 +289,38 @@ export function mountLiquidGlassSvg() {
 	});
 	targets.forEach((el) => observer.observe(el));
 
+	const comments = document.getElementById('waline');
+	if (comments) {
+		const refreshComments = () => {
+			for (const surface of targets) {
+				if (surface.isConnected) continue;
+				const optics = wallpaperLayers.get(surface)?.layer ?? surface;
+				entries.get(optics)?.filter.remove();
+				entries.delete(optics);
+				wallpaperLayers.delete(surface);
+				observer.unobserve(surface);
+				pending.delete(surface);
+				targets.delete(surface);
+			}
+			comments.querySelectorAll<HTMLElement>('.wl-panel, .wl-card-item').forEach(surface => {
+				if (targets.has(surface)) return;
+				targets.add(surface);
+				observer.observe(surface);
+				schedule(surface);
+			});
+		};
+		new MutationObserver(refreshComments).observe(comments, { childList: true, subtree: true });
+		refreshComments();
+	}
+
 	reducedTransparency.addEventListener('change', () => schedule());
 	window.addEventListener('pageshow', () => schedule());
-	const updateReadingLayers = () => readingLayers.forEach((_layer, surface) => schedule(surface));
+	const updateReadingLayers = () => wallpaperLayers.forEach((entry, surface) => {
+		const height = surface.clientHeight;
+		if (height > FULL_FILTER_HEIGHT && sliceTop(surface, height, sliceSize(height)) !== entry.top) schedule(surface);
+	});
 	window.addEventListener('scroll', updateReadingLayers, { passive: true });
-	window.addEventListener('resize', updateReadingLayers);
+	window.addEventListener('resize', () => schedule());
 
 	flush();
 }

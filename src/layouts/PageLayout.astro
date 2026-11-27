@@ -22,7 +22,7 @@ const { title, description, heroImage } = Astro.props;
 	<body>
 		<Header />
 		<main>
-			<article class="page-card glass-card" data-glass-tier="reading">
+			<article class="page-card glass-card" data-glass-tier="page">
 				<div class="page-heading">
 					<p class="eyebrow">SKITTLES’S BLOG</p>
 					<h1 class="editorial-title">{title}</h1>
@@ -45,7 +45,8 @@ const { title, description, heroImage } = Astro.props;
 <style>
 	main { max-width: 960px; }
 	.page-card {
-		padding: clamp(1.2rem, 5vw, 3.3rem);
+		--page-card-padding: clamp(1.2rem, 5vw, 3.3rem);
+		padding: var(--page-card-padding);
 	}
 	.hero-image { margin-bottom: 2rem; }
 	.hero-image :global(img) {
@@ -53,7 +54,8 @@ const { title, description, heroImage } = Astro.props;
 		width: 100%;
 		max-height: 420px;
 		object-fit: cover;
-		border-radius: 18px;
+		border-radius: max(var(--liquid-glass-control-radius), calc(var(--liquid-glass-card-radius) - var(--page-card-padding)));
+		corner-shape: superellipse(var(--liquid-glass-corner));
 	}
 	.page-heading {
 		max-width: 720px;
@@ -74,7 +76,6 @@ const { title, description, heroImage } = Astro.props;
 
 	@media (max-width: 720px) {
 		.hero-image { margin-bottom: 1.4rem; }
-		.hero-image :global(img) { border-radius: 13px; }
 		.page-heading { margin-bottom: 1.7rem; }
 	}
 </style>

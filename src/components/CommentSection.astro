@@ -1,0 +1,71 @@
+---
+const avatars = Array.from({ length: 16 }, (_, index) => {
+	const number = index + 1;
+	return { number, key: `avatar${number}`, src: `/avatars/avatar${number}.${number <= 8 ? 'png' : 'jpg'}` };
+});
+---
+
+<section class="comment-section glass-card" id="comments" data-glass-tier="page" aria-labelledby="comment-section-title">
+	<div class="comment-heading">
+		<h2 id="comment-section-title">评论</h2>
+		<p>填写昵称，选一个头像，就可以留言。</p>
+	</div>
+	<details class="comment-notice">
+		<summary>留言须知</summary>
+		<p>留言发出后不可自助修改或删除，如需删除请联系博主。文中未公开的细节涉及隐私，如有疑问，请私下联系博主。</p>
+	</details>
+	<template id="comment-avatar-template">
+		<div class="comment-avatar-picker">
+			<div class="comment-avatar-heading">
+				<span>头像</span>
+				<div class="comment-avatar-actions">
+					<button type="button" data-avatar-random>随机</button>
+					<button type="button" data-avatar-upload aria-pressed="false">上传</button>
+					<input type="file" data-avatar-file accept="image/*" hidden />
+				</div>
+			</div>
+			<div class="comment-avatar-options" role="group" aria-label="选择评论头像">
+				{avatars.map(({ number, key, src }) => (
+					<button type="button" data-avatar={key} aria-label={`头像 ${number}`} aria-pressed="false">
+						<img src={src} width="36" height="36" alt="" />
+					</button>
+				))}
+			</div>
+			<p class="comment-avatar-status" role="status" hidden></p>
+		</div>
+	</template>
+	<div id="waline"></div>
+</section>
+
+<style>
+	.comment-section { margin-top: var(--layout-gap); padding: clamp(1rem, 4vw, 2.6rem); scroll-margin-top: 5.5rem; }
+	.comment-heading { display: grid; gap: 0.28rem; margin-bottom: 1rem; }
+	.comment-heading h2 { margin: 0; font: 600 clamp(1.7rem, 3vw, 2.2rem)/1.15 var(--font-display); }
+	.comment-heading p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+	.comment-notice { margin-bottom: 1.15rem; font-size: 0.83rem; color: var(--text-muted); }
+	.comment-notice summary { width: fit-content; cursor: pointer; color: var(--rose-ink); }
+	.comment-notice p { margin: 0.45rem 0 0; line-height: 1.65; }
+</style>
+
+<script>
+	import '@waline/client/style';
+	import { mountComments } from '../scripts/comments';
+
+	const root = document.getElementById('waline');
+	const template = document.querySelector<HTMLTemplateElement>('#comment-avatar-template');
+	if (root && template) {
+		const load = () => mountComments(root, template).catch(() => {
+			root.textContent = '评论区加载失败，请刷新页面后重试。';
+		});
+		if ('IntersectionObserver' in window) {
+			const observer = new IntersectionObserver((entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return;
+				observer.disconnect();
+				void load();
+			}, { rootMargin: '500px 0px' });
+			observer.observe(root);
+		} else {
+			void load();
+		}
+	}
+</script>
